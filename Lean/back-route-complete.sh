@@ -1,6 +1,6 @@
 #!/bin/sh
 # back-route-complete.sh
-# 修改时间：2025-05-24
+# 修改时间：2025-06-13
 #
 # 功能：
 #  1. 清理 OpenClash 默认的 fwmark 回程路由（0x162）  
@@ -22,8 +22,8 @@ WAN_IF=eth1                # 旁路由到主路由 LAN 的接口
 CLASH_MARK=0x162           # OpenClash 默认打标
 
 ### 1. 清理 OpenClash 默认回程策略路由 —— ###
-ip rule del fwmark ${CLASH_MARK} ipproto icmp lookup main 2>/dev/null
-ip rule del fwmark ${CLASH_MARK}         lookup 354         2>/dev/null
+#ip rule del fwmark ${CLASH_MARK} ipproto icmp lookup main 2>/dev/null
+#ip rule del fwmark ${CLASH_MARK}         lookup 354         2>/dev/null
 
 ### 2. 清理 DNS (53) 重定向 —— ###
 iptables -t nat -D PREROUTING -p udp  --dport 53 -j REDIRECT --to-ports 53 2>/dev/null
