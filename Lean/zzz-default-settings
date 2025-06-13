@@ -1,0 +1,227 @@
+#!/bin/sh
+#
+# zzz-default-settings
+# 放置于：package/lean/default-settings/files/zzz-default-settings
+# 系统首次启动时自动执行，执行完毕后删除自身
+#
+
+# =============================================================================
+# 1. 设置 LuCI 界面语言为简体中文
+# =============================================================================
+uci set luci.main.lang=zh_cn
+uci commit luci
+
+# =============================================================================
+# 2. 设置系统时区、主机名和 NTP 服务器
+# =============================================================================
+uci -q batch <<-EOF
+  set system.@system[0].timezone='CST-8'
+  set system.@system[0].zonename='Asia/Shanghai'
+  set system.@system[0].hostname='AJ.Main.Router'
+  delete system.ntp.server
+  add_list system.ntp.server='ntp1.aliyun.com'
+  add_list system.ntp.server='ntp.tencent.com'
+  add_list system.ntp.server='ntp.ntsc.ac.cn'
+  add_list system.ntp.server='time.ustc.edu.cn'
+EOF
+uci commit system
+
+# =============================================================================
+# 3. 启用匿名挂载
+# =============================================================================
+uci set fstab.@global[0].anon_mount=1
+uci commit fstab
+
+# =============================================================================
+# 4. 清理 LuCI 状态页面
+# =============================================================================
+rm -f /usr/lib/lua/luci/view/admin_status/index/{mwan,upnp,ddns,minidlna}.htm
+
+# =============================================================================
+# 5. 重命名 “Services” 菜单为 “NAS”
+# =============================================================================
+for ctl in aria2 hd_idle samba samba4 minidlna transmission mjpg-streamer p910nd usb_printer xunlei; do
+  sed -i 's/"services"/"nas"/g' /usr/lib/lua/luci/controller/${ctl}.lua
+done
+for view in overview_status minidlna_status; do
+  sed -i 's/services/nas/g' /usr/lib/lua/luci/view/${view}.htm
+done
+
+# =============================================================================
+# 6. 更换 OPKG 源为阿里云，注释第三方源
+# =============================================================================
+sed -i 's|https://downloads.openwrt.org|https://mirrors.aliyun.com/openwrt|g' /etc/opkg/distfeeds.conf
+sed -i '/smpackage/s/^/#/' /etc/opkg/distfeeds.conf
+sed -i '/kenzo/s/^/#/'    /etc/opkg/distfeeds.conf
+sed -i '/small/s/^/#/'    /etc/opkg/distfeeds.conf
+sed -i '/check_signature/s/^/#/' /etc/opkg.conf
+
+# =============================================================================
+# 7. 重置 root 密码
+# =============================================================================
+sed -i 's#root::0:0:99999:7:::#root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::#g' /etc/shadow
+
+# =============================================================================
+# 8. 优化 Dnsmasq 日志与 LuCI 缓存
+# =============================================================================
+sed -i '/log-facility/d' /etc/dnsmasq.conf
+echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
+rm -rf /tmp/luci-modulecache/ /tmp/luci-indexcache
+
+# =============================================================================
+# 9. 默认开启所有无线接口
+# =============================================================================
+sed -i '/option disabled/d' /etc/config/wireless
+sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
+
+# =============================================================================
+# 10. 自定义固件版本信息
+# =============================================================================
+sed -i '/DISTRIB_REVISION/d'    /etc/openwrt_release
+echo "DISTRIB_REVISION='R22.11.11'" >> /etc/openwrt_release
+sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
+echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
+
+# =============================================================================
+# 11. 网络与 DHCP 静态设置（针对 IPv4） + 取消 LAN 桥接 + 彻底关闭 IPv6
+# =============================================================================
+# 说明：
+#  - 原有 br-lan 桥接已删除，LAN 仅使用 eth0
+#  - LAN: 192.168.122.144/24，不分配任何 IPv6 前缀
+#  - WAN: 192.168.12.144/24，网关 192.168.12.254，DNS 192.168.12.3
+#  - 内核层面与 odhcpd 层面都禁用 IPv6
+
+# 删除旧的 lan.ifname 列表和类型（取消桥接）
+uci delete network.lan.ifname || true
+uci delete network.lan.type   || true
+
+# 配置 LAN 为纯 eth0 静态 IP
+uci set network.lan.ifname='eth0'
+uci set network.lan.proto='static'
+uci set network.lan.ipaddr='192.168.122.144'
+uci set network.lan.netmask='255.255.255.0'
+
+# 禁用 LAN 分配任何 IPv6 前缀
+uci set network.lan.ip6assign='0'
+
+# 配置 DHCP: lan 段禁止 DHCPv6/RA，且关闭 IPv4 DHCP 服务
+uci set dhcp.lan=dhcp
+uci set dhcp.lan.interface='lan'
+uci set dhcp.lan.ignore='1'
+uci set dhcp.lan.dhcpv6='disabled'
+uci set dhcp.lan.ra='disabled'
+uci set dhcp.lan.ra_management='0'
+
+# WAN 配置
+uci delete network.wan.ifname || true
+uci set network.wan.ifname='eth1'
+uci set network.wan.proto='static'
+uci set network.wan.ipaddr='192.168.12.144'
+uci set network.wan.netmask='255.255.255.0'
+uci set network.wan.gateway='192.168.12.254'
+uci set network.wan.dns='192.168.12.3'
+uci set network.wan.broadcast='192.168.12.255'
+
+# 禁用 WAN 分配任何 IPv6 前缀（可选）
+uci set network.wan.ip6assign='0'
+
+# ========== 新增：删除默认 wan6（IPv6 WAN）接口及其 DHCP 配置 ==========
+uci delete network.wan6 2>/dev/null
+uci delete dhcp.wan6 2>/dev/null
+
+uci commit network
+uci commit dhcp
+
+# ───────────────────────────────────────────────────
+# 禁用 LAN 的 IPv6 前缀分配字段
+# 删除 ip6assign 选项，让 LuCI 显示“已禁用”
+uci delete network.lan.ip6assign
+
+# 禁用 WAN6 的自动获取字段
+# （对于自动获取 IPv6 前缀的接口，删除 auto 也能让其变为“未指定”）
+uci delete network.wan.ip6assign
+
+# 保存改动
+uci commit network
+# ───────────────────────────────────────────────────
+
+# 重启 network 服务，使静态 IPv4 + lan DHCPv6/RA 禁用立即生效
+/etc/init.d/network restart
+
+# —— 内核层面彻底禁用 IPv6 + 停用 odhcpd 服务 —— 
+cat << 'EOF' >> /etc/sysctl.conf
+
+# ========== 禁用 IPv6 ==========
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+EOF
+
+# 立即加载 sysctl，使内核层面禁用 IPv6 生效
+sysctl -p >/dev/null 2>&1
+
+# 停用 odhcpd 服务，并禁止其开机自启，彻底关闭 DHCPv6/RA
+/etc/init.d/odhcpd disable
+/etc/init.d/odhcpd stop
+
+# ============================================================================
+# 12. 防火墙策略设置与 DNS 重定向（UCI + 可选 nft）
+# =============================================================================
+
+# —— 12.1 将 INPUT、OUTPUT、FORWARD 全部设为 ACCEPT —— 
+uci set firewall.@defaults[0].input='ACCEPT'
+uci set firewall.@defaults[0].output='ACCEPT'
+uci set firewall.@defaults[0].forward='ACCEPT'
+
+# 12.2 设置 WAN 区域为 ACCEPT（入站/出站/转发）
+uci set firewall.@zone[1].input='ACCEPT'
+uci set firewall.@zone[1].output='ACCEPT'
+uci set firewall.@zone[1].forward='ACCEPT'
+
+# 可选：设置 LAN 区域同样全部为 ACCEPT（不需要可删掉）
+uci set firewall.@zone[0].input='ACCEPT'
+uci set firewall.@zone[0].output='ACCEPT'
+uci set firewall.@zone[0].forward='ACCEPT'
+
+# 12.3 DNS 重定向：拦截所有 TCP/UDP 53 端口并 DNAT 到本机 53 —— 
+uci -q batch <<-EOF
+  add firewall.redirect
+  set firewall.@redirect[-1].name='dns_redirect'
+  set firewall.@redirect[-1].src='*'
+  set firewall.@redirect[-1].src_dport='53'
+  set firewall.@redirect[-1].family='ipv4'
+  set firewall.@redirect[-1].proto='tcpudp'
+  set firewall.@redirect[-1].target='DNAT'
+  set firewall.@redirect[-1].dest_port='53'
+EOF
+
+# 12.4 可选 nftables 规则（如果不使用 nftables，可注释掉以下部分） —— 
+# nft -- add table ip nat
+# nft -- add chain ip nat PREROUTING { type nat hook prerouting priority 0 \; }
+# nft -- add rule ip nat PREROUTING udp dport 53 dnat to :53
+# nft -- add rule ip nat PREROUTING tcp dport 53 dnat to :53
+# nft -- add table ip6 nat
+# nft -- add chain ip6 nat PREROUTING { type nat hook prerouting priority 0 \; }
+# nft -- add rule ip6 nat PREROUTING udp dport 53 dnat to :53
+# nft -- add rule ip6 nat PREROUTING tcp dport 53 dnat to :53
+
+uci commit firewall
+/etc/init.d/firewall restart
+
+# =============================================================================
+# 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口
+# =============================================================================
+uci delete dropbear.@dropbear[0].Interface
+uci commit dropbear
+
+# =============================================================================
+# 14. 执行回程路由脚本
+# =============================================================================
+# 确保 /usr/bin/back-route-complete.sh 已存在且可执行
+#/usr/bin/back-route-complete.sh
+
+# =============================================================================
+# 脚本执行完毕后删除自身，避免再次执行
+# =============================================================================
+rm -f /etc/uci-defaults/zzz-default-settings
+exit 0
