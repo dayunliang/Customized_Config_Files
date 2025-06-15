@@ -30,13 +30,14 @@ if ! command -v docker >/dev/null 2>&1; then
 else
   echo "  Docker 已安装，跳过。"
 fi
+echo "  Docker 版本："
 
-echo "启动 Docker daemon…"
+# --------------------------------------------------------------------------
+# 3. 启动 Docker daemon
+# --------------------------------------------------------------------------
+echo "[3/14] 启动 Docker daemon…"
 rc-service docker start      # 使用 OpenRC 启动 Docker 服务守护进程
 echo "  Docker daemon 已启动。"
-
-echo "  Docker 版本："
-docker version               # 显示当前 Docker 客户端/服务端版本，验证安装成功
 
 # --------------------------------------------------------------------------
 # 4. 设置 Docker 开机启动
