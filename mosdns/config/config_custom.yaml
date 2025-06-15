@@ -1,79 +1,87 @@
-# ------------------------------------------------------------
-# MosDNS v4 配置示例：config_custom.yaml
-# 适用于 MosDNS 5.3.3 及以下版本（v4 DSL）
-# 说明：不要使用 v5 的顶级 sequences、forward_plugins 等字段
-# ------------------------------------------------------------
+# ┌────────────────────────────────────────────────────────────────────────────┐
+# │                        MosDNS v4 配置：config_custom.yaml                   │
+# │ 适用于 MosDNS 5.3.3 及以下版本（v4 DSL），不要使用 v5 的顶级字段                   │
+# └────────────────────────────────────────────────────────────────────────────┘
 
-# 日志相关配置
+# 日志配置：控制台 & 文件双输出，帮助排查启动和运行时问题
 log:
-  level: debug           # 输出日志级别，共有 trace/debug/info/warn/error 四档，debug 级别会记录详尽的调试信息
-  file: "/var/log/mosdns.log"  # 指定日志文件路径，容器内请确保该路径可写；若省略则默认输出到 stdout
+  level: debug            # 日志级别：trace/debug/info/warn/error，debug 输出最详尽调试信息
+  file: "/var/log/mosdns.log"  # 日志文件路径，请确保容器内此路径存在且可写
 
-# 管理 API 端口（可选）
+# 管理 API：通过 HTTP 端口可远程查询当前状态或动态修改配置
 api:
-  http: "0.0.0.0:8338"    # HTTP API 监听地址和端口，0.0.0.0 表示接受全部接口请求；可用于运行时动态查看或调整配置
+  http: "0.0.0.0:8338"     # 0.0.0.0 绑定所有网卡，8338 为监听端口
 
-# 引入额外配置文件
+# ┌─────────────────────────── 引入外部配置 ────────────────────────────┐
+# │ 加载 dat_exec.yaml（定义数据源、ECS、TTL 调整插件）                    │
+# │ 加载 dns.yaml（定义上游 forward 插件：ADH_CN/ADH_GFW）                │
+# └───────────────────────────────────────────────────────────────────┘
 include:
-  - "/etc/mosdns/dat_exec.yaml"  # 加载数据源和插件定义（geoip/geosite/ECS/TTL 等）
-  - "/etc/mosdns/dns.yaml"       # 加载上游 DNS 转发插件定义（ADH_CN/ADH_GFW）
+  - "/etc/mosdns/dat_exec.yaml"
+  - "/etc/mosdns/dns.yaml"
 
-# 插件（plugins）块：定义所有可复用的“插件”（plugin），同时也包含入口（server）插件
+# ┌─────────────────────────── 插件定义 ─────────────────────────────┐
+# │ 在此块中定义所有插件：包括自定义逻辑、分流主流程及服务入口               │
+# └─────────────────────────────────────────────────────────────────┘
 plugins:
 
-  # ┌─────────────── 广告域名拒绝插件 ───────────────┐
-  # | 作用：遇到广告域名时，直接返回 NXDOMAIN，达到屏蔽效果      |
-  # | type: sequence 表示该插件由一条或多条 exec 动作组成         |
-  # | tag: reject_ads 为此插件起个名字，后面在 main_sequence 中引用  |
-  # └───────────────────────────────────────────────┘
+  # ┌────────────────────────────────────────────────────────────────────────┐
+  # │ reject_ads：广告域名拒绝插件                                              │
+  # │   type: sequence    由多个 exec 组成，实现复杂动作                         │
+  # │   作用：对 qname 匹配广告列表时，使用 reject 3 返回 NXDOMAIN                │
+  # └────────────────────────────────────────────────────────────────────────┘
   - tag: reject_ads
-    type: sequence       # 序列插件，按 args 列表依次执行
+    type: sequence
     args:
-      - exec: "reject 3" # 执行内置指令 reject 3，返回 NXDOMAIN（拒绝查询）
+      - exec: "reject 3"  # 内置指令：reject 3 表示 NXDOMAIN
+      - exec: "return"    # 中断插件执行，避免跑入后续逻辑
 
-  # ┌─────────────── 主分流逻辑插件 ───────────────┐
-  # | 作用：按照域名类型分流：CN 域名走 ADH_CN；广告域名走 reject_ads；|
-  # |      其他域名走 ADH_GFW                                   |
-  # | type: sequence 表示多步判断/执行串行逻辑                     |
-  # | tag: main_sequence 为主入口逻辑命名                         |
-  # └───────────────────────────────────────────────────────┘
+  # ┌────────────────────────────────────────────────────────────────────────┐
+  # │ main_sequence：主分流逻辑                                                │
+  # │   type: sequence    多步判断+执行                                        │
+  # │   作用：                                                                │
+  # │     1) 若域名属于 geosite_cn，则转发到 ADH_CN；                            │
+  # │     2) 若域名属于广告列表，则调用 reject_ads；                              │
+  # │     3) 其它域名则转发到 ADH_GFW。                                         │
+  # └────────────────────────────────────────────────────────────────────────┘
   - tag: main_sequence
     type: sequence
     args:
 
-      # —— 第一步：匹配中国大陆域名 —— 
-      # matches: qname $geosite_cn 表示：如果查询名称（qname）匹配 geosite_cn 插件加载的域名列表
-      # exec: $ADH_CN 表示：执行名为 ADH_CN 的插件（在 dns.yaml 中定义的 forward 类型）
+      # —— 步骤 1：匹配中国大陆域名 —— 
+      # matches: qname $geosite_cn 使用 dat_exec.yaml 中 geosite_cn 插件加载的域名列表
+      # exec:    $ADH_CN       调用 dns.yaml 中定义的国内转发插件
       - matches: qname $geosite_cn
         exec: $ADH_CN
+      - exec: "return"       # 匹配后马上退出，不再执行后续规则
 
-      # —— 第二步：匹配广告域名 —— 
-      # matches: qname $geosite_category-ads-all 表示：如果 qname 匹配广告域名列表
-      # exec: $reject_ads         表示：执行前面定义的 reject_ads 插件，返回 NXDOMAIN
+      # —— 步骤 2：匹配广告域名 —— 
+      # matches: qname $geosite_category-ads-all 使用广告域名集合
+      # exec:    $reject_ads   调用广告拒绝插件返回 NXDOMAIN
       - matches: qname $geosite_category-ads-all
         exec: $reject_ads
+      - exec: "return"       # 拒绝后退出，避免落入兜底逻辑
 
-      # —— 第三步：默认走国外解析 —— 
-      # 没有 matches 条件，表示兜底分支；所有未被前两条规则匹配的请求都会走这里
-      # exec: $ADH_GFW 表示：执行名为 ADH_GFW 的插件（在 dns.yaml 中定义的 forward 类型）
+      # —— 步骤 3：兜底——其它域名 —— 
+      # 无 matches 意味默认命中；exec: $ADH_GFW 调用国外转发插件
       - exec: $ADH_GFW
+      - exec: "return"       # 最后退出 sequence
 
-  # ┌─────────────── UDP 服务入口 ───────────────┐
-  # | 作用：在 UDP 协议上监听 DNS 请求，并将控制权交给 main_sequence  |
-  # | type: udp_server 表示 UDP Server 插件               |
-  # | args.entry: main_sequence 表示入口逻辑                  |
-  # | args.listen: ":5333" 表示在容器内部 5333 端口监听所有接口     |
-  # └────────────────────────────────────────────────────┘
+  # ┌────────────────────────────────────────────────────────────────────────┐
+  # │ udp_server：UDP 服务入口                                                │
+  # │   type: udp_server   监听 UDP 协议，entry 指向主流程 main_sequence        │
+  # │   listen: ":5333"    容器内部监听 5333，外部可映射到 53 端口                │
+  # └────────────────────────────────────────────────────────────────────────┘
   - type: udp_server
     args:
-      entry: main_sequence  # 指定上面的 main_sequence 插件为此服务的入口
-      listen: ":5333"       # 监听在本地 0.0.0.0:5333，容器外映射到 53 即可提供标准 DNS 服务
+      entry: main_sequence
+      listen: ":5333"
 
-  # ┌─────────────── TCP 服务入口 ───────────────┐
-  # | 作用：在 TCP 协议上监听 DNS 请求（用于大型响应或 DoT），同样用 main_sequence  |
-  # | type: tcp_server 表示 TCP Server 插件               |
-  # | args 同上                                          |
-  # └────────────────────────────────────────────────────┘
+  # ┌────────────────────────────────────────────────────────────────────────┐
+  # │ tcp_server：TCP 服务入口（用于大型响应或 DoT）                              │
+  # │   type: tcp_server   监听 TCP 协议，同样使用 main_sequence 作为入口        │
+  # │   listen: ":5333"    容器内部监听 5333，外部可映射到 53/TCP 端口            │
+  # └────────────────────────────────────────────────────────────────────────┘
   - type: tcp_server
     args:
       entry: main_sequence
