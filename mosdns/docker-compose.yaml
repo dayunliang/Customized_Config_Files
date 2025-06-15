@@ -1,0 +1,22 @@
+services:
+  mosdns:
+    image: irinesistiana/mosdns:latest
+    container_name: mosdns
+    ports:
+      - "53:5333/udp"
+      - "53:5333/tcp"
+    volumes:
+      - /etc/mosdns:/etc/mosdns
+      - /var/mosdns/geoip_cn.txt:/var/mosdns/geoip_cn.txt
+      - /var/mosdns/geosite_category-ads-all.txt:/var/mosdns/geosite_category-ads-all.txt
+      - /var/mosdns/geosite_geolocation-!cn.txt:/var/mosdns/geosite_geolocation-!cn.txt
+      - /var/mosdns/geosite_gfw.txt:/var/mosdns/geosite_gfw.txt
+      - /var/mosdns/geosite_cn.txt:/var/mosdns/geosite_cn.txt
+      - /var/mosdns/geoip_private.txt:/var/mosdns/geoip_private.txt
+      - /var/log/mosdns.log:/var/log/mosdns.log     # 挂载日志文件
+    entrypoint: |
+      /bin/sh -c "\
+      : > /var/log/mosdns.log && \
+      exec mosdns start -c /etc/mosdns/config_custom.yaml\
+      "
+    restart: unless-stopped
