@@ -22,4 +22,7 @@ wget https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/proxy-list
 wget https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/direct-list.txt \
      -O "$RULE_DIR/geosite_cn.txt" > /dev/null 2>&1
 
+wget https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/gfw.txt \
+     -O "$RULE_DIR/geosite_gfw.txt" > /dev/null 2>&1
+
 echo "Update geoip & geosite lists completed."
