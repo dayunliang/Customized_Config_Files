@@ -1,87 +1,69 @@
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │                        MosDNS v4 配置：config_custom.yaml                   │
-# │ 适用于 MosDNS 5.3.3 及以下版本（v4 DSL），不要使用 v5 的顶级字段                   │
-# └────────────────────────────────────────────────────────────────────────────┘
+# MosDNS v4 配置文件：config_custom.yaml
+# ------------------------------------------------------------
+# ✅ 支持国内/广告/国外域名分流逻辑（无重复转发）
+# ✅ 完全符合 MosDNS v4 DSL 语法规范
+# ✅ 仅需此文件，其他配置文件 dns.yaml / dat_exec.yaml 无需修改
+# ------------------------------------------------------------
 
-# 日志配置：控制台 & 文件双输出，帮助排查启动和运行时问题
 log:
-  level: debug            # 日志级别：trace/debug/info/warn/error，debug 输出最详尽调试信息
-  file: "/var/log/mosdns.log"  # 日志文件路径，请确保容器内此路径存在且可写
+  level: debug                      # 日志等级（建议调试用 debug，正式运行用 info）
+  file: "/var/log/mosdns.log"      # 日志输出文件路径（容器内路径，需确保可写）
 
-# 管理 API：通过 HTTP 端口可远程查询当前状态或动态修改配置
 api:
-  http: "0.0.0.0:8338"     # 0.0.0.0 绑定所有网卡，8338 为监听端口
+  http: "0.0.0.0:8338"              # 管理 API 端口，可用于运行时查询配置状态
 
-# ┌─────────────────────────── 引入外部配置 ────────────────────────────┐
-# │ 加载 dat_exec.yaml（定义数据源、ECS、TTL 调整插件）                    │
-# │ 加载 dns.yaml（定义上游 forward 插件：ADH_CN/ADH_GFW）                │
-# └───────────────────────────────────────────────────────────────────┘
 include:
-  - "/etc/mosdns/dat_exec.yaml"
-  - "/etc/mosdns/dns.yaml"
+  - "/etc/mosdns/dat_exec.yaml"    # 数据规则文件（如 geosite_cn、ads 等）
+  - "/etc/mosdns/dns.yaml"         # 上游 DNS 配置文件（定义 ADH_CN 和 ADH_GFW）
 
-# ┌─────────────────────────── 插件定义 ─────────────────────────────┐
-# │ 在此块中定义所有插件：包括自定义逻辑、分流主流程及服务入口               │
-# └─────────────────────────────────────────────────────────────────┘
 plugins:
 
-  # ┌────────────────────────────────────────────────────────────────────────┐
-  # │ reject_ads：广告域名拒绝插件                                              │
-  # │   type: sequence    由多个 exec 组成，实现复杂动作                         │
-  # │   作用：对 qname 匹配广告列表时，使用 reject 3 返回 NXDOMAIN                │
-  # └────────────────────────────────────────────────────────────────────────┘
+  # 插件：reject_ads
+  # 功能：对匹配到的广告域名直接返回 NXDOMAIN（拒绝解析）
   - tag: reject_ads
     type: sequence
     args:
-      - exec: "reject 3"  # 内置指令：reject 3 表示 NXDOMAIN
-      - exec: "return"    # 中断插件执行，避免跑入后续逻辑
+      - exec: "reject 3"            # 内置 reject 指令，代码 3 表示 NXDOMAIN
 
-  # ┌────────────────────────────────────────────────────────────────────────┐
-  # │ main_sequence：主分流逻辑                                                │
-  # │   type: sequence    多步判断+执行                                        │
-  # │   作用：                                                                │
-  # │     1) 若域名属于 geosite_cn，则转发到 ADH_CN；                            │
-  # │     2) 若域名属于广告列表，则调用 reject_ads；                              │
-  # │     3) 其它域名则转发到 ADH_GFW。                                         │
-  # └────────────────────────────────────────────────────────────────────────┘
+  # 插件：route_cn
+  # 功能：匹配 geosite_cn（中国大陆域名）→ 发往 ADH_CN
+  # 注意：不在此处 return，交由 main_sequence 控制是否中断
+  - tag: route_cn
+    type: sequence
+    args:
+      - matches: qname $geosite_cn
+        exec: $ADH_CN
+
+  # 插件：route_ads
+  # 功能：匹配广告域名 → 执行拒绝（reject_ads）
+  - tag: route_ads
+    type: sequence
+    args:
+      - matches: qname $geosite_category-ads-all
+        exec: $reject_ads
+
+  # 插件：main_sequence
+  # 功能：主流程控制，根据是否已有响应（has_resp）决定是否走 ADH_GFW
   - tag: main_sequence
     type: sequence
     args:
+      - exec: $route_cn             # 第一步：尝试匹配国内域名并解析
+      - exec: $route_ads            # 第二步：尝试匹配广告域名并拒绝
 
-      # —— 步骤 1：匹配中国大陆域名 —— 
-      # matches: qname $geosite_cn 使用 dat_exec.yaml 中 geosite_cn 插件加载的域名列表
-      # exec:    $ADH_CN       调用 dns.yaml 中定义的国内转发插件
-      - matches: qname $geosite_cn
-        exec: $ADH_CN
-      - exec: "return"       # 匹配后马上退出，不再执行后续规则
+      - matches: has_resp           # 第三步：若前面已有响应（国内或广告），中断流程
+        exec: "return"
 
-      # —— 步骤 2：匹配广告域名 —— 
-      # matches: qname $geosite_category-ads-all 使用广告域名集合
-      # exec:    $reject_ads   调用广告拒绝插件返回 NXDOMAIN
-      - matches: qname $geosite_category-ads-all
-        exec: $reject_ads
-      - exec: "return"       # 拒绝后退出，避免落入兜底逻辑
+      - exec: $ADH_GFW              # 第四步：默认兜底逻辑，发往国外上游
 
-      # —— 步骤 3：兜底——其它域名 —— 
-      # 无 matches 意味默认命中；exec: $ADH_GFW 调用国外转发插件
-      - exec: $ADH_GFW
-      - exec: "return"       # 最后退出 sequence
-
-  # ┌────────────────────────────────────────────────────────────────────────┐
-  # │ udp_server：UDP 服务入口                                                │
-  # │   type: udp_server   监听 UDP 协议，entry 指向主流程 main_sequence        │
-  # │   listen: ":5333"    容器内部监听 5333，外部可映射到 53 端口                │
-  # └────────────────────────────────────────────────────────────────────────┘
+  # 插件：udp_server
+  # 功能：MosDNS 的 UDP 服务监听（容器内监听 5333 端口，外部可映射为 53）
   - type: udp_server
     args:
       entry: main_sequence
       listen: ":5333"
 
-  # ┌────────────────────────────────────────────────────────────────────────┐
-  # │ tcp_server：TCP 服务入口（用于大型响应或 DoT）                              │
-  # │   type: tcp_server   监听 TCP 协议，同样使用 main_sequence 作为入口        │
-  # │   listen: ":5333"    容器内部监听 5333，外部可映射到 53/TCP 端口            │
-  # └────────────────────────────────────────────────────────────────────────┘
+  # 插件：tcp_server
+  # 功能：支持 TCP 请求（DoT 或大响应等场景）
   - type: tcp_server
     args:
       entry: main_sequence
