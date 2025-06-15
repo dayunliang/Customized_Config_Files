@@ -1,0 +1,185 @@
+log:
+  level: debug
+  file: "/var/log/mosdns.log"
+
+api:
+  http: "0.0.0.0:8338"
+
+include:
+  - "/etc/mosdns/dat_exec.yaml"
+  - "/etc/mosdns/dns.yaml"
+
+plugins:
+  - tag: reject_null_domain
+    type: sequence
+    args:
+      - exec: query_summary reject_null_domain
+      - exec: $reject_3
+
+  - tag: reject_qtype65
+    type: sequence
+    args:
+      - exec: query_summary reject_qtype65
+      - exec: $reject_3
+
+  ################ 序列 #################
+  - tag: dns_nocn
+    type: fallback
+    args:
+      primary: quad9
+      secondary: nextdns
+      threshold: 700
+      always_standby: true
+  
+  - tag: dns_cn
+    type: fallback
+    args:
+      primary: ali
+      secondary: dnspod
+      threshold: 500
+      always_standby: true
+
+  - tag: dns_nocn_seq
+    type: sequence
+    args:
+      - exec: query_summary dns_nocn
+      - exec: $dns_nocn
+
+  - tag: dns_cn_seq
+    type: sequence
+    args:
+      - exec: query_summary dns_cn
+      - exec: $dns_cn
+
+  - tag: local_seq
+    type: sequence
+    args:
+      - exec: query_summary local
+      - exec: $local
+
+  - tag: fallback_seq
+    type: sequence
+    args:
+      - exec: query_summary fallback
+      - exec: $dns_nocn_seq  # 改为国外 DNS
+
+  - tag: other_seq
+    type: sequence
+    args:
+      - exec: query_summary other
+      - exec: $dns_cn
+
+  # ========== 修改 query_cn ==========  
+  - tag: query_cn
+    type: sequence
+    args:
+      - exec: $ecs_cn
+      - exec: $local_seq
+      - matches: "!resp_ip $geoip_cn"
+        exec: drop_resp
+
+  # ========== 修改 query_nocn ==========  
+  - tag: query_nocn
+    type: sequence
+    args:
+      - exec: $no_ecs
+      - exec: prefer_ipv4
+      - exec: $forward_remote
+      - matches: "resp_ip $geoip_cn"
+        exec: drop_resp
+
+  - tag: query_gfw
+    type: sequence
+    args:
+      - exec: $forward_remote
+
+  - tag: query_fallback
+    type: sequence
+    args:
+      - exec: prefer_ipv4
+      - exec: $fallback_seq
+
+  - tag: query_lan
+    type: sequence
+    args:
+      - matches: has_resp
+        exec: return
+      - exec: $local_seq
+
+  - tag: query_other
+    type: sequence
+    args:
+      - exec: $other_seq
+
+  - tag: pre_handle
+    type: sequence
+    args:
+      - exec: $ttl_1h
+      - exec: accept
+
+  - tag: main_handle
+    type: sequence
+    args:
+      - exec: $ttl_5m
+      - exec: accept
+
+  - tag: has_resp_pre
+    type: sequence
+    args:
+      - matches: has_resp
+        exec: goto pre_handle
+
+  - tag: has_resp_main
+    type: sequence
+    args:
+      - matches: has_resp
+        exec: goto main_handle
+
+  - tag: pre_sequence
+    type: sequence
+    args:
+      - matches: qtype 65
+        exec: $reject_qtype65
+      - matches: "qname keyword::"
+        exec: $reject_null_domain
+      - matches: qtype 12
+        exec: $query_other
+      - matches: qtype 255
+        exec: $query_other
+      - matches: ptr_ip $geoip_private
+        exec: $query_lan
+      - exec: jump has_resp_pre
+
+  - tag: main_sequence
+    type: sequence
+    args:
+      - exec: jump has_resp_main
+      - matches: qname $geosite_cn
+        exec: $query_cn
+      - exec: jump has_resp_main
+      - matches: qname $geosite_gfw
+        exec: $query_gfw
+      - exec: jump has_resp_main
+      - matches: qname $geosite_location-!cn
+        exec: $query_nocn
+      - exec: jump has_resp_main
+      - exec: $no_ecs
+      - exec: $query_fallback
+      - exec: jump has_resp_main
+
+  - tag: sequence
+    type: sequence
+    args:
+      - exec: metrics_collector metrics
+      - exec: $pre_sequence
+      - exec: $main_sequence
+
+  - type: udp_server
+    args:
+      entry: sequence
+      listen: :5333
+
+  - type: tcp_server
+    args:
+      entry: sequence
+      listen: :5333
