@@ -1,185 +1,80 @@
+# ------------------------------------------------------------
+# MosDNS v4 配置示例：config_custom.yaml
+# 适用于 MosDNS 5.3.3 及以下版本（v4 DSL）
+# 说明：不要使用 v5 的顶级 sequences、forward_plugins 等字段
+# ------------------------------------------------------------
+
+# 日志相关配置
 log:
-  level: debug
-  file: "/var/log/mosdns.log"
+  level: debug           # 输出日志级别，共有 trace/debug/info/warn/error 四档，debug 级别会记录详尽的调试信息
+  file: "/var/log/mosdns.log"  # 指定日志文件路径，容器内请确保该路径可写；若省略则默认输出到 stdout
 
+# 管理 API 端口（可选）
 api:
-  http: "0.0.0.0:8338"
+  http: "0.0.0.0:8338"    # HTTP API 监听地址和端口，0.0.0.0 表示接受全部接口请求；可用于运行时动态查看或调整配置
 
+# 引入额外配置文件
 include:
-  - "/etc/mosdns/dat_exec.yaml"
-  - "/etc/mosdns/dns.yaml"
+  - "/etc/mosdns/dat_exec.yaml"  # 加载数据源和插件定义（geoip/geosite/ECS/TTL 等）
+  - "/etc/mosdns/dns.yaml"       # 加载上游 DNS 转发插件定义（ADH_CN/ADH_GFW）
 
+# 插件（plugins）块：定义所有可复用的“插件”（plugin），同时也包含入口（server）插件
 plugins:
-  - tag: reject_null_domain
-    type: sequence
-    args:
-      - exec: query_summary reject_null_domain
-      - exec: $reject_3
 
-  - tag: reject_qtype65
-    type: sequence
+  # ┌─────────────── 广告域名拒绝插件 ───────────────┐
+  # | 作用：遇到广告域名时，直接返回 NXDOMAIN，达到屏蔽效果      |
+  # | type: sequence 表示该插件由一条或多条 exec 动作组成         |
+  # | tag: reject_ads 为此插件起个名字，后面在 main_sequence 中引用  |
+  # └───────────────────────────────────────────────┘
+  - tag: reject_ads
+    type: sequence       # 序列插件，按 args 列表依次执行
     args:
-      - exec: query_summary reject_qtype65
-      - exec: $reject_3
+      - exec: "reject 3" # 执行内置指令 reject 3，返回 NXDOMAIN（拒绝查询）
 
-  ################ 序列 #################
-  - tag: dns_nocn
-    type: fallback
-    args:
-      primary: quad9
-      secondary: nextdns
-      threshold: 700
-      always_standby: true
-  
-  - tag: dns_cn
-    type: fallback
-    args:
-      primary: ali
-      secondary: dnspod
-      threshold: 500
-      always_standby: true
-
-  - tag: dns_nocn_seq
-    type: sequence
-    args:
-      - exec: query_summary dns_nocn
-      - exec: $dns_nocn
-
-  - tag: dns_cn_seq
-    type: sequence
-    args:
-      - exec: query_summary dns_cn
-      - exec: $dns_cn
-
-  - tag: local_seq
-    type: sequence
-    args:
-      - exec: query_summary local
-      - exec: $local
-
-  - tag: fallback_seq
-    type: sequence
-    args:
-      - exec: query_summary fallback
-      - exec: $dns_nocn_seq  # 改为国外 DNS
-
-  - tag: other_seq
-    type: sequence
-    args:
-      - exec: query_summary other
-      - exec: $dns_cn
-
-  # ========== 修改 query_cn ==========  
-  - tag: query_cn
-    type: sequence
-    args:
-      - exec: $ecs_cn
-      - exec: $local_seq
-      - matches: "!resp_ip $geoip_cn"
-        exec: drop_resp
-
-  # ========== 修改 query_nocn ==========  
-  - tag: query_nocn
-    type: sequence
-    args:
-      - exec: $no_ecs
-      - exec: prefer_ipv4
-      - exec: $forward_remote
-      - matches: "resp_ip $geoip_cn"
-        exec: drop_resp
-
-  - tag: query_gfw
-    type: sequence
-    args:
-      - exec: $forward_remote
-
-  - tag: query_fallback
-    type: sequence
-    args:
-      - exec: prefer_ipv4
-      - exec: $fallback_seq
-
-  - tag: query_lan
-    type: sequence
-    args:
-      - matches: has_resp
-        exec: return
-      - exec: $local_seq
-
-  - tag: query_other
-    type: sequence
-    args:
-      - exec: $other_seq
-
-  - tag: pre_handle
-    type: sequence
-    args:
-      - exec: $ttl_1h
-      - exec: accept
-
-  - tag: main_handle
-    type: sequence
-    args:
-      - exec: $ttl_5m
-      - exec: accept
-
-  - tag: has_resp_pre
-    type: sequence
-    args:
-      - matches: has_resp
-        exec: goto pre_handle
-
-  - tag: has_resp_main
-    type: sequence
-    args:
-      - matches: has_resp
-        exec: goto main_handle
-
-  - tag: pre_sequence
-    type: sequence
-    args:
-      - matches: qtype 65
-        exec: $reject_qtype65
-      - matches: "qname keyword::"
-        exec: $reject_null_domain
-      - matches: qtype 12
-        exec: $query_other
-      - matches: qtype 255
-        exec: $query_other
-      - matches: ptr_ip $geoip_private
-        exec: $query_lan
-      - exec: jump has_resp_pre
-
+  # ┌─────────────── 主分流逻辑插件 ───────────────┐
+  # | 作用：按照域名类型分流：CN 域名走 ADH_CN；广告域名走 reject_ads；|
+  # |      其他域名走 ADH_GFW                                   |
+  # | type: sequence 表示多步判断/执行串行逻辑                     |
+  # | tag: main_sequence 为主入口逻辑命名                         |
+  # └───────────────────────────────────────────────────────┘
   - tag: main_sequence
     type: sequence
     args:
-      - exec: jump has_resp_main
+
+      # —— 第一步：匹配中国大陆域名 —— 
+      # matches: qname $geosite_cn 表示：如果查询名称（qname）匹配 geosite_cn 插件加载的域名列表
+      # exec: $ADH_CN 表示：执行名为 ADH_CN 的插件（在 dns.yaml 中定义的 forward 类型）
       - matches: qname $geosite_cn
-        exec: $query_cn
-      - exec: jump has_resp_main
-      - matches: qname $geosite_gfw
-        exec: $query_gfw
-      - exec: jump has_resp_main
-      - matches: qname $geosite_location-!cn
-        exec: $query_nocn
-      - exec: jump has_resp_main
-      - exec: $no_ecs
-      - exec: $query_fallback
-      - exec: jump has_resp_main
+        exec: $ADH_CN
 
-  - tag: sequence
-    type: sequence
-    args:
-      - exec: metrics_collector metrics
-      - exec: $pre_sequence
-      - exec: $main_sequence
+      # —— 第二步：匹配广告域名 —— 
+      # matches: qname $geosite_category-ads-all 表示：如果 qname 匹配广告域名列表
+      # exec: $reject_ads         表示：执行前面定义的 reject_ads 插件，返回 NXDOMAIN
+      - matches: qname $geosite_category-ads-all
+        exec: $reject_ads
 
+      # —— 第三步：默认走国外解析 —— 
+      # 没有 matches 条件，表示兜底分支；所有未被前两条规则匹配的请求都会走这里
+      # exec: $ADH_GFW 表示：执行名为 ADH_GFW 的插件（在 dns.yaml 中定义的 forward 类型）
+      - exec: $ADH_GFW
+
+  # ┌─────────────── UDP 服务入口 ───────────────┐
+  # | 作用：在 UDP 协议上监听 DNS 请求，并将控制权交给 main_sequence  |
+  # | type: udp_server 表示 UDP Server 插件               |
+  # | args.entry: main_sequence 表示入口逻辑                  |
+  # | args.listen: ":5333" 表示在容器内部 5333 端口监听所有接口     |
+  # └────────────────────────────────────────────────────┘
   - type: udp_server
     args:
-      entry: sequence
-      listen: :5333
+      entry: main_sequence  # 指定上面的 main_sequence 插件为此服务的入口
+      listen: ":5333"       # 监听在本地 0.0.0.0:5333，容器外映射到 53 即可提供标准 DNS 服务
 
+  # ┌─────────────── TCP 服务入口 ───────────────┐
+  # | 作用：在 TCP 协议上监听 DNS 请求（用于大型响应或 DoT），同样用 main_sequence  |
+  # | type: tcp_server 表示 TCP Server 插件               |
+  # | args 同上                                          |
+  # └────────────────────────────────────────────────────┘
   - type: tcp_server
     args:
-      entry: sequence
-      listen: :5333
+      entry: main_sequence
+      listen: ":5333"
