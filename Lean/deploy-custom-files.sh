@@ -13,7 +13,7 @@ set -e  # 只要有一条命令失败，立即退出脚本，防止脏环境
 # ---------------------------------------------------------------------------
 # 1. 基本变量定义
 # ---------------------------------------------------------------------------
-REPO_URL="https://github.com/dayunliang/OpenWRT_Customized.git"  # 你的自定义仓库地址
+REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"  # 你的自定义仓库地址
 TMP_DIR=$(mktemp -d)   # 用于临时clone仓库，保证主目录干净
 TS=$(date +%Y%m%d-%H%M%S)   # 时间戳，用于备份文件名防止覆盖
 declare -a BACKUP_LIST      # 声明一个数组用于收集所有被备份的文件路径
