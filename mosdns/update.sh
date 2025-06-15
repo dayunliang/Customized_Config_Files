@@ -2,10 +2,10 @@
 
 # MosDNS 项目目录和 rule 子目录
 MOSDNS_DIR="$HOME/mosdns"
-RULE_DIR="$MOSDNS_DIR/rule"
+RULES_DAT_DIR="$MOSDNS_DIR/rules-dat"
 
 # 如果 rule 目录不存在则创建
-[ ! -d "$RULE_DIR" ] && mkdir -p "$RULE_DIR"
+[ ! -d "$RULES_DAT_DIR" ] && mkdir -p "$RULES_DAT_DIR"
 
 # 在此处维护“URL 文件名”对，每行一个，URL 和对应文件以空格分隔
 URL_FILE_LIST=$(cat << 'EOF'
@@ -24,9 +24,9 @@ i=1
 printf "%s\n" "$URL_FILE_LIST" | while IFS=' ' read -r url fname; do
   echo "[${i}/${TOTAL}] Downloading ${fname}..."
   # BusyBox wget 默认会显示点状进度，这里不重定向，保留进度输出
-  wget "$url" -O "$RULE_DIR/$fname"
+  wget "$url" -O "$RULES_DAT_DIR/$fname"
   if [ $? -eq 0 ]; then
-    echo "→ Saved to ${RULE_DIR}/${fname}"
+    echo "→ Saved to ${RULES_DAT_DIR}/${fname}"
   else
     echo "✗ Failed to download ${fname}"
   fi
