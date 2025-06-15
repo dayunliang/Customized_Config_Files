@@ -44,6 +44,9 @@ plugins:
     args:
       files:
         - "/var/mosdns/geosite_cn.txt"
+        - "/var/mosdns/geosite_cn_extra.txt"
+        - "/var/mosdns/geosite_cn_apple.txt"
+        - "/var/mosdns/geosite_cn_google.txt"
         - "/etc/mosdns/rule/whitelist.txt"
 
   # ┌────────────────────────────────────────────────────────────────────────┐
