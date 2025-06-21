@@ -18,8 +18,7 @@
 
 ```bash
 .
-├── deploy_mosdns.sh             # 主部署脚本（一键执行）
-├── clean_port.sh               # 独立端口释放脚本（可选）
+├── deploy_mosdns_AdH.sh        # 主部署脚本（一键执行）
 ├── conf/
 │   ├── AdH_CN.yaml             # 国内 ADH 配置文件
 │   ├── AdH_GFW.yaml            # 国外 ADH 配置文件
