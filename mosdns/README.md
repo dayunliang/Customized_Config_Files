@@ -56,10 +56,3 @@ curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Custom
 👤 作者
 Andy Da
 📬 欢迎交流建议或提 Issue
-
-🧭 鸣谢
-MosDNS
-
-AdGuardHome
-
-geosite 数据
