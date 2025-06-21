@@ -1,1 +1,16 @@
-
+services:
+  mosdns:
+    image: irinesistiana/mosdns:latest
+    container_name: mosdns
+    ports:
+      - "53:5333/udp"
+      - "53:5333/tcp"
+    volumes:
+      - ~/mosdns/config:/etc/mosdns
+      - ~/mosdns/rules-dat:/var/mosdns
+    entrypoint: |
+      /bin/sh -c "\
+      : > /var/log/mosdns.log && \
+      exec mosdns start -c /etc/mosdns/config_custom.yaml\
+      "
+    restart: unless-stopped
