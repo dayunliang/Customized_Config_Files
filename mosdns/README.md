@@ -15,11 +15,11 @@
 - 🌐 DNS 分流逻辑
 🇨🇳 国内域名（CN）：
 
-MosDNS 检测到 geosite:cn / geoip:cn，转发给 AdH_CN（监听端口：54）
+MosDNS 检测到 geosite:cn / geoip:cn，转发给 adh_cn（监听端口：54）
 
 🌍 国外域名 / GFW 域名：
 
-转发给 AdH_GFW（监听端口：55），其上游为代理节点或海外 DNS（如 8.8.8.8）
+转发给 adh_gfw（监听端口：55），其上游为代理节点或海外 DNS（如 8.8.8.8）
 
 ---
 
@@ -27,16 +27,16 @@ MosDNS 检测到 geosite:cn / geoip:cn，转发给 AdH_CN（监听端口：54）
 
 ```bash
 .
-├── deploy_mosdns_AdH.sh        # 主部署脚本（一键执行）
+├── deploy_mosdns_adh.sh        # 主部署脚本（一键执行）
 ├── conf/
-│   ├── AdH_CN.yaml             # 国内 ADH 配置文件
-│   ├── AdH_GFW.yaml            # 国外 ADH 配置文件
+│   ├── adh_cn.yaml             # 国内 ADH 配置文件
+│   ├── adh_gfw.yaml            # 国外 ADH 配置文件
 │   ├── config_custom.yaml      # MosDNS 主配置
 │   └── dat_exec.yaml           # MosDNS 数据规则配置
 └── docker-compose/
-    ├── docker-compose.AdH_CN.yaml
-    ├── docker-compose.AdH_GFW.yaml
-    └── docker-compose.mosdns.yaml
+    ├── adh_cn
+    ├── adh_gfw
+    └── mosdns
 
 🚀 快速开始
 
@@ -44,11 +44,11 @@ MosDNS 检测到 geosite:cn / geoip:cn，转发给 AdH_CN（监听端口：54）
 推荐平台：Alpine (建议) / Debian / Ubuntu
 
 2️⃣ 一键部署
-wget https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh
+wget https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_adh.sh
 
 或使用 Github Proxy
 
-wget https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh
+wget https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_adh.sh
 
 📜 LICENSE
 本项目使用 MIT License 开源。
