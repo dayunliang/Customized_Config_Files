@@ -3,8 +3,8 @@ set -e  # 遇到任何错误立即退出脚本执行
 
 # 定义三个主要服务目录变量
 MOSDNS_DIR="$HOME/mosdns"         # MosDNS 工作目录
-ADH_CN_DIR="$HOME/AdH_CN"         # AdGuardHome 国内节点配置目录
-ADH_GFW_DIR="$HOME/AdH_GFW"       # AdGuardHome GFW 节点配置目录
+ADH_CN_DIR="$HOME/adh_cn"         # AdGuardHome 国内节点配置目录
+ADH_GFW_DIR="$HOME/adh_gfw"       # AdGuardHome GFW 节点配置目录
 CRONTAB_FILE="/etc/crontabs/root" # Alpine 系统中 crontab 文件路径
 
 # ==================================================================
@@ -174,20 +174,20 @@ cleanup_environment
 # --------------------------------------------------------------------------
 # [8/14] 部署 AdGuardHome 国内实例
 # --------------------------------------------------------------------------
-echo "[8/14] 部署 AdH_CN..."
+echo "[8/14] 部署 adh_cn..."
 mkdir -p "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/AdH_CN.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/AdH_CN -o "$ADH_CN_DIR/docker-compose.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn -o "$ADH_CN_DIR/docker-compose.yaml"
 cd "$ADH_CN_DIR"
 docker-compose up -d --force-recreate   # 强制重新创建并启动容器
 
 # --------------------------------------------------------------------------
 # [9/14] 部署 AdGuardHome GFW 实例
 # --------------------------------------------------------------------------
-echo "[9/14] 部署 AdH_GFW..."
+echo "[9/14] 部署 adh_gfw..."
 mkdir -p "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/AdH_GFW.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/AdH_GFW -o "$ADH_GFW_DIR/docker-compose.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw -o "$ADH_GFW_DIR/docker-compose.yaml"
 cd "$ADH_GFW_DIR"
 docker-compose up -d --force-recreate
 
