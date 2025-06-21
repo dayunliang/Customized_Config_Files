@@ -1,0 +1,16 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: AdH_GFW
+    restart: unless-stopped
+    ports:
+      - "55:53/tcp"
+      - "55:53/udp"
+      - "82:80/tcp"
+      - "445:443/tcp"
+      - "3002:3000/tcp"
+    volumes:
+      - ./conf:/opt/adguardhome/conf
+      - ./work:/opt/adguardhome/work
+    environment:
+      - TZ=Asia/Shanghai
