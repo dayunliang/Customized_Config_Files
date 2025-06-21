@@ -157,22 +157,22 @@ cleanup_environment
 
 # [8/14] 拉取并启动 AdGuardHome（国内）容器
 mkdir -p "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/AdH_CN.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/docker-compose.AdH_CN.yaml -o "$ADH_CN_DIR/docker-compose.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/AdH_CN.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/AdH_CN -o "$ADH_CN_DIR/docker-compose.yaml"
 cd "$ADH_CN_DIR"
 docker-compose up -d --force-recreate
 
 # [9/14] 拉取并启动 AdGuardHome（国外）容器
 mkdir -p "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/AdH_GFW.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/docker-compose.AdH_GFW.yaml -o "$ADH_GFW_DIR/docker-compose.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/AdH_GFW.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/AdH_GFW -o "$ADH_GFW_DIR/docker-compose.yaml"
 cd "$ADH_GFW_DIR"
 docker-compose up -d --force-recreate
 
 # [10/14] 拉取 MosDNS 的 docker-compose 和自动更新脚本
 cd "$MOSDNS_DIR"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/docker-compose.mosdns.yaml -o ./docker-compose.yaml
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh -o ./update.sh
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns -o ./docker-compose.yaml
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh -o ./update.sh
 chmod +x update.sh
 ./update.sh  # 初始执行一次，拉取规则等
 
@@ -187,7 +187,7 @@ mkdir -p "$MOSDNS_DIR/rules-dat"
 mkdir -p "$MOSDNS_DIR/config/rule"
 cd "$MOSDNS_DIR/config"
 for f in config_custom.yaml dns.yaml dat_exec.yaml; do
-  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$f"
+  curl -fsSL "https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$f"
 done
 cd rule
 : > whitelist.txt
