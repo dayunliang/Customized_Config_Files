@@ -1,42 +1,34 @@
 #!/bin/sh
-# ----------------------------------------------------------------------------
-# Script Name: deploy-mosdns.sh
-# 作用：一键部署 MosDNS + 国内/国外 AdGuardHome 的容器服务
-# 环境需求：Alpine Linux（OpenRC）+ Docker + 网络支持
-# 功能目标：构建分流、防污染、高性能、本地可控的 DNS 体系
-# 作者：Andy Da（由 ChatGPT 协助完成）
-# 最后更新时间：2025-06-21
-# ----------------------------------------------------------------------------
+set -e  # 遇到任何错误立即退出脚本执行
 
-set -e  # 遇到任意错误立即退出脚本执行
+# 定义三个主要服务目录变量
+MOSDNS_DIR="$HOME/mosdns"         # MosDNS 工作目录
+ADH_CN_DIR="$HOME/AdH_CN"         # AdGuardHome 国内节点配置目录
+ADH_GFW_DIR="$HOME/AdH_GFW"       # AdGuardHome GFW 节点配置目录
+CRONTAB_FILE="/etc/crontabs/root" # Alpine 系统中 crontab 文件路径
 
-# ======================== 目录变量定义 ========================
-MOSDNS_DIR="$HOME/mosdns"        # MosDNS 配置主目录
-ADH_CN_DIR="$HOME/AdH_CN"        # 国内 AdGuardHome 容器配置目录
-ADH_GFW_DIR="$HOME/AdH_GFW"      # 国外 AdGuardHome 容器配置目录
-CRONTAB_FILE="/etc/crontabs/root"  # Alpine 中 root 用户的定时任务文件
-
-# ======================== 步骤 7：清理环境函数 ========================
+# ==================================================================
+# 函数：检查并释放占用端口 53/54/55 的容器或进程 + 清理旧配置目录
+# ==================================================================
 cleanup_environment() {
-  # 清理前检查端口占用（53/54/55）
-  PORTS="53 54 55"
-  TMP_CONTAINER=$(mktemp)
-  TMP_PROCESS=$(mktemp)
+  PORTS="53 54 55"                        # 需要检查的端口列表
+  TMP_CONTAINER=$(mktemp)                # 存储占用端口的容器临时文件
+  TMP_PROCESS=$(mktemp)                  # 存储占用端口的非容器进程临时文件
 
   echo "[7/14] 清理旧容器并释放端口占用..."
 
-  # 检查当前是否有容器监听目标端口
+  # 查找监听这些端口的 Docker 容器
   for PORT in $PORTS; do
     docker ps --format '{{.ID}} {{.Names}} {{.Ports}}' | grep ":$PORT->" | while read ID NAME PORTMAP; do
       echo "$PORT $ID $NAME" >> "$TMP_CONTAINER"
     done
   done
 
-  # 检查是否有系统进程占用端口（排除 docker-proxy）
+  # 查找监听这些端口的本地进程（排除 docker-proxy）
   for PORT in $PORTS; do
     netstat -tulpn 2>/dev/null | grep ":$PORT" | while read -r line; do
-      proto=$(echo "$line" | awk '{print $1}')
-      pid_info=$(echo "$line" | awk '{print $NF}')
+      proto=$(echo "$line" | awk '{print $1}')         # 协议类型（tcp/udp）
+      pid_info=$(echo "$line" | awk '{print $NF}')     # 获取 PID/进程名
       echo "$pid_info" | grep -qE '^[0-9]+/[^[:space:]]+$' || continue
       pid=$(echo "$pid_info" | cut -d'/' -f1)
       name=$(echo "$pid_info" | cut -d'/' -f2)
@@ -45,6 +37,7 @@ cleanup_environment() {
     done
   done
 
+  # 如果没有容器或进程占用端口，则直接退出
   if [ ! -s "$TMP_CONTAINER" ] && [ ! -s "$TMP_PROCESS" ]; then
     echo "✅ 没有发现任何需要释放的端口占用。"
   else
@@ -67,9 +60,10 @@ cleanup_environment() {
       exit 0
     fi
 
+    echo ""
     echo "🛠️ 正在执行释放操作..."
 
-    # 停止并删除容器
+    # 停止并删除占用端口的容器
     [ -s "$TMP_CONTAINER" ] && sort -u "$TMP_CONTAINER" | awk '{print $2}' | sort -u | while read ID; do
       echo "  🛑 停止容器 $ID ..."
       docker stop "$ID" > /dev/null 2>&1 && echo "     ✅ 已停止" || echo "     ❌ 停止失败"
@@ -77,7 +71,7 @@ cleanup_environment() {
       docker rm "$ID" > /dev/null 2>&1 && echo "     ✅ 已删除" || echo "     ❌ 删除失败"
     done
 
-    # 终止系统进程（优先 TERM，失败再 KILL）
+    # 终止占用端口的非容器进程
     [ -s "$TMP_PROCESS" ] && awk '{print $3}' "$TMP_PROCESS" | sort -u | while read PID; do
       echo "  🔪 终止进程 PID=$PID ..."
       kill "$PID" 2>/dev/null && echo "     ✅ 已终止 (TERM)" || {
@@ -86,6 +80,7 @@ cleanup_environment() {
     done
   fi
 
+  # 清理临时文件和配置目录
   rm -f "$TMP_CONTAINER" "$TMP_PROCESS"
 
   echo ""
@@ -95,25 +90,33 @@ cleanup_environment() {
   echo "✅ 环境清理完成。"
 }
 
-# [1/14] 设置 APK 镜像源为中科大，仅在首次执行时覆盖
-if ! grep -q ustc /etc/apk/repositories 2>/dev/null; then
-  echo "[1/14] 设置 APK 镜像源为中科大..."
-  cat >/etc/apk/repositories <<-'EOF'
+# --------------------------------------------------------------------------
+# [1/14] 设置 APK 镜像源为中科大
+# --------------------------------------------------------------------------
+echo "[1/14] 设置 APK 镜像源为中科大..."
+grep -q ustc /etc/apk/repositories 2>/dev/null || {
+cat >/etc/apk/repositories <<-'EOF'
 https://mirrors.ustc.edu.cn/alpine/latest-stable/main
 https://mirrors.ustc.edu.cn/alpine/latest-stable/community
 EOF
-  apk update
-else
-  echo "[1/14] APK 镜像源已设置，跳过。"
-fi
+apk update
+}
 
-# [2/14] 安装 VMware 工具包，支持宿主硬件识别
+# --------------------------------------------------------------------------
+# [2/14] 安装 open-vm-tools
+# --------------------------------------------------------------------------
+echo "[2/14] 安装 open-vm-tools..."
 apk add --no-cache open-vm-tools
-rc-update add open-vm-tools default
-rc-service open-vm-tools start
+rc-update add open-vm-tools default    # 设置开机启动
+rc-service open-vm-tools start         # 启动服务
 
-# [3/14] 安装编辑器 + 中文本地化支持，避免乱码
+# --------------------------------------------------------------------------
+# [3/14] 安装 vim 和中文支持
+# --------------------------------------------------------------------------
+echo "[3/14] 安装 vim 和中文支持..."
 apk add --no-cache vim musl-locales musl-locales-lang less
+
+# 设置中文环境变量
 cat << 'EOF' >/etc/profile.d/locale.sh
 export LANG=zh_CN.UTF-8
 export LC_CTYPE=zh_CN.UTF-8
@@ -121,6 +124,8 @@ export LC_ALL=zh_CN.UTF-8
 EOF
 chmod +x /etc/profile.d/locale.sh
 . /etc/profile.d/locale.sh
+
+# 设置 Vim 默认编码
 cat << 'EOF' >/etc/vim/vimrc
 set encoding=utf-8
 set termencoding=utf-8
@@ -128,12 +133,18 @@ set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,default,latin1
 EOF
 
-# [4/14] 安装并启动 Docker 容器服务
+# --------------------------------------------------------------------------
+# [4/14] 安装并启动 Docker
+# --------------------------------------------------------------------------
+echo "[4/14] 安装并启动 Docker..."
 apk add --no-cache docker
-rc-update add docker boot
-rc-service docker start
+rc-update add docker boot             # 设置为开机自启
+rc-service docker start               # 启动 Docker 服务
 
-# [5/14] 配置国内加速的 Docker 镜像源，提高拉取效率
+# --------------------------------------------------------------------------
+# [5/14] 设置 Docker 镜像加速器
+# --------------------------------------------------------------------------
+echo "[5/14] 配置 Docker 镜像加速..."
 mkdir -p /etc/docker
 cat >/etc/docker/daemon.json <<-'EOF'
 {
@@ -147,57 +158,83 @@ cat >/etc/docker/daemon.json <<-'EOF'
   ]
 }
 EOF
-service docker restart
+service docker restart  # 应用新镜像加速配置
 
-# [6/14] 安装 Docker Compose 工具和基础网络工具
+# --------------------------------------------------------------------------
+# [6/14] 安装 docker-compose 和 net-tools 工具
+# --------------------------------------------------------------------------
+echo "[6/14] 安装 docker-compose 和 net-tools..."
 apk add --no-cache docker-compose net-tools curl
 
-# [7/14] 清理旧环境并释放端口占用
+# --------------------------------------------------------------------------
+# [7/14] 执行环境清理函数
+# --------------------------------------------------------------------------
 cleanup_environment
 
-# [8/14] 拉取并启动 AdGuardHome（国内）容器
+# --------------------------------------------------------------------------
+# [8/14] 部署 AdGuardHome 国内实例
+# --------------------------------------------------------------------------
+echo "[8/14] 部署 AdH_CN..."
 mkdir -p "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/AdH_CN.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/AdH_CN -o "$ADH_CN_DIR/docker-compose.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/AdH_CN.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/docker-compose.AdH_CN.yaml -o "$ADH_CN_DIR/docker-compose.yaml"
 cd "$ADH_CN_DIR"
-docker-compose up -d --force-recreate
+docker-compose up -d --force-recreate   # 强制重新创建并启动容器
 
-# [9/14] 拉取并启动 AdGuardHome（国外）容器
+# --------------------------------------------------------------------------
+# [9/14] 部署 AdGuardHome GFW 实例
+# --------------------------------------------------------------------------
+echo "[9/14] 部署 AdH_GFW..."
 mkdir -p "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/AdH_GFW.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/AdH_GFW -o "$ADH_GFW_DIR/docker-compose.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/AdH_GFW.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/docker-compose.AdH_GFW.yaml -o "$ADH_GFW_DIR/docker-compose.yaml"
 cd "$ADH_GFW_DIR"
 docker-compose up -d --force-recreate
 
-# [10/14] 拉取 MosDNS 的 docker-compose 和自动更新脚本
+# --------------------------------------------------------------------------
+# [10/14] 下载 MosDNS 的 docker-compose 与 update.sh
+# --------------------------------------------------------------------------
+echo "[10/14] 下载 MosDNS 配置及 update.sh..."
 cd "$MOSDNS_DIR"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns -o ./docker-compose.yaml
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh -o ./update.sh
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/docker-compose.mosdns.yaml -o ./docker-compose.yaml
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh -o ./update.sh
 chmod +x update.sh
-./update.sh  # 初始执行一次，拉取规则等
+./update.sh   # 初次执行更新脚本
 
-# [11/14] 添加 cron 计划任务，每周一凌晨 4 点自动更新
-mkdir -p /etc/periodic/weekly
+# --------------------------------------------------------------------------
+# [11/14] 设置 cron 每周一凌晨 4 点自动更新
+# --------------------------------------------------------------------------
+echo "[11/14] 设置 cron 自动更新..."
+touch "$CRONTAB_FILE"
 sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
 echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
 
-# [12/14] 创建空白规则文件并下载主要配置（国内/国际分流规则）
+# --------------------------------------------------------------------------
+# [12/14] 下载规则和空白名单文件
+# --------------------------------------------------------------------------
+echo "[12/14] 下载规则和空白名单..."
 mkdir -p "$MOSDNS_DIR/rules-dat"
 : > "$MOSDNS_DIR/rules-dat/geoip_private.txt"
+
 mkdir -p "$MOSDNS_DIR/config/rule"
 cd "$MOSDNS_DIR/config"
 for f in config_custom.yaml dns.yaml dat_exec.yaml; do
-  curl -fsSL "https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$f"
+  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$f"
 done
 cd rule
 : > whitelist.txt
 : > greylist.txt
 
-# [13/14] 启动 MosDNS 主服务容器
+# --------------------------------------------------------------------------
+# [13/14] 启动 MosDNS 服务容器
+# --------------------------------------------------------------------------
+echo "[13/14] 启动 MosDNS..."
 cd "$MOSDNS_DIR"
 docker-compose up -d --force-recreate
 
-# [14/14] 显示部署完成提示信息和正在运行的容器
+# --------------------------------------------------------------------------
+# [14/14] 提示所有服务部署完成
+# --------------------------------------------------------------------------
 echo "✅ 所有服务部署完成"
 echo "📌 正在运行的容器："
 docker ps
