@@ -1,7 +1,7 @@
 services:
   adguardhome:
     image: adguard/adguardhome:latest
-    container_name: AdH_GFW
+    container_name: adh_gfw
     restart: unless-stopped
     ports:
       - "55:53/tcp"
