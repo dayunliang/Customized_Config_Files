@@ -12,6 +12,15 @@
 - 🧱 支持定时更新配置与规则文件（可选）
 - 📜 可选通过 GitHub 代理下载配置文件，适配国内环境
 
+- 🌐 DNS 分流逻辑
+🇨🇳 国内域名（CN）：
+
+MosDNS 检测到 geosite:cn / geoip:cn，转发给 AdH_CN（监听端口：54）
+
+🌍 国外域名 / GFW 域名：
+
+转发给 AdH_GFW（监听端口：55），其上游为代理节点或海外 DNS（如 8.8.8.8）
+
 ---
 
 ## 📂 项目结构
@@ -29,3 +38,28 @@
     ├── docker-compose.AdH_GFW.yaml
     └── docker-compose.mosdns.yaml
 
+🚀 快速开始
+
+1️⃣ 准备环境
+推荐平台：Alpine (建议) / Debian / Ubuntu
+
+2️⃣ 一键部署
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh | bash
+
+或使用 Github Proxy
+
+curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh | bash
+
+📜 LICENSE
+本项目使用 MIT License 开源。
+
+👤 作者
+Andy Da
+📬 欢迎交流建议或提 Issue
+
+🧭 鸣谢
+MosDNS
+
+AdGuardHome
+
+geosite 数据
