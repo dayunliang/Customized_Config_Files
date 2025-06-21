@@ -44,11 +44,11 @@ MosDNS 检测到 geosite:cn / geoip:cn，转发给 AdH_CN（监听端口：54）
 推荐平台：Alpine (建议) / Debian / Ubuntu
 
 2️⃣ 一键部署
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh | sh
+wget https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh
 
 或使用 Github Proxy
 
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh | sh
+wget https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/deploy_mosdns_AdH.sh
 
 📜 LICENSE
 本项目使用 MIT License 开源。
