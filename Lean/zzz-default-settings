@@ -54,6 +54,7 @@ sed -i 's|https://downloads.openwrt.org|https://mirrors.aliyun.com/openwrt|g' /e
 sed -i '/smpackage/s/^/#/' /etc/opkg/distfeeds.conf
 sed -i '/kenzo/s/^/#/'    /etc/opkg/distfeeds.conf
 sed -i '/small/s/^/#/'    /etc/opkg/distfeeds.conf
+sed -i '/openwrt_istore/s|^|#|' /etc/opkg/distfeeds.conf
 sed -i '/check_signature/s/^/#/' /etc/opkg.conf
 
 # =============================================================================
