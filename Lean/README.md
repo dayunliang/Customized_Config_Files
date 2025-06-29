@@ -20,25 +20,27 @@
 
 你应将所有定制文件放在 Git 仓库的 `Lean/` 目录下，结构示例：
 
+```
 Customized_Config_Files/
 └── Lean/
-├── config # 主构建配置，将被复制为 .config
-├── feeds.conf.default # 软件源定义
-├── zzz-default-settings # 默认设置脚本
-└── files/
-├── usr/bin/
-│ ├── back-route-checkenv.sh
-│ ├── back-route-complete.sh
-│ └── back-route-cron.sh
-├── etc/
-│ ├── ipsec.conf
-│ ├── ipsec.secrets
-│ ├── config/
-│ │ └── luci-app-ipsec-server
-│ ├── avahi/
-│ │ └── avahi-daemon.conf
-│ └── crontabs/
-│ └── root
+    ├── config                         # 主构建配置，将被复制为 .config
+    ├── feeds.conf.default            # 软件源定义
+    ├── zzz-default-settings          # 默认设置脚本
+    └── files/
+        ├── usr/bin/
+        │   ├── back-route-checkenv.sh
+        │   ├── back-route-complete.sh
+        │   └── back-route-cron.sh
+        ├── etc/
+        │   ├── ipsec.conf
+        │   ├── ipsec.secrets
+        │   ├── config/
+        │   │   └── luci-app-ipsec-server
+        │   ├── avahi/
+        │   │   └── avahi-daemon.conf
+        │   └── crontabs/
+        │       └── root
+```
 
 ## ⚙️ 使用方法
 
