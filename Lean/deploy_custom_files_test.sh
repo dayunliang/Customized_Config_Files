@@ -76,31 +76,31 @@ deploy_file() {
 echo "2. 分发自定义文件到指定目录..."
 
 # 5.1 feeds.conf.default（OpenWrt 源配置）
-deploy_file "feeds.conf.default 文件" "$TMP_DIR/Lean/feeds.conf.default" "./feeds.conf.default"
+deploy_file "feeds.conf.default 软件源列表配置文件" "$TMP_DIR/Lean/feeds.conf.default" "./feeds.conf.default"
 
 # 5.2 zzz-default-settings（默认配置脚本）
-deploy_file "zzz-default-settings 脚本" "$TMP_DIR/Lean/zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings"
+deploy_file "zzz-default-settings 系统初始化设置脚本" "$TMP_DIR/Lean/zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings"
 
 # 5.3 back-route 系列脚本（3 个）
-deploy_file "back-route-checkenv.sh 脚本" "$TMP_DIR/Lean/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
-deploy_file "back-route-complete.sh 脚本" "$TMP_DIR/Lean/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
-deploy_file "back-route-cron.sh 脚本" "$TMP_DIR/Lean/back-route-cron.sh" "./files/usr/bin/back-route-cron.sh"
+deploy_file "back-route-checkenv.sh 路由检查脚本" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
+deploy_file "back-route-complete.sh 回程路由脚本" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
+deploy_file "back-route-cron.sh 回程路由定时检查脚本" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh" "./files/usr/bin/back-route-cron.sh"
 
 # back-route 系列脚本统一添加可执行权限（即使重复执行也无影响）
 chmod +x ./files/usr/bin/back-route-*.sh 2>/dev/null || true
 
 # 5.4 IPsec 配置文件（2 个）
-deploy_file "ipsec.conf 配置文件" "$TMP_DIR/Lean/ipsec.conf" "./files/etc/ipsec.conf"
-deploy_file "ipsec.secrets 密钥文件" "$TMP_DIR/Lean/ipsec.secrets" "./files/etc/ipsec.secrets"
+deploy_file "ipsec.conf IPsec-VPN核心配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf" "./files/etc/ipsec.conf"
+deploy_file "ipsec.secrets IPSec-VPN密钥配置文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets" "./files/etc/ipsec.secrets"
 
 # 5.5 luci-app-ipsec-server 配置（如果启用了此插件）
-deploy_file "luci-app-ipsec-server 配置" "$TMP_DIR/Lean/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
+deploy_file "luci-app-ipsec-server IPSec-WEB插件配置文件" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
 
 # 5.6 avahi-daemon 配置（用于 mDNS 服务）
-deploy_file "avahi-daemon.conf 配置" "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf" "./files/etc/avahi/avahi-daemon.conf"
+deploy_file "avahi-daemon.conf Avahi-Daemon配置文件" "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf" "./files/etc/avahi/avahi-daemon.conf"
 
 # 5.7 crontab 定时任务文件（OpenWrt root 用户）
-deploy_file "root crontab 定时任务" "$TMP_DIR/Lean/root" "./files/etc/crontabs/root"
+deploy_file "root crontab 定时任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
 
 # ===========================================================================
 # 6. 清理临时目录
