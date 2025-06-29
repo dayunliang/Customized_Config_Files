@@ -1,4 +1,4 @@
-#!/bin/shAdd commentMore actions
+#!/bin/sh
 # 原始回程路由脚本（未加输入接口限制）
 
 # 可选：先删除旧规则/路由
