@@ -1,9 +1,0 @@
-config service 'ipsec'
-        option enabled '1'
-        option secret 'beverly'
-        option clientip '10.10.10.100/24'
-
-config ipsec_users
-        option enabled '1'
-        option username 'dayunliang'
-        option password 'Passw0rd!'
