@@ -1,30 +1,21 @@
 #!/bin/bash
 # ===========================================================================
-# Lean OpenWrt 定制文件一键部署脚本（自动备份 + 缺失即停 + 展示备份清单）
-# 作者：你自己（https://github.com/dayunliang）
+# Lean OpenWrt 定制文件一键部署脚本（自动备份 + 缺失即停 + 下载校验）
+# 作者：https://github.com/dayunliang
 # ===========================================================================
 
-# 只要有一条命令出错，立即终止整个脚本，防止部署脏文件
-set -e
+set -e  # 只要脚本中任意一条命令失败，立即退出，防止脏环境构建
 
 # ===========================================================================
-# 1. 变量定义区
+# 1. 基本变量定义
 # ===========================================================================
-
-# Git 仓库地址（包含 Lean 目录下的自定义配置文件）
-REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"
-
-# 创建一个临时目录，用于 clone 仓库，不污染当前工作目录
-TMP_DIR=$(mktemp -d)
-
-# 生成当前时间戳，用于备份文件名（格式：20250629-123456）
-TS=$(date +%Y%m%d-%H%M%S)
-
-# 声明一个数组，用于记录所有被自动备份的原文件路径
-declare -a BACKUP_LIST
+REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"  # GitHub 仓库地址
+TMP_DIR=$(mktemp -d)    # 创建临时目录用于 clone 仓库
+TS=$(date +%Y%m%d-%H%M%S)  # 当前时间戳用于文件备份命名
+declare -a BACKUP_LIST     # 定义备份清单数组，记录所有被自动备份的文件
 
 # ===========================================================================
-# 2. 克隆自定义文件仓库
+# 2. 克隆 Git 仓库
 # ===========================================================================
 echo "1. 克隆自定义文件仓库到临时目录 $TMP_DIR ..."
 if ! git clone --depth=1 "$REPO_URL" "$TMP_DIR"; then
@@ -33,104 +24,123 @@ if ! git clone --depth=1 "$REPO_URL" "$TMP_DIR"; then
 fi
 
 # ===========================================================================
-# 3. 复制函数：包含自动备份逻辑（不做文件存在判断）
+# 3. 复制函数（带备份机制）
 # ===========================================================================
 safe_cp() {
-    src="$1"  # 源文件路径
-    dst="$2"  # 目标文件路径
-
-    # 如果目标文件已存在，先自动备份
+    src="$1"
+    dst="$2"
     if [ -f "$dst" ]; then
         backup_name="$dst.bak.$TS"
         cp -v "$dst" "$backup_name"
-        BACKUP_LIST+=("$backup_name")  # 把备份文件名加入清单
+        BACKUP_LIST+=("$backup_name")  # 添加到备份列表
     fi
-
-    # 复制新文件到目标位置
-    cp -vf "$src" "$dst"
+    cp -vf "$src" "$dst"  # 强制复制并显示过程
 }
 
 # ===========================================================================
-# 4. 包装函数：先检查文件是否存在，缺失即停；然后自动创建目录并复制
+# 4. 部署函数（复制前校验 + 自动创建目录）
 # ===========================================================================
 deploy_file() {
-    desc="$1"  # 描述（如 “IPsec 配置文件”）
-    src="$2"   # 源路径
-    dst="$3"   # 目标路径
+    desc="$1"  # 文件描述（用于错误提示）
+    src="$2"
+    dst="$3"
 
     if [ ! -f "$src" ]; then
         echo "❌ 错误：缺失文件 [$desc]：$src"
         exit 1
     fi
 
-    # 创建目标目录（若不存在）
-    mkdir -p "$(dirname "$dst")"
-
-    # 执行复制逻辑
+    mkdir -p "$(dirname "$dst")"  # 自动创建目标目录
     safe_cp "$src" "$dst"
 }
 
 # ===========================================================================
-# 5. 分发定制文件到 Lean OpenWrt 源码目录
+# 5. 部署配置文件
 # ===========================================================================
 echo "2. 分发自定义文件到指定目录..."
 
-# 5.1 .config（OpenWrt 编译系统核心配置文件）
-deploy_file ".config Buildroot 核心配置文件" "$TMP_DIR/Lean/config" "./.config"
+deploy_file ".config Buildroot核心配置文件" "$TMP_DIR/Lean/config" "./.config"
 echo "📦 Lean/config 已部署为 .config（OpenWrt 编译配置文件）"
 
-# 立即处理 .config，使其适配当前 OpenWrt 版本及可用组件
-echo "🔧 正在执行 make defconfig..."
-make defconfig
+deploy_file "feeds.conf.default 源列表配置文件" "$TMP_DIR/Lean/feeds.conf.default" "./feeds.conf.default"
+deploy_file "zzz-default-settings 系统初始化设置脚本" "$TMP_DIR/Lean/zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings"
 
-# 更新 & 安装 feeds
-echo "🌐 执行 scripts/feeds update -a ..."
-./scripts/feeds update -a
-
-echo "📦 执行 scripts/feeds install -a ..."
-./scripts/feeds install -a
-
-
-# 5.2 feeds.conf.default（OpenWrt 软件源配置）
-deploy_file "feeds.conf.default OpenWRT 源列表配置文件" "$TMP_DIR/Lean/feeds.conf.default" "./feeds.conf.default"
-
-# 5.3 zzz-default-settings（默认配置脚本）
-deploy_file "zzz-default-settings OpenWRT 系统初始化设置脚本" "$TMP_DIR/Lean/zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings"
-
-# 5.4 back-route 系列脚本（3 个）
 deploy_file "back-route-checkenv.sh 路由检查脚本" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
 deploy_file "back-route-complete.sh 回程路由脚本" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
 deploy_file "back-route-cron.sh 回程路由定时检查脚本" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh" "./files/usr/bin/back-route-cron.sh"
 
-# back-route 系列脚本统一添加可执行权限（即使重复执行也无影响）
-chmod +x ./files/usr/bin/back-route-*.sh 2>/dev/null || true
+chmod +x ./files/usr/bin/back-route-*.sh 2>/dev/null || true  # 为 back-route 脚本添加执行权限
 
-# 5.5 IPsec 配置文件（2 个）
 deploy_file "ipsec.conf IPsec-VPN核心配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf" "./files/etc/ipsec.conf"
 deploy_file "ipsec.secrets IPSec-VPN密钥配置文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets" "./files/etc/ipsec.secrets"
-
-# 5.6 luci-app-ipsec-server 配置（如果启用了此插件）
 deploy_file "luci-app-ipsec-server IPSec-WEB插件配置文件" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
-
-# 5.7 avahi-daemon 配置（用于 mDNS 服务）
 deploy_file "avahi-daemon.conf Avahi-Daemon配置文件" "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf" "./files/etc/avahi/avahi-daemon.conf"
-
-# 5.8 crontab 定时任务文件（OpenWrt root 用户）
 deploy_file "root crontab 定时任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
 
 # ===========================================================================
-# 6. 清理临时目录
+# 6. 清理临时 clone 仓库
 # ===========================================================================
 echo "3. 清理临时目录 $TMP_DIR"
 rm -rf "$TMP_DIR"
 
 # ===========================================================================
-# 7. 展示所有备份的原始文件清单（如有）
+# 7. 构建准备：feeds update/install + make defconfig
+# ===========================================================================
+echo
+echo "🛠️ 开始构建前准备步骤（make defconfig / feeds update / feeds install）..."
+
+# 更新 feeds 源中所有包描述（sources）
+echo "🌐 执行 ./scripts/feeds update -a ..."
+./scripts/feeds update -a
+
+# 安装 feeds 到 package/feeds 目录，准备编译
+echo "📦 执行 ./scripts/feeds install -a ..."
+./scripts/feeds install -a
+
+# make defconfig 可清理无效配置项，并补全所需默认值
+echo "🔧 执行 make defconfig..."
+make defconfig
+
+# ===========================================================================
+# 8. 是否首次执行构建（决定是否自动 download）
+# ===========================================================================
+echo
+read -p "🧐 是否是首次执行此编译环境？需要预下载所有源码包？(y/N): " is_first
+
+if [[ "$is_first" == "y" || "$is_first" == "Y" ]]; then
+    echo
+    echo "📥 正在预下载所有编译所需源码包（make download -j8 V=s）..."
+    while true; do
+        make download -j8 V=s
+        echo "🔍 检查是否有下载不完整的小文件（<1KB）..."
+        broken=$(find dl -size -1024c)
+
+        if [ -z "$broken" ]; then
+            echo "✅ 所有软件包已完整下载。"
+            break
+        else
+            echo "⚠️ 检测到以下不完整文件，将删除后重新下载："
+            echo "$broken"
+            find dl -size -1024c -exec rm -f {} \;
+            echo "🔁 重新执行下载..."
+        fi
+    done
+else
+    echo
+    echo "✅ 跳过预下载，假设你已执行过 make download。"
+    echo "👉 你现在可以继续执行编译命令："
+    echo
+    echo "   make -j$(nproc) V=s"
+    echo
+fi
+
+# ===========================================================================
+# 9. 展示所有自动备份的文件（部署完成后最后统一展示）
 # ===========================================================================
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
     echo
     echo "======================================================="
-    echo "本次操作已自动备份的原有文件清单如下："
+    echo "🗂️ 本次操作已自动备份的原有文件清单如下："
     for f in "${BACKUP_LIST[@]}"; do
         echo "  $f"
     done
@@ -138,11 +148,13 @@ if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
     echo "======================================================="
 else
     echo
-    echo "本次未检测到需要备份的已有同名文件，无备份操作。"
+    echo "🗂️ 本次未检测到需要备份的已有同名文件，无备份操作。"
 fi
 
 # ===========================================================================
-# 8. 脚本结束提示
+# 10. 最终提示
 # ===========================================================================
 echo
-echo "✅ 所有自定义文件已成功部署，脚本执行完毕。"
+echo "🚀 所有配置部署和构建准备已完成。"
+echo "📂 当前目录为：$(pwd)"
+echo "📝 可开始编译：make -j$(nproc) V=s"
