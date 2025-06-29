@@ -7,3 +7,7 @@ config ipsec_users
         option enabled '1'
         option username 'dayunliang'
         option password 'Passw0rd!'
+        option username 'wuyan'
+        option password 'Julie@19821202!'
+        option username 'dahongxuan'
+        option password 'Justin@20120420!'
