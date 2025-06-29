@@ -5,7 +5,7 @@ curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/
 
 或者用：
 
-wget -O https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/Lean/deploy_custom_files_test.sh | bash
+wget -O https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/Lean/deploy_custom_files.sh | bash
 
 自动流程：
 
