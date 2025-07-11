@@ -215,6 +215,7 @@ echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >>
 echo "[12/14] 下载规则和空白名单..."
 mkdir -p "$MOSDNS_DIR/rules-dat"
 : > "$MOSDNS_DIR/rules-dat/geoip_private.txt"
+: > "$MOSDNS_DIR/rules-dat/hosts.txt"
 
 mkdir -p "$MOSDNS_DIR/config/rule"
 cd "$MOSDNS_DIR/config"
