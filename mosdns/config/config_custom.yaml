@@ -6,65 +6,71 @@
 # ------------------------------------------------------------
 
 log:
-  level: debug                      # 日志等级（建议调试用 debug，正式运行用 info）
-  file: "/var/log/mosdns.log"      # 日志输出文件路径（容器内路径，需确保可写）
+  level: debug                 # 日志记录级别（debug 为详细级别，方便排查问题）
+  file: "/var/log/mosdns.log"  # 日志文件路径，记录运行日志以便于监控和调试
 
 api:
-  http: "0.0.0.0:8338"              # 管理 API 端口，可用于运行时查询配置状态
+  http: "0.0.0.0:8338"          # HTTP API 监听地址，外部可通过此接口管理和监控 mosdns 服务
 
+# 引入外部配置文件，便于单独维护复杂或经常变动的配置项
 include:
-  - "/etc/mosdns/dat_exec.yaml"    # 数据规则文件（如 geosite_cn、ads 等）
-  - "/etc/mosdns/dns.yaml"         # 上游 DNS 配置文件（定义 ADH_CN 和 ADH_GFW）
+  - "/etc/mosdns/dat_exec.yaml" # 外部定义的数据处理规则（如EDNS处理、缓存策略等）
+  - "/etc/mosdns/dns.yaml"      # 外部定义的 DNS 上游服务器和相关插件配置
 
+# 插件定义部分，每个插件通过 tag 标识，随后可在主流程（main_sequence）中引用
 plugins:
 
   # 插件：reject_ads
-  # 功能：对匹配到的广告域名直接返回 NXDOMAIN（拒绝解析）
+  # 功能：匹配广告域名后返回拒绝解析响应（NXDOMAIN），屏蔽广告
   - tag: reject_ads
     type: sequence
     args:
-      - exec: "reject 3"            # 内置 reject 指令，代码 3 表示 NXDOMAIN
+      - exec: "reject 3"             # 返回 DNS 响应代码 3 (NXDOMAIN)
 
   # 插件：route_cn
-  # 功能：匹配 geosite_cn（中国大陆域名）→ 发往 ADH_CN
-  # 注意：不在此处 return，交由 main_sequence 控制是否中断
+  # 功能：将中国大陆的域名解析请求交给本地 ADH_CN DNS 服务处理（优化国内访问体验）
   - tag: route_cn
     type: sequence
     args:
-      - matches: qname $geosite_cn
-        exec: $ADH_CN
+      - matches: qname $geosite_cn   # 使用 geosite 中定义的中国大陆域名规则
+        exec: $ADH_CN                # 执行定义在外部配置中的 ADH_CN 上游解析
 
   # 插件：route_ads
-  # 功能：匹配广告域名 → 执行拒绝（reject_ads）
+  # 功能：匹配广告相关域名并拒绝解析
   - tag: route_ads
     type: sequence
     args:
-      - matches: qname $geosite_category-ads-all
-        exec: $reject_ads
+      - matches: qname $geosite_category-ads-all  # 使用 geosite 中定义的广告域名规则
+        exec: $reject_ads                         # 调用 reject_ads 插件执行屏蔽
 
-  # 插件：main_sequence
-  # 功能：主流程控制，根据是否已有响应（has_resp）决定是否走 ADH_GFW
+  # 插件：local_hosts
+  # 功能：优先使用本地 hosts 文件解析，适合定义局域网内设备
+  - tag: local_hosts
+    type: hosts
+    args:
+      files:
+        - /var/mosdns/hosts.txt      # 本地自定义 hosts 文件路径
+
+  # 主处理流程（main_sequence），定义域名解析请求的整体执行顺序
   - tag: main_sequence
     type: sequence
     args:
-      - exec: $route_cn             # 第一步：尝试匹配国内域名并解析
-      - exec: $route_ads            # 第二步：尝试匹配广告域名并拒绝
+      - exec: $local_hosts           # 1️⃣ 首先尝试使用本地 hosts 文件进行解析
+      - exec: $route_cn              # 2️⃣ 若非本地 hosts，检查是否为大陆域名并通过 ADH_CN 解析
+      - exec: $route_ads             # 3️⃣ 若为广告域名，直接拒绝解析
+      - matches: has_resp            # 4️⃣ 若以上步骤已成功解析，则直接返回结果
+        exec: return                 # 有结果则结束本次请求处理
+      - exec: $ADH_GFW               # 5️⃣ 剩余的国外或其他域名交由 ADH_GFW（代理解析）处理
 
-      - matches: has_resp           # 第三步：若前面已有响应（国内或广告），中断流程
-        exec: "return"
-
-      - exec: $ADH_GFW              # 第四步：默认兜底逻辑，发往国外上游
-
-  # 插件：udp_server
-  # 功能：MosDNS 的 UDP 服务监听（容器内监听 5333 端口，外部可映射为 53）
+  # DNS 服务监听配置
+  # UDP 协议监听配置
   - type: udp_server
     args:
-      entry: main_sequence
-      listen: ":5333"
+      entry: main_sequence           # 使用主处理流程处理请求
+      listen: ":5333"                # 监听所有网络接口上的 UDP 5333 端口
 
-  # 插件：tcp_server
-  # 功能：支持 TCP 请求（DoT 或大响应等场景）
+  # TCP 协议监听配置
   - type: tcp_server
     args:
-      entry: main_sequence
-      listen: ":5333"
+      entry: main_sequence           # 使用主处理流程处理请求
+      listen: ":5333"                # 监听所有网络接口上的 TCP 5333 端口
