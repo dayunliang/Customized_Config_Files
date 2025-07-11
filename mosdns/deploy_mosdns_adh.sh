@@ -103,10 +103,10 @@ apk update
 }
 
 # --------------------------------------------------------------------------
-# [2/14] 安装 open-vm-tools
+# [2/14] 安装 open-vm-tools 以及 jq
 # --------------------------------------------------------------------------
-echo "[2/14] 安装 open-vm-tools..."
-apk add --no-cache open-vm-tools
+echo "[2/14] 安装 open-vm-tools & jq ..."
+apk add --no-cache open-vm-tools jq
 rc-update add open-vm-tools default    # 设置开机启动
 rc-service open-vm-tools start         # 启动服务
 
