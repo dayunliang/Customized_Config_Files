@@ -6,8 +6,8 @@ services:
       - "53:5333/udp"
       - "53:5333/tcp"
     volumes:
-      - ~/mosdns/config:/etc/mosdns
-      - ~/mosdns/rules-dat:/var/mosdns
+      - /root/mosdns/config:/etc/mosdns
+      - /root/mosdns/rules-dat:/var/mosdns
     entrypoint: |
       /bin/sh -c "\
       : > /var/log/mosdns.log && \
