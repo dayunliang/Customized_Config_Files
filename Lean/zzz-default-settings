@@ -296,13 +296,15 @@ uci commit dropbear
 #/usr/bin/back-route-complete.sh
 
 # =============================================================================
-# 15. 启用并启动 Avahi 相关服务（dbus 和 avahi-daemon）
+# 15. 启动 mdns-repeater 相关服务
 # =============================================================================
-/etc/init.d/dbus enable
-/etc/init.d/avahi-daemon enable
-sleep 2
-/etc/init.d/dbus restart
-/etc/init.d/avahi-daemon restart
+#/etc/init.d/dbus enable
+#/etc/init.d/avahi-daemon enable
+#sleep 2
+#/etc/init.d/dbus restart
+#/etc/init.d/avahi-daemon restart
+
+/usr/bin/mdns-repeater eth1.50 eth1.80 eth1.90 &
 
 # =============================================================================
 # 脚本执行完毕后删除自身，避免再次执行
