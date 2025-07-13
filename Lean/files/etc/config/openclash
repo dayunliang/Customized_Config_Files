@@ -45,7 +45,6 @@ config openclash 'config'
 	option config_auto_update_mode '0'
 	option config_update_week_time '*'
 	option auto_update_time '5'
-	option core_type 'Meta'
 	option dnsmasq_noresolv '0'
 	option dnsmasq_resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
 	option en_mode 'fake-ip-mix'
@@ -95,9 +94,11 @@ config openclash 'config'
 	option urltest_address_mod '0'
 	option github_address_mod '0'
 	option urltest_interval_mod '60'
-	option enable '1'
 	option tolerance '1'
 	option config_path '/etc/openclash/config/AmyTelecom.yaml'
+	option smart_enable '1'
+	option enable '1'
+	option core_type 'Smart'
 
 config dns_servers
 	option type 'udp'
@@ -8548,4 +8549,102 @@ config servers
 	option manual '0'
 	option config 'AmyTelecom.yaml'
 	option name '[SS] 🇸🇬 新加坡 04'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'YouTube(By ACL4SSR)'
+	list rule_name 'YouTube(By lhie1)'
+	option group '📹 油管视频'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	option group '㊙️ HDAV'
+	option position '1'
+	list rule_name 'Porn'
+	list rule_name 'Japonx'
+	list rule_name 'Pornhub(By lhie1)'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Hulu Japan'
+	list rule_name 'Hulu(By lhie1)'
+	option group '🍋 hulu'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Disney Plus'
+	list rule_name 'DisneyPlus(By ACL4SSR)'
+	option group '🐭 Disney Plus'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Netflix(By lhie1)'
+	list rule_name 'Netflix(By ACL4SSR)'
+	option group '🎥 奈飞视频'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	option group '🎮 游戏平台'
+	list rule_name 'Epic'
+	list rule_name 'Steam(By ACL4SSR)'
+	list rule_name 'Steam'
+	list rule_name 'Blizzard'
+	list rule_name 'Sony.yaml'
+	list rule_name 'Sony.list'
+	list rule_name 'Xbox.list'
+	list rule_name 'Xbox.yaml'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Bilibili(By ACL4SSR)'
+	list rule_name 'Bilibili'
+	list rule_name 'BilibiliHMT'
+	option group '📺 哔哩哔哩'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Bahamut(By ACL4SSR)'
+	list rule_name 'Bahamut(By lhie1)'
+	option group '📺 巴哈姆特'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Telegram(By ACL4SSR)'
+	list rule_name 'Telegram(By lhie1)'
+	option group '📲 电报消息'
+	option position '0'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'TikTok.list'
+	list rule_name 'TikTok.yaml'
+	option group '🇨🇳 台湾节点'
+	option position '0'
 
