@@ -75,7 +75,7 @@ deploy_file "ipsec.conf IPsec-VPN核心配置文件" "$TMP_DIR/Lean/files/etc/ip
 deploy_file "ipsec.secrets IPSec-VPN密钥配置文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets" "./files/etc/ipsec.secrets"
 deploy_file "luci-app-ipsec-server IPSec-WEB插件配置文件" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
 deploy_file "avahi-daemon.conf Avahi-Daemon配置文件" "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf" "./files/etc/avahi/avahi-daemon.conf"
-deploy_file "OpenClash 配置文件" "$TMP_DIR/Lean/files/etc/config/opencalsh" "./files/etc/config/openclash"
+deploy_file "OpenClash 配置文件" "$TMP_DIR/Lean/files/etc/config/openclash" "./files/etc/config/openclash"
 deploy_file "root crontab 定时任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
 
 # ===========================================================================
