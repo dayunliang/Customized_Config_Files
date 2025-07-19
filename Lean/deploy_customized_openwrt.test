@@ -12,6 +12,8 @@ set -e  # 任意命令失败即退出，防止环境污染
 # ===========================================================================
 if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
     echo "🔍 未检测到 OpenWrt 源码根目录。"
+    cd ~
+    echo "📁 已切换到用户主目录: $PWD"
     read -p "是否需要自动 clone OpenWrt 仓库并进入该目录？(y/N): " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
         read -p "请输入 OpenWrt 仓库 URL (默认: https://github.com/coolsnowwolf/lede.git): " repo_url
