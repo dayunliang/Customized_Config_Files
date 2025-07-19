@@ -47,10 +47,10 @@ for ctl in aria2 hd_idle samba samba4 minidlna transmission mjpg-streamer p910nd
             sed -i 's/services/nas/g' /usr/lib/lua/luci/view/${view}.htm
     done
 
-    # =============================================================================
-    # 6. 更换 OPKG 源为阿里云，注释第三方源
-    # =============================================================================
-    sed -i 's|https://downloads.openwrt.org|https://mirrors.aliyun.com/openwrt|g' /etc/opkg/distfeeds.conf
+# =============================================================================
+# 6. 更换 OPKG 源为阿里云，注释第三方源
+# =============================================================================
+sed -i 's|https://downloads.openwrt.org|https://mirrors.aliyun.com/openwrt|g' /etc/opkg/distfeeds.conf
 sed -i '/smpackage/s/^/#/' /etc/opkg/distfeeds.conf
 sed -i '/kenzo/s/^/#/'    /etc/opkg/distfeeds.conf
 sed -i '/small/s/^/#/'    /etc/opkg/distfeeds.conf
@@ -124,66 +124,66 @@ uci set network.wan.dns='192.168.12.10 192.168.12.11'
 uci set network.wan.broadcast='192.168.12.255'
 
 # VLAN 50 配置（eth1.50）
-uci set network.dev_vlan50=device
-uci set network.dev_vlan50.name='eth1.50'
-uci set network.dev_vlan50.type='8021q'
-uci set network.dev_vlan50.ifname='eth1'
-uci set network.dev_vlan50.vid='50'
+#uci set network.dev_vlan50=device
+#uci set network.dev_vlan50.name='eth1.50'
+#uci set network.dev_vlan50.type='8021q'
+#uci set network.dev_vlan50.ifname='eth1'
+#uci set network.dev_vlan50.vid='50'
 
-uci set network.VLAN50=interface
-uci set network.VLAN50.proto='static'
-uci set network.VLAN50.device='eth1.50'
-uci set network.VLAN50.ipaddr='192.168.50.144'
-uci set network.VLAN50.netmask='255.255.255.0'
+#uci set network.VLAN50=interface
+#uci set network.VLAN50.proto='static'
+#uci set network.VLAN50.device='eth1.50'
+#uci set network.VLAN50.ipaddr='192.168.50.144'
+#uci set network.VLAN50.netmask='255.255.255.0'
 
-uci set dhcp.VLAN50=dhcp
-uci set dhcp.VLAN50.interface='VLAN50'
-uci set dhcp.VLAN50.ignore='1'
-uci set dhcp.VLAN50.dhcpv6='disabled'
-uci set dhcp.VLAN50.ra='disabled'
-uci set dhcp.VLAN50.ra_management='0'
+#uci set dhcp.VLAN50=dhcp
+#uci set dhcp.VLAN50.interface='VLAN50'
+#uci set dhcp.VLAN50.ignore='1'
+#uci set dhcp.VLAN50.dhcpv6='disabled'
+#uci set dhcp.VLAN50.ra='disabled'
+#uci set dhcp.VLAN50.ra_management='0'
 
 
 # VLAN 80 配置（eth1.80）
-uci set network.dev_vlan80=device
-uci set network.dev_vlan80.name='eth1.80'
-uci set network.dev_vlan80.type='8021q'
-uci set network.dev_vlan80.ifname='eth1'
-uci set network.dev_vlan80.vid='80'
+#uci set network.dev_vlan80=device
+#uci set network.dev_vlan80.name='eth1.80'
+#uci set network.dev_vlan80.type='8021q'
+#uci set network.dev_vlan80.ifname='eth1'
+#uci set network.dev_vlan80.vid='80'
 
-uci set network.VLAN80=interface
-uci set network.VLAN80.proto='static'
-uci set network.VLAN80.device='eth1.80'
-uci set network.VLAN80.ipaddr='192.168.80.144'
-uci set network.VLAN80.netmask='255.255.255.0'
+#uci set network.VLAN80=interface
+#uci set network.VLAN80.proto='static'
+#uci set network.VLAN80.device='eth1.80'
+#uci set network.VLAN80.ipaddr='192.168.80.144'
+#uci set network.VLAN80.netmask='255.255.255.0'
 
-uci set dhcp.VLAN80=dhcp
-uci set dhcp.VLAN80.interface='VLAN80'
-uci set dhcp.VLAN80.ignore='1'
-uci set dhcp.VLAN80.dhcpv6='disabled'
-uci set dhcp.VLAN80.ra='disabled'
-uci set dhcp.VLAN80.ra_management='0'
+#uci set dhcp.VLAN80=dhcp
+#uci set dhcp.VLAN80.interface='VLAN80'
+#uci set dhcp.VLAN80.ignore='1'
+#uci set dhcp.VLAN80.dhcpv6='disabled'
+#uci set dhcp.VLAN80.ra='disabled'
+#uci set dhcp.VLAN80.ra_management='0'
 
 
 # VLAN 90 配置（eth1.90）
-uci set network.dev_vlan90=device
-uci set network.dev_vlan90.name='eth1.90'
-uci set network.dev_vlan90.type='8021q'
-uci set network.dev_vlan90.ifname='eth1'
-uci set network.dev_vlan90.vid='90'
+#uci set network.dev_vlan90=device
+#uci set network.dev_vlan90.name='eth1.90'
+#uci set network.dev_vlan90.type='8021q'
+#uci set network.dev_vlan90.ifname='eth1'
+#uci set network.dev_vlan90.vid='90'
 
-uci set network.VLAN90=interface
-uci set network.VLAN90.proto='static'
-uci set network.VLAN90.device='eth1.90'
-uci set network.VLAN90.ipaddr='192.168.90.144'
-uci set network.VLAN90.netmask='255.255.255.0'
+#uci set network.VLAN90=interface
+#uci set network.VLAN90.proto='static'
+#uci set network.VLAN90.device='eth1.90'
+#uci set network.VLAN90.ipaddr='192.168.90.144'
+#uci set network.VLAN90.netmask='255.255.255.0'
 
-uci set dhcp.VLAN90=dhcp
-uci set dhcp.VLAN90.interface='VLAN90'
-uci set dhcp.VLAN90.ignore='1'
-uci set dhcp.VLAN90.dhcpv6='disabled'
-uci set dhcp.VLAN90.ra='disabled'
-uci set dhcp.VLAN90.ra_management='0'
+#uci set dhcp.VLAN90=dhcp
+#uci set dhcp.VLAN90.interface='VLAN90'
+#uci set dhcp.VLAN90.ignore='1'
+#uci set dhcp.VLAN90.dhcpv6='disabled'
+#uci set dhcp.VLAN90.ra='disabled'
+#uci set dhcp.VLAN90.ra_management='0'
 
 # 保存并应用
 uci commit network
@@ -304,7 +304,7 @@ uci commit dropbear
 #/etc/init.d/dbus restart
 #/etc/init.d/avahi-daemon restart
 
-/usr/bin/mdns-repeater eth1.50 eth1.80 eth1.90 &
+#/usr/bin/mdns-repeater eth1.50 eth1.80 eth1.90 &
 
 # =============================================================================
 # 脚本执行完毕后删除自身，避免再次执行
