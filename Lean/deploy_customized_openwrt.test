@@ -1,0 +1,211 @@
+#!/bin/bash
+# ===========================================================================
+# Lean OpenWrt 定制文件一键部署脚本（自动备份 + 缺失即停 + 下载校验）
+# 作者：https://github.com/dayunliang
+# ===========================================================================
+
+set -e  # 任意命令失败即退出，防止环境污染
+
+# ===========================================================================
+# 安全检查/自动克隆：确保在 OpenWrt 源码根目录
+# 如果未检测到, 可选择自动 clone 并进入
+# ===========================================================================
+if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
+    echo "🔍 未检测到 OpenWrt 源码根目录。"
+    read -p "是否需要自动 clone OpenWrt 仓库并进入该目录？(y/N): " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        read -p "请输入 OpenWrt 仓库 URL (默认: https://github.com/coolsnowwolf/lede.git): " repo_url
+        repo_url=${repo_url:-https://github.com/coolsnowwolf/lede.git}
+        read -p "请输入目标目录名 (默认: lede): " target_dir
+        target_dir=${target_dir:-lede}
+
+        echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
+        git clone --depth=1 "$repo_url" "$target_dir" || {
+            echo "❌ 克隆失败，请检查 URL 或网络。"
+            exit 1
+        }
+        cd "$target_dir"
+        echo "✅ 已进入目录 $(pwd)，继续执行脚本。"
+    else
+        script_name=$(basename "$0")
+        echo
+        echo "请手动 clone 并进入源码目录后再执行脚本："
+        echo "  git clone https://github.com/coolsnowwolf/lede.git"
+        echo "  cd lede"
+        echo "  ./$script_name"
+        exit 1
+    fi
+fi
+
+# ===========================================================================
+# 1. 基本变量定义
+# ===========================================================================
+REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"
+TMP_DIR=$(mktemp -d)
+TS=$(date +%Y%m%d-%H%M%S)
+declare -a BACKUP_LIST
+
+# ===========================================================================
+# 2. 克隆定制配置仓库
+# ===========================================================================
+echo "1. 克隆自定义文件仓库到临时目录 $TMP_DIR ..."
+if ! git clone --depth=1 "$REPO_URL" "$TMP_DIR"; then
+    echo "❌ 克隆仓库失败：$REPO_URL"
+    exit 1
+fi
+
+# ===========================================================================
+# 3. 复制函数（含备份机制）
+# ===========================================================================
+safe_cp() {
+    src="$1"
+    dst="$2"
+    if [ -f "$dst" ]; then
+        backup_name="$dst.bak.$TS"
+        cp -v "$dst" "$backup_name"
+        BACKUP_LIST+=("$backup_name")
+    fi
+    cp -vf "$src" "$dst"
+}
+
+# ===========================================================================
+# 4. 部署函数（带校验）
+# ===========================================================================
+deploy_file() {
+    desc="$1"
+    src="$2"
+    dst="$3"
+    if [ ! -f "$src" ]; then
+        echo "❌ 缺失文件 [$desc]：$src"
+        exit 1
+    fi
+    mkdir -p "$(dirname "$dst")"
+    safe_cp "$src" "$dst"
+}
+
+# ===========================================================================
+# 5. 部署定制配置文件
+# ===========================================================================
+echo "2. 分发自定义配置文件..."
+
+deploy_file ".config"                "$TMP_DIR/Lean/config"                             "./.config"
+echo "📦 .config 已部署"
+
+deploy_file "feeds.conf.default"     "$TMP_DIR/Lean/feeds.conf.default"                "./feeds.conf.default"
+deploy_file "zzz-default-settings"   "$TMP_DIR/Lean/zzz-default-settings"              "./package/lean/default-settings/files/zzz-default-settings"
+
+deploy_file "back-route-checkenv.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
+deploy_file "back-route-complete.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
+deploy_file "back-route-cron.sh"      "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh"      "./files/usr/bin/back-route-cron.sh"
+chmod +x ./files/usr/bin/back-route-*.sh || true
+
+deploy_file "ipsec.conf"             "$TMP_DIR/Lean/files/etc/ipsec.conf"              "./files/etc/ipsec.conf"
+deploy_file "ipsec.secrets"          "$TMP_DIR/Lean/files/etc/ipsec.secrets"           "./files/etc/ipsec.secrets"
+deploy_file "luci-app-ipsec-server"   "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
+deploy_file "avahi-daemon.conf"      "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf"  "./files/etc/avahi/avahi-daemon.conf"
+deploy_file "openclash config"        "$TMP_DIR/Lean/files/etc/config/openclash"        "./files/etc/config/openclash"
+deploy_file "openclash config"        "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list"        "./files/etc/openclash/custom/openclash_custom_rules.list"
+deploy_file "root crontab"            "$TMP_DIR/Lean/files/etc/crontabs/root"           "./files/etc/crontabs/root"
+
+# ===========================================================================
+# 6. 下载 OpenClash Provider 规则（dler-io & ACL4SSR）
+# ===========================================================================
+echo "3. 下载 OpenClash Provider 规则..."
+OUT_DIR="./files/etc/openclash/rule_provider"
+mkdir -p "$OUT_DIR"
+TMP_DIR_RULES=$(mktemp -d)
+declare -A REPO_SOURCES=(
+    [lhie1]="https://github.com/dler-io/Rules.git"
+    [ACL4SSR]="https://github.com/ACL4SSR/ACL4SSR.git"
+)
+for key in "${!REPO_SOURCES[@]}"; do
+    echo "🌐 克隆 $key..."
+    dest_dir="$TMP_DIR_RULES/$key"
+    if [ "$key" = "ACL4SSR" ]; then
+        git clone --depth=1 --branch master "${REPO_SOURCES[$key]}" "$dest_dir"
+    else
+        git clone --depth=1 "${REPO_SOURCES[$key]}" "$dest_dir"
+    fi
+    echo "📥 提取规则文件..."
+    find "$dest_dir/Clash" -type f \( -iname "*.yaml" -o -iname "*.list" \) | while read -r file; do
+        cp -v "$file" "$OUT_DIR/$(basename "$file")"
+    done
+    rm -rf "$dest_dir"
+done
+rm -rf "$TMP_DIR_RULES"
+
+# ===========================================================================
+# 7. 清理临时 clone 仓库
+# ===========================================================================
+echo "4. 清理临时目录 $TMP_DIR"
+rm -rf "$TMP_DIR"
+
+# ===========================================================================
+# 8. 构建准备阶段
+# ===========================================================================
+echo
+echo "🛠️ 构建前准备：feeds update/install + make defconfig"
+echo "🌐 ./scripts/feeds update -a"
+./scripts/feeds update -a
+echo "📦 ./scripts/feeds install -a"
+./scripts/feeds install -a
+echo "🔧 make defconfig"
+make defconfig
+
+# ===========================================================================
+# 9. 可选预下载源码包
+# ===========================================================================
+echo
+read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
+if [[ "$is_first" =~ ^[Yy]$ ]]; then
+    echo "📥 正在预下载源码包..."
+    while true; do
+        make download -j8 V=s
+        broken=$(find dl -size -1024c)
+        if [ -z "$broken" ]; then
+            echo "✅ 源码包下载完整"
+            break
+        else
+            echo "⚠️ 检测到不完整文件，重新下载"
+            echo "$broken"
+            find dl -size -1024c -exec rm -f {} \\;
+        fi
+    done
+else
+    echo "✅ 跳过预下载，建议执行：make -j\$(nproc) V=s"
+fi
+
+# ===========================================================================
+# 10. 展示备份文件清单
+# ===========================================================================
+if [ \${#BACKUP_LIST[@]} -gt 0 ]; then
+    echo
+    echo "======================================================="
+    echo "🗂️ 本次自动备份文件："
+    for f in "\${BACKUP_LIST[@]}"; do echo "  \$f"; done
+    echo "======================================================="
+else
+    echo "🗂️ 无需备份：未检测到同名文件"
+fi
+
+# ===========================================================================
+# 11. 执行关键步骤总结
+# ===========================================================================
+echo
+echo "📋 本次执行关键步骤："
+echo "-------------------------------------------------------"
+echo "✅ 部署定制文件"
+echo "✅ 自动备份已有配置"
+echo "✅ 下载 OpenClash Provider 规则"
+echo "✅ 执行 feeds update/install & make defconfig"
+echo "✅ （可选）预下载源码包并校验"
+echo "-------------------------------------------------------"
+
+# ===========================================================================
+# 12. 最终提示
+# ===========================================================================
+echo
+echo "🚀 所有配置部署和构建准备完成！"
+echo "📂 当前目录：\$(pwd)"
+echo "📝 建议：make -j\$(nproc) V=s"
+echo
