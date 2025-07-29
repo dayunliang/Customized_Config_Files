@@ -719,3 +719,11 @@ config rule_provider_config
 	list rule_name 'Telegram(By lhie1)'
 	option group '📲 电报消息'
 	option position '0'
+
+config rule_provider_config
+        option enabled '1'
+        option interval '86400'
+        option config 'all'
+        list rule_name 'TikTok'
+        option position '0'
+        option group '🚂 手动切换'
