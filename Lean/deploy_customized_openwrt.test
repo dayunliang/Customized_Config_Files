@@ -112,44 +112,18 @@ deploy_file "IPSec WEB 配置"   "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-
 #deploy_file "avahi-daemon.conf"      "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf"  "./files/etc/avahi/avahi-daemon.conf"
 deploy_file "Openclash 自定义规则"        "$TMP_DIR/Lean/files/etc/config/openclash"        "./files/etc/config/openclash"
 deploy_file "Openclash 规则附加"        "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list"        "./files/etc/openclash/custom/openclash_custom_rules.list"
+deploy_file "Openclash 第三方规则集"        "$TMP_DIR/Lean/files/etc/usr/share/openclash/res/rule_providers.list"        "./files/etc/usr/share/openclash/res/rule_providers.list"
 deploy_file "Turbo ACC 网络加速设置"        "$TMP_DIR/Lean/files/etc/config/turboacc"        "./files/etc/config/turboacc"
 deploy_file "root 计划任务"            "$TMP_DIR/Lean/files/etc/crontabs/root"           "./files/etc/crontabs/root"
 
 # ===========================================================================
-# 6. 下载 OpenClash Provider 规则（dler-io & ACL4SSR）
-# ===========================================================================
-echo "3. 下载 OpenClash Provider 规则..."
-OUT_DIR="./files/etc/openclash/rule_provider"
-mkdir -p "$OUT_DIR"
-TMP_DIR_RULES=$(mktemp -d)
-declare -A REPO_SOURCES=(
-    [lhie1]="https://github.com/dler-io/Rules.git"
-    [ACL4SSR]="https://github.com/ACL4SSR/ACL4SSR.git"
-)
-for key in "${!REPO_SOURCES[@]}"; do
-    echo "🌐 克隆 $key..."
-    dest_dir="$TMP_DIR_RULES/$key"
-    if [ "$key" = "ACL4SSR" ]; then
-        git clone --depth=1 --branch master "${REPO_SOURCES[$key]}" "$dest_dir"
-    else
-        git clone --depth=1 "${REPO_SOURCES[$key]}" "$dest_dir"
-    fi
-    echo "📥 提取规则文件..."
-    find "$dest_dir/Clash" -type f \( -iname "*.yaml" -o -iname "*.list" \) | while read -r file; do
-        cp -v "$file" "$OUT_DIR/$(basename "$file")"
-    done
-    rm -rf "$dest_dir"
-done
-rm -rf "$TMP_DIR_RULES"
-
-# ===========================================================================
-# 7. 清理临时 clone 仓库
+# 6. 清理临时 clone 仓库
 # ===========================================================================
 echo "4. 清理临时目录 $TMP_DIR"
 rm -rf "$TMP_DIR"
 
 # ===========================================================================
-# 8. 构建准备阶段
+# 7. 构建准备阶段
 # ===========================================================================
 echo
 echo "🛠️ 构建前准备：feeds update/install + make defconfig"
@@ -161,7 +135,7 @@ echo "🔧 make defconfig"
 make defconfig
 
 # ===========================================================================
-# 9. 可选预下载源码包
+# 8. 可选预下载源码包
 # ===========================================================================
 echo
 read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
@@ -184,7 +158,7 @@ else
 fi
 
 # ===========================================================================
-# 10. 展示备份文件清单
+# 9. 展示备份文件清单
 # ===========================================================================
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
     echo
@@ -197,7 +171,7 @@ else
 fi
 
 # ===========================================================================
-# 11. 执行关键步骤总结
+# 10. 执行关键步骤总结
 # ===========================================================================
 echo
 echo "📋 本次执行关键步骤："
@@ -210,7 +184,7 @@ echo "✅ （可选）预下载源码包并校验"
 echo "-------------------------------------------------------"
 
 # ===========================================================================
-# 12. 最终提示
+# 11. 最终提示
 # ===========================================================================
 echo
 echo "🚀 所有配置部署和构建准备完成！"
