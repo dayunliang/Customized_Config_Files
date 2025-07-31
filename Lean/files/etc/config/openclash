@@ -623,7 +623,7 @@ config servers
 	option sni 'ali-hk.b-gfw.sbs'
 	option tfo 'false'
 	option ip_version 'ipv4-prefer'
-	option port '443'
+	option port '12012'
 	option obfs_trojan 'grpc'
 	list alpn 'h2'
 	option manual '1'
