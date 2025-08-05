@@ -527,12 +527,6 @@ sub_info_get()
 config_load "openclash"
 config_foreach sub_info_get "config_subscribe" "$1"
 
-# —— 自定义钩子：订阅更新后关闭 DNS ——>
-    if [ -x "/etc/openclash/dns_enable_false.sh" ]; then
-        sh /etc/openclash/dns_enable_false.sh
-    fi
-# <—— 钩子结束 ——>
-
 uci -q delete openclash.config.config_update_path
 uci commit openclash
 
@@ -564,4 +558,11 @@ dec_job_counter_and_restart() {
 }
 
 dec_job_counter_and_restart
+
+# —— 自定义钩子：订阅更新后关闭 DNS ——>
+    if [ -x "/etc/openclash/dns_enable_false.sh" ]; then
+        sh /etc/openclash/dns_enable_false.sh
+    fi
+# <—— 钩子结束 ——>
+
 del_lock
