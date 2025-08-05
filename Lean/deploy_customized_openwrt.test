@@ -113,9 +113,8 @@ deploy_file "IPSec WEB 配置"   "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-
 deploy_file "Openclash 自定义规则"        "$TMP_DIR/Lean/files/etc/config/openclash"        "./files/etc/config/openclash"
 deploy_file "Openclash 规则附加"        "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list"        "./files/etc/openclash/custom/openclash_custom_rules.list"
 deploy_file "Openclash 第三方规则集"        "$TMP_DIR/Lean/files/usr/share/openclash/res/rule_providers.list"        "./files/usr/share/openclash/res/rule_providers.list"
-#deploy_file "Openclash 主脚本修改"        "$TMP_DIR/Lean/files/usr/share/openclash/openclash.sh"        "./files/usr/share/openclash/openclash.sh"
-#deploy_file "Openclash DNS false 修改脚本"        "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh"        "./files/etc/openclash/dns_enable_false.sh"
-#chmod +x ./files/etc/openclash/dns_enable_false.sh || true
+deploy_file "Openclash 主脚本修改"        "$TMP_DIR/Lean/files/usr/share/openclash/openclash.sh"        "./files/usr/share/openclash/openclash.sh"#deploy_file "Openclash DNS false 修改脚本"        "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh"        "./files/etc/openclash/dns_enable_false.sh"
+chmod +x ./files/etc/openclash/dns_enable_false.sh || true
 deploy_file "ShadowSocksR Plus+ 配置文件"        "$TMP_DIR/Lean/files/etc/config/shadowsocksr"        "./files/etc/config/shadowsocksr"
 deploy_file "Turbo ACC 网络加速设置"        "$TMP_DIR/Lean/files/etc/config/turboacc"        "./files/etc/config/turboacc"
 deploy_file "root 计划任务"            "$TMP_DIR/Lean/files/etc/crontabs/root"           "./files/etc/crontabs/root"
