@@ -18,12 +18,6 @@ del_lock() {
 
 set_lock
 
-# —— 全局 EXIT 钩子：脚本退出时关闭 DNS ——>
-trap 'if [ -x "/etc/openclash/dns_enable_false.sh" ]; then
-    sh /etc/openclash/dns_enable_false.sh
-fi' EXIT
-# <—— 钩子结束 ——>
-
 LOGTIME=$(echo $(date "+%Y-%m-%d %H:%M:%S"))
 LOG_FILE="/tmp/openclash.log"
 CFG_FILE="/tmp/yaml_sub_tmp_config.yaml"
@@ -564,5 +558,14 @@ dec_job_counter_and_restart() {
 }
 
 dec_job_counter_and_restart
+
+# —— 后台延迟关 DNS 钩子 ——>
+( 
+  # 等 3 秒等所有 reload/restart 都跑完
+  sleep 3
+  if [ -x "/etc/openclash/dns_enable_false.sh" ]; then
+    sh /etc/openclash/dns_enable_false.sh
+  fi
+) &
 
 del_lock
