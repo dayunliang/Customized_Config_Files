@@ -120,7 +120,9 @@ deploy_file "Openclash 第三方规则集"        "$TMP_DIR/Lean/files/usr/share
 #chmod +x ./files/etc/openclash/dns_enable_false.sh || true
 #chmod +x ./files/usr/share/openclash/openclash.sh || true
 #chmod +x ./files/usr/share/openclash/openclash-core.sh || true
+
 deploy_file "Openclash 服务器节点配置"        "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh"        "./files/usr/share/openclash/yml_proxys_set.sh"
+chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
 
 deploy_file "ShadowSocksR Plus+ 配置文件"        "$TMP_DIR/Lean/files/etc/config/shadowsocksr"        "./files/etc/config/shadowsocksr"
 deploy_file "Turbo ACC 网络加速设置"        "$TMP_DIR/Lean/files/etc/config/turboacc"        "./files/etc/config/turboacc"
