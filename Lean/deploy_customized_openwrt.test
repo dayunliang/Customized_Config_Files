@@ -109,17 +109,15 @@ chmod +x ./files/usr/bin/back-route-*.sh || true
 deploy_file "IPSec 配置文件"             "$TMP_DIR/Lean/files/etc/ipsec.conf"              "./files/etc/ipsec.conf"
 deploy_file "IPSec 密码文件"          "$TMP_DIR/Lean/files/etc/ipsec.secrets"           "./files/etc/ipsec.secrets"
 deploy_file "IPSec WEB 配置"   "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
+
 #deploy_file "avahi-daemon.conf"      "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf"  "./files/etc/avahi/avahi-daemon.conf"
+
 deploy_file "Openclash 自定义规则"        "$TMP_DIR/Lean/files/etc/config/openclash"        "./files/etc/config/openclash"
 deploy_file "Openclash 规则附加"        "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list"        "./files/etc/openclash/custom/openclash_custom_rules.list"
 deploy_file "Openclash 第三方规则集"        "$TMP_DIR/Lean/files/usr/share/openclash/res/rule_providers.list"        "./files/usr/share/openclash/res/rule_providers.list"
 
-#deploy_file "Openclash wrapper"        "$TMP_DIR/Lean/files/usr/share/openclash/openclash.sh"        "./files/usr/share/openclash/openclash.sh"
-#deploy_file "Openclash 核心文件"        "$TMP_DIR/Lean/files/usr/share/openclash/openclash-core.sh"        "./files/usr/share/openclash/openclash-core.sh"
-#deploy_file "Openclash DNS false 修改脚本"        "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh"        "./files/etc/openclash/dns_enable_false.sh"
-#chmod +x ./files/etc/openclash/dns_enable_false.sh || true
-#chmod +x ./files/usr/share/openclash/openclash.sh || true
-#chmod +x ./files/usr/share/openclash/openclash-core.sh || true
+deploy_file "Openclash DNS false 修改脚本"        "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh"        "./files/etc/openclash/dns_enable_false.sh"
+chmod +x ./files/etc/openclash/dns_enable_false.sh || true
 
 deploy_file "Openclash 服务器节点配置"        "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh"        "./files/usr/share/openclash/yml_proxys_set.sh"
 chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
