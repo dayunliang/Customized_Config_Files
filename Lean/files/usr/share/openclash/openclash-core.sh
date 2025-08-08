@@ -101,7 +101,7 @@ DOWNLOAD_FILE_CURL "$DOWNLOAD_URL" "$CFG_FILE" "$DOWNLOAD_PARAM"
 
 config_cus_up()
 {
-	if [ -z "$CONFIG_PATH" ]; then
+        if [ -z "$CONFIG_PATH" ]; then
       for file_name in /etc/openclash/config/*
       do
          if [ -f "$file_name" ]; then
@@ -111,17 +111,17 @@ config_cus_up()
       done
       uci -q set openclash.config.config_path="$CONFIG_PATH"
       uci commit openclash
-	fi
-	if [ -z "$subscribe_url_param" ]; then
-	   if [ -n "$key_match_param" ] || [ -n "$key_ex_match_param" ]; then
-	      LOG_OUT "Config File【$name】is Replaced Successfully, Start Picking Nodes..."	      
-	      ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
-	      begin
+        fi
+        if [ -z "$subscribe_url_param" ]; then
+           if [ -n "$key_match_param" ] || [ -n "$key_ex_match_param" ]; then
+              LOG_OUT "Config File【$name】is Replaced Successfully, Start Picking Nodes..."          
+              ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
+              begin
             threads = [];
-	         Value = YAML.load_file('$CONFIG_FILE');
-	         if Value.has_key?('proxies') and not Value['proxies'].to_a.empty? then
-	            Value['proxies'].reverse.each{
-	            |x|
+                 Value = YAML.load_file('$CONFIG_FILE');
+                 if Value.has_key?('proxies') and not Value['proxies'].to_a.empty? then
+                    Value['proxies'].reverse.each{
+                    |x|
                   if not '$key_match_param'.empty? then
                      threads << Thread.new {
                         if not /$key_match_param/i =~ x['name'] then
@@ -156,8 +156,8 @@ config_cus_up()
                         end;
                      };
                   end;
-	            };
-	         end;
+                    };
+                 end;
             if Value.key?('proxy-providers') and not Value['proxy-providers'].nil? then
                Value['proxy-providers'].values.each do
                   |i|
@@ -172,12 +172,12 @@ config_cus_up()
                end;
             end;
             threads.each(&:join);
-	      rescue Exception => e
-	         YAML.LOG('Error: Filter Proxies Failed,【' + e.message + '】');
-	      ensure
-	         File.open('$CONFIG_FILE','w') {|f| YAML.dump(Value, f)};
-	      end" 2>/dev/null >> $LOG_FILE
-	   fi
+              rescue Exception => e
+                 YAML.LOG('Error: Filter Proxies Failed,【' + e.message + '】');
+              ensure
+                 File.open('$CONFIG_FILE','w') {|f| YAML.dump(Value, f)};
+              end" 2>/dev/null >> $LOG_FILE
+           fi
    fi
    if [ "$servers_update" -eq 1 ]; then
       LOG_OUT "Config File【$name】is Replaced Successfully, Start to Reserving..."
@@ -215,7 +215,7 @@ config_su_check()
          cp "$CFG_FILE" "$BACKPACK_FILE"
          #保留规则部分
          if [ "$servers_update" -eq 1 ] && [ "$only_download" -eq 0 ]; then
-   	        ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
+                ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
                Value = YAML.load_file('$CONFIG_FILE');
                Value_1 = YAML.load_file('$CFG_FILE');
                if Value.key?('rules') or Value.key?('script') or Value.key?('rule-providers') then
@@ -329,27 +329,27 @@ config_download_direct()
 
 server_key_match()
 {
-	local key_match key_word
-	 
+        local key_match key_word
+         
    if [ -n "$(echo "$1" |grep "^ \{0,\}$")" ] || [ -n "$(echo "$1" |grep "^\t\{0,\}$")" ]; then
-	    return
+            return
    fi
-	 
+         
    if [ -n "$(echo "$1" |grep "&")" ]; then
       key_word=$(echo "$1" |sed 's/&/ /g')
-	    for k in $key_word
-	    do
-	       if [ -z "$k" ]; then
-	          continue
-	       fi
-	       k="(?=.*$k)"
-	       key_match="$key_match$k"
-	    done
-	    key_match="^($key_match).*"
+            for k in $key_word
+            do
+               if [ -z "$k" ]; then
+                  continue
+               fi
+               k="(?=.*$k)"
+               key_match="$key_match$k"
+            done
+            key_match="^($key_match).*"
    else
-	    if [ -n "$1" ]; then
-	       key_match="($1)"
-	    fi
+            if [ -n "$1" ]; then
+               key_match="($1)"
+            fi
    fi
    
    if [ "$2" = "keyword" ]; then
@@ -359,7 +359,7 @@ server_key_match()
          key_match_param="$key_match_param|$key_match"
       fi
    elif [ "$2" = "ex_keyword" ]; then
-   	  if [ -z "$key_ex_match_param" ]; then
+          if [ -z "$key_ex_match_param" ]; then
          key_ex_match_param="$key_match"
       else
          key_ex_match_param="$key_ex_match_param|$key_match"
@@ -448,10 +448,10 @@ sub_info_get()
    if [ -n "$de_ex_keyword" ]; then
       for i in $de_ex_keyword;
       do
-      	if [ -z "$key_ex_match_param" ]; then
-      	   key_ex_match_param="($i)"
-      	else
-      	   key_ex_match_param="$key_ex_match_param|($i)"
+        if [ -z "$key_ex_match_param" ]; then
+           key_ex_match_param="($i)"
+        else
+           key_ex_match_param="$key_ex_match_param|($i)"
         fi
       done
    fi
@@ -461,7 +461,7 @@ sub_info_get()
    elif [ "$sub_convert" -eq 1 ] && [ -n "$template" ]; then
       while read line
       do
-      	subscribe_url=$([ -n "$subscribe_url" ] && echo "$subscribe_url|")$(urlencode "$line")
+        subscribe_url=$([ -n "$subscribe_url" ] && echo "$subscribe_url|")$(urlencode "$line")
       done < <(echo "$address")
       if [ "$template" != "0" ]; then
          template_path=$(grep "^$template," /usr/share/openclash/res/sub_ini.list |awk -F ',' '{print $3}' 2>/dev/null)
@@ -526,7 +526,6 @@ sub_info_get()
 #分别获取订阅信息进行处理
 config_load "openclash"
 config_foreach sub_info_get "config_subscribe" "$1"
-
 uci -q delete openclash.config.config_update_path
 uci commit openclash
 
@@ -558,5 +557,4 @@ dec_job_counter_and_restart() {
 }
 
 dec_job_counter_and_restart
-
 del_lock
