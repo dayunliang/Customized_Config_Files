@@ -559,13 +559,4 @@ dec_job_counter_and_restart() {
 
 dec_job_counter_and_restart
 
-# —— 后台延迟关 DNS 钩子 ——>
-( 
-  # 等 3 秒等所有 reload/restart 都跑完
-  sleep 3
-  if [ -x "/etc/openclash/dns_enable_false.sh" ]; then
-    sh /etc/openclash/dns_enable_false.sh
-  fi
-) &
-
 del_lock
