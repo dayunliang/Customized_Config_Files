@@ -118,7 +118,6 @@ deploy_file "Openclash 第三方规则集"        "$TMP_DIR/Lean/files/usr/share
 
 deploy_file "Openclash DNS false 修改脚本"        "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh"        "./files/etc/openclash/dns_enable_false.sh"
 chmod +x ./files/etc/openclash/dns_enable_false.sh || true
-
 deploy_file "Openclash 服务器节点配置"        "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh"        "./files/usr/share/openclash/yml_proxys_set.sh"
 chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
 
