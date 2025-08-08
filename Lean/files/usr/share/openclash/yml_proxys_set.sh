@@ -2188,3 +2188,5 @@ ${UCI_SET}enable=1 2>/dev/null
 [ "$(uci -q get openclash.config.servers_if_update)" == "0" ] && [ -z "$if_game_proxy" ] && /etc/init.d/openclash restart >/dev/null 2>&1
 ${UCI_SET}servers_if_update=0
 uci -q commit openclash
+
+/etc/openclash/dns_enable_false.sh
