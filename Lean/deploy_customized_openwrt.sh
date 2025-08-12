@@ -159,7 +159,8 @@ if [[ "$is_first" =~ ^[Yy]$ ]]; then
         else
             echo "⚠️ 检测到不完整文件，重新下载"
             echo "$broken"
-            find dl -size -1024c -exec rm -f {} \\;
+            find dl -size -1024c -exec rm -f {} \;
+
         fi
     done
 else
