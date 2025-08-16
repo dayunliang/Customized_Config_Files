@@ -40,19 +40,29 @@ if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
         target_dir=${target_dir:-lede}
 
         if [ -d "$target_dir" ]; then
-            echo "⚠️ 目录 $target_dir 已存在，直接进入该目录..."
+            echo "⚠️ 目录 $target_dir 已存在，进入该目录..."
             cd "$target_dir"
 
-            # 二次确认：是否在此目录重新 git clone
-            read -p "目录已存在，是否仍要在该目录执行 git clone (会覆盖已有内容)？(y/N): " reconfirm
-            if [[ "$reconfirm" =~ ^[Yy]$ ]]; then
-                echo "🌐 正在克隆 $repo_url 到当前目录..."
+            if [ -z "$(ls -A .)" ]; then
+                # 空目录 → 直接 clone
+                echo "🌐 目录为空，正在克隆 $repo_url ..."
                 git clone --depth=1 "$repo_url" . || {
                     echo "❌ 克隆失败，请检查 URL 或网络连接"
                     exit 1
                 }
             else
-                echo "➡️ 跳过 git clone，继续执行后续步骤..."
+                # 非空目录 → 提示是否清空后再 clone
+                read -p "⚠️ 当前目录非空，是否清空后再克隆？(y/N): " clear_confirm
+                if [[ "$clear_confirm" =~ ^[Yy]$ ]]; then
+                    rm -rf ./* ./.??*   # 删除所有文件和隐藏文件（排除.和..）
+                    echo "🧹 目录已清空，开始克隆..."
+                    git clone --depth=1 "$repo_url" . || {
+                        echo "❌ 克隆失败，请检查 URL 或网络连接"
+                        exit 1
+                    }
+                else
+                    echo "➡️ 跳过 git clone，继续执行后续步骤..."
+                fi
             fi
         else
             echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
