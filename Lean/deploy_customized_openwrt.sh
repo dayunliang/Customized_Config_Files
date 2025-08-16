@@ -1,203 +1,198 @@
 #!/bin/bash
 # ===========================================================================
-# Lean OpenWrt 定制文件一键部署脚本（自动备份 + 缺失即停 + 下载校验）
+# Lean OpenWrt 定制文件一键部署脚本【逐行详解版】
+#
+# 功能：
+#   1. 检查当前是否处于 OpenWrt 源码根目录
+#   2. 如果不在源码根目录，支持自动 git clone 进入
+#   3. 克隆自定义配置文件仓库（REPO_URL），自动部署到指定路径
+#   4. 对已存在的目标文件进行备份（加时间戳后缀，防止覆盖丢失）
+#   5. 自动检测 luci feed，避免 po2lmo 工具缺失
+#   6. 执行 feeds update/install + make defconfig
+#   7. 强制编译 po2lmo（解决 default-settings 编译时报错问题）
+#   8. 首次构建可选执行 make download 并循环校验下载完整性
+#   9. 输出执行摘要和备份清单
 # 作者：https://github.com/dayunliang
 # ===========================================================================
 
-set -e  # 任意命令失败即退出，防止环境污染
+set -e  # 遇到任何命令出错立即退出（防止错误继续执行）
 
+# ==== [0] 环境检查 ====
 if [ -z "$BASH_VERSION" ]; then
-    echo "❗ 本脚本需要 bash 环境，请用 bash 运行！"
+    echo "❗ 必须在 bash 环境下执行此脚本，sh 环境不支持！"
     exit 1
 fi
 
-# ===========================================================================
-# 安全检查/自动克隆：确保在 OpenWrt 源码根目录
-# 如果未检测到, 可选择自动 clone 并进入
-# ===========================================================================
+# ==== [1] 检查是否在 OpenWrt 源码根目录 ====
+# 判定依据：必须同时存在 scripts/feeds 文件和 package 目录
 if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
     echo "🔍 未检测到 OpenWrt 源码根目录。"
-    cd ~
-    echo "📁 已切换到用户主目录: $PWD"
-    read -p "是否需要自动 clone OpenWrt 仓库并进入该目录？(y/N): " confirm
+    cd ~  # 切换到用户家目录，方便执行 git clone
+    echo "📁 当前目录已切换到：$PWD"
+    read -p "是否自动 clone OpenWrt 仓库并进入？(y/N): " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        # 用户可自定义仓库地址（默认 Lean 源）
         read -p "请输入 OpenWrt 仓库 URL (默认: https://github.com/coolsnowwolf/lede.git): " repo_url
         repo_url=${repo_url:-https://github.com/coolsnowwolf/lede.git}
+
+        # 用户可自定义目标目录（默认 lede）
         read -p "请输入目标目录名 (默认: lede): " target_dir
         target_dir=${target_dir:-lede}
 
         echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
         git clone --depth=1 "$repo_url" "$target_dir" || {
-            echo "❌ 克隆失败，请检查 URL 或网络。"
+            echo "❌ 克隆失败，请检查 URL 或网络连接"
             exit 1
         }
         cd "$target_dir"
-        echo "✅ 已进入目录 $(pwd)，继续执行脚本。"
+        echo "✅ 已进入源码目录：$(pwd)"
     else
+        # 用户拒绝自动 clone，退出并提示
         script_name=$(basename "$0")
-        echo
-        echo "请手动 clone 并进入源码目录后再执行脚本："
+        echo "❌ 请先手动下载源码再运行本脚本"
+        echo "示例："
         echo "  git clone https://github.com/coolsnowwolf/lede.git"
         echo "  cd lede"
-        echo "  ./$script_name"
+        echo "  bash $script_name"
         exit 1
     fi
 fi
 
-# ===========================================================================
-# 1. 基本变量定义
-# ===========================================================================
-REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"
-TMP_DIR=$(mktemp -d)
-TS=$(date +%Y%m%d-%H%M%S)
-declare -a BACKUP_LIST
+# ==== [2] 基本变量 ====
+REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git" # 配置文件仓库
+TMP_DIR=$(mktemp -d)    # 临时目录（脚本结束会删除）
+TS=$(date +%Y%m%d-%H%M%S) # 当前时间戳，用于备份文件命名
+declare -a BACKUP_LIST  # 数组，用于记录备份文件路径
 
-# ===========================================================================
-# 2. 克隆定制配置仓库
-# ===========================================================================
-echo "1. 克隆自定义文件仓库到临时目录 $TMP_DIR ..."
+# ==== [3] 克隆定制配置文件仓库 ====
+echo "1. 克隆定制配置仓库到临时目录 $TMP_DIR ..."
 if ! git clone --depth=1 "$REPO_URL" "$TMP_DIR"; then
     echo "❌ 克隆仓库失败：$REPO_URL"
     exit 1
 fi
 
-# ===========================================================================
-# 3. 复制函数（含备份机制）
-# ===========================================================================
+# ==== [4] 定义安全复制函数（带备份） ====
 safe_cp() {
-    src="$1"
-    dst="$2"
+    src="$1"  # 源文件
+    dst="$2"  # 目标文件
     if [ -f "$dst" ]; then
         backup_name="$dst.bak.$TS"
-        cp -v "$dst" "$backup_name"
+        cp -v "$dst" "$backup_name"  # 备份旧文件
         BACKUP_LIST+=("$backup_name")
     fi
-    cp -vf "$src" "$dst"
+    cp -vf "$src" "$dst"  # 覆盖复制新文件
 }
 
-# ===========================================================================
-# 4. 部署函数（带校验）
-# ===========================================================================
+# ==== [5] 部署文件函数 ====
 deploy_file() {
-    desc="$1"
-    src="$2"
-    dst="$3"
+    desc="$1" # 描述（方便日志输出）
+    src="$2"  # 源路径
+    dst="$3"  # 目标路径
     if [ ! -f "$src" ]; then
         echo "❌ 缺失文件 [$desc]：$src"
         exit 1
     fi
-    mkdir -p "$(dirname "$dst")"
-    safe_cp "$src" "$dst"
+    mkdir -p "$(dirname "$dst")" # 确保目录存在
+    safe_cp "$src" "$dst"        # 复制文件
 }
 
-# ===========================================================================
-# 5. 部署定制配置文件
-# ===========================================================================
-echo "2. 分发自定义配置文件..."
+# ==== [6] 部署配置文件 ====
+echo "2. 部署自定义配置文件..."
+# .config 文件（编译选项）
+deploy_file ".config" "$TMP_DIR/Lean/config" "./.config"
+# feeds.conf.default（feeds 源列表）
+deploy_file "feeds.conf.default" "$TMP_DIR/Lean/feeds.conf.default" "./feeds.conf.default"
+# 默认系统设置（包含编译后的默认配置）
+deploy_file "zzz-default-settings" "$TMP_DIR/Lean/zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings"
 
-deploy_file ".config"                "$TMP_DIR/Lean/config"                             "./.config"
-echo "📦 .config 已部署"
-
-deploy_file "feeds.conf.default"     "$TMP_DIR/Lean/feeds.conf.default"                "./feeds.conf.default"
-deploy_file "zzz-default-settings"   "$TMP_DIR/Lean/zzz-default-settings"              "./package/lean/default-settings/files/zzz-default-settings"
-
+# 回程路由脚本
 deploy_file "back-route-checkenv.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
 deploy_file "back-route-complete.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
-deploy_file "back-route-cron.sh"      "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh"      "./files/usr/bin/back-route-cron.sh"
+deploy_file "back-route-cron.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh" "./files/usr/bin/back-route-cron.sh"
 chmod +x ./files/usr/bin/back-route-*.sh || true
 
-deploy_file "IPSec 配置文件"             "$TMP_DIR/Lean/files/etc/ipsec.conf"              "./files/etc/ipsec.conf"
-deploy_file "IPSec 密码文件"          "$TMP_DIR/Lean/files/etc/ipsec.secrets"           "./files/etc/ipsec.secrets"
-deploy_file "IPSec WEB 配置"   "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
+# IPSec 配置
+deploy_file "IPSec 配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf" "./files/etc/ipsec.conf"
+deploy_file "IPSec 密码文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets" "./files/etc/ipsec.secrets"
+deploy_file "IPSec Web 配置" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
 
-#deploy_file "avahi-daemon.conf"      "$TMP_DIR/Lean/files/etc/avahi/avahi-daemon.conf"  "./files/etc/avahi/avahi-daemon.conf"
+# OpenClash 配置和规则
+deploy_file "Openclash 配置" "$TMP_DIR/Lean/files/etc/config/openclash" "./files/etc/config/openclash"
+deploy_file "Openclash 自定义规则" "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list" "./files/etc/openclash/custom/openclash_custom_rules.list"
+deploy_file "Openclash 规则列表" "$TMP_DIR/Lean/files/usr/share/openclash/res/rule_providers.list" "./files/usr/share/openclash/res/rule_providers.list"
 
-deploy_file "Openclash 自定义规则"        "$TMP_DIR/Lean/files/etc/config/openclash"        "./files/etc/config/openclash"
-deploy_file "Openclash 规则附加"        "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list"        "./files/etc/openclash/custom/openclash_custom_rules.list"
-deploy_file "Openclash 第三方规则集"        "$TMP_DIR/Lean/files/usr/share/openclash/res/rule_providers.list"        "./files/usr/share/openclash/res/rule_providers.list"
-
-deploy_file "Openclash DNS false 修改脚本"        "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh"        "./files/etc/openclash/dns_enable_false.sh"
+deploy_file "Openclash DNS false 修改脚本" "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh" "./files/etc/openclash/dns_enable_false.sh"
 chmod +x ./files/etc/openclash/dns_enable_false.sh || true
-deploy_file "Openclash 服务器节点配置"        "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh"        "./files/usr/share/openclash/yml_proxys_set.sh"
+deploy_file "Openclash 节点配置脚本" "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh" "./files/usr/share/openclash/yml_proxys_set.sh"
 chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
 
-deploy_file "ShadowSocksR Plus+ 配置文件"        "$TMP_DIR/Lean/files/etc/config/shadowsocksr"        "./files/etc/config/shadowsocksr"
-deploy_file "Turbo ACC 网络加速设置"        "$TMP_DIR/Lean/files/etc/config/turboacc"        "./files/etc/config/turboacc"
-deploy_file "root 计划任务"            "$TMP_DIR/Lean/files/etc/crontabs/root"           "./files/etc/crontabs/root"
+# 其它网络加速、计划任务等配置
+deploy_file "ShadowSocksR Plus+ 配置" "$TMP_DIR/Lean/files/etc/config/shadowsocksr" "./files/etc/config/shadowsocksr"
+deploy_file "Turbo ACC 网络加速配置" "$TMP_DIR/Lean/files/etc/config/turboacc" "./files/etc/config/turboacc"
+deploy_file "root 用户计划任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
 
-# ===========================================================================
-# 6. 清理临时 clone 仓库
-# ===========================================================================
-echo "4. 清理临时目录 $TMP_DIR"
+# ==== [7] 删除临时目录 ====
+echo "4. 删除临时目录 $TMP_DIR"
 rm -rf "$TMP_DIR"
 
-# ===========================================================================
-# 7. 构建准备阶段
-# ===========================================================================
-echo
-echo "🛠️ 构建前准备：feeds update/install + make defconfig"
-echo "🌐 ./scripts/feeds update -a"
+# ==== [8] 检查 luci feed（po2lmo 工具所在位置） ====
+if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
+    echo "⚠️  feeds.conf.default 缺少 luci 源，已自动追加"
+    echo "src-git luci https://github.com/coolsnowwolf/luci" >> feeds.conf.default
+fi
+
+# 更新 luci feed 并安装 luci-base（包含 po2lmo）
+./scripts/feeds update luci
+./scripts/feeds install luci-base
+
+# ==== [9] 全量更新 feeds 并安装 ====
+echo "🛠️ 正在执行 feeds update/install..."
 ./scripts/feeds update -a
-echo "📦 ./scripts/feeds install -a"
 ./scripts/feeds install -a
-echo "🔧 make defconfig"
 make defconfig
 
-# ===========================================================================
-# 8. 可选预下载源码包
-# ===========================================================================
-echo
+# ==== [10] 编译 po2lmo 工具 ====
+echo "🛠️ 编译 po2lmo 工具..."
+make package/feeds/luci/luci-base/host/compile V=s
+
+# ==== [11] 首次构建可选下载源码包 ====
 read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
 if [[ "$is_first" =~ ^[Yy]$ ]]; then
-    echo "📥 正在预下载源码包..."
+    echo "📥 开始预下载源码包..."
     while true; do
         make download -j8 V=s
         broken=$(find dl -size -1024c)
         if [ -z "$broken" ]; then
-            echo "✅ 源码包下载完整"
+            echo "✅ 下载完成且校验通过"
             break
         else
-            echo "⚠️ 检测到不完整文件，重新下载"
-            echo "$broken"
+            echo "⚠️ 检测到不完整文件，重新下载..."
             find dl -size -1024c -exec rm -f {} \;
-
         fi
     done
 else
-    echo "✅ 跳过预下载，建议执行：make -j\$(nproc) V=s"
+    echo "✅ 跳过预下载，可直接 make -j\$(nproc) V=s"
 fi
 
-# ===========================================================================
-# 9. 展示备份文件清单
-# ===========================================================================
+# ==== [12] 显示备份列表 ====
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
-    echo
-    echo "======================================================="
-    echo "🗂️ 本次自动备份文件："
+    echo "🗂️ 本次备份的文件："
     for f in "${BACKUP_LIST[@]}"; do echo "  $f"; done
-    echo "======================================================="
 else
-    echo "🗂️ 无需备份：未检测到同名文件"
+    echo "🗂️ 本次没有文件被覆盖，因此没有备份"
 fi
 
-# ===========================================================================
-# 10. 执行关键步骤总结
-# ===========================================================================
-echo
-echo "📋 本次执行关键步骤："
+# ==== [13] 总结 ====
+echo "📋 执行步骤总结："
 echo "-------------------------------------------------------"
 echo "✅ 部署定制文件"
 echo "✅ 自动备份已有配置"
-echo "✅ 下载 OpenClash Provider 规则"
 echo "✅ 执行 feeds update/install & make defconfig"
-echo "✅ （可选）预下载源码包并校验"
+echo "✅ 编译 po2lmo 工具"
+echo "✅ （可选）下载源码包并校验"
 echo "-------------------------------------------------------"
 
-# ===========================================================================
-# 11. 最终提示
-# ===========================================================================
-echo
-echo "🚀 所有配置部署和构建准备完成！"
-echo "📂 当前目录：\$(pwd)"
-echo "📝 建议：make -j\$(nproc) V=s"
-echo
+# ==== [14] 完成提示 ====
+echo "🚀 配置部署完成！"
+echo "📂 当前目录：$(pwd)"
+echo "💡 可执行：make -j\$(nproc) V=s"
