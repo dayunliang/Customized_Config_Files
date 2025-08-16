@@ -1,0 +1,31 @@
+###############################################################
+# feeds.conf.default for Lean.AJ.Router (基于 OpenWrt 24.10.1)
+###############################################################
+
+# —— coolsnowwolf 自己维护的 packages（使用默认 master 分支） ——  
+src-git packages            https://github.com/coolsnowwolf/packages.git
+
+# —— coolsnowwolf 自己维护的 luci 和 routing（使用默认 master 分支） ——  
+src-git luci                https://github.com/coolsnowwolf/luci.git
+src-git routing             https://github.com/coolsnowwolf/routing.git
+
+# —— 官方 telephony Feed（OpenWrt 官方源，git.openwrt.org 地址无需 .git 后缀） ——  
+src-git telephony           https://git.openwrt.org/feed/telephony.git
+
+# —— 额外第三方 feeds，根据项目需要自行启用或注释 ——  
+src-git kenzo               https://github.com/kenzok8/openwrt-packages.git
+#src-git smpackage           https://github.com/kenzok8/small-package.git
+src-git small               https://github.com/kenzok8/small
+
+# —— 其它可选 feed（保持注释状态，不启用时请保留 “#”） ——  
+# src-git oui               https://github.com/zhaojh329/oui.git
+# src-git video             https://github.com/openwrt/video.git
+# src-git targets           https://github.com/openwrt/targets.git
+# src-git oldpackages       http://git.openwrt.org/packages.git
+# src-link custom           /usr/src/openwrt/custom-feed
+# src-git helloworld        https://github.com/dayunliang/helloworld.git
+# src-git dayunliang        https://github.com/dayunliang/openwrt-packages.git
+# src-git depends           https://github.com/dayunliang/passwall-depends.git
+# src-git rosy              https://github.com/rosywrt/luci.git
+# src-git nikki             https://github.com/nikkinikki-org/OpenWrt-nikki.git;main
+src-git istore              https://github.com/linkease/istore-packages
