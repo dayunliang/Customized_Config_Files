@@ -216,6 +216,7 @@ fi
 
 # ==== [10] 全量更新 feeds 并安装 ====
 echo "🛠️ 正在执行 feeds update/install..."
+./scripts/feeds clean
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 ./remove_conflict.sh
