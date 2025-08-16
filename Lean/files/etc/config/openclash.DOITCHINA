@@ -1,0 +1,729 @@
+config openclash 'config'
+	option proxy_port '7892'
+	option tproxy_port '7895'
+	option mixed_port '7893'
+	option socks_port '7891'
+	option http_port '7890'
+	option dns_port '7874'
+	option update '0'
+	option cn_port '9090'
+	option dashboard_forward_ssl '0'
+	option enable_custom_dns '0'
+	option ipv6_enable '0'
+	option ipv6_dns '0'
+	option other_rule_auto_update '0'
+	option servers_if_update '0'
+	option disable_masq_cache '1'
+	option servers_update '0'
+	option proxy_mode 'rule'
+	option disable_udp_quic '1'
+	option operation_mode 'fake-ip'
+	option enable_rule_proxy '0'
+	option filter_aaaa_dns '0'
+	option small_flash_memory '0'
+	option interface_name '0'
+	option log_size '1024'
+	option append_wan_dns '0'
+	option stream_auto_select '0'
+	option bypass_gateway_compatible '0'
+	option delay_start '0'
+	option router_self_proxy '1'
+	option release_branch 'master'
+	option dashboard_type 'Official'
+	option yacd_type 'Meta'
+	option append_default_dns '0'
+	option enable_respect_rules '0'
+	option geo_custom_url 'https://testingcf.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/lite/Country.mmdb'
+	option chnr_custom_url 'https://ispip.clang.cn/all_cn.txt'
+	option chnr6_custom_url 'https://ispip.clang.cn/all_cn_ipv6.txt'
+	option dashboard_password 'xQF3eZHg'
+	option core_version 'linux-amd64'
+	option default_resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+	option auto_update '1'
+	option config_auto_update_mode '0'
+	option config_update_week_time '*'
+	option auto_update_time '5'
+	option dnsmasq_noresolv '0'
+	option dnsmasq_resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+	option en_mode 'fake-ip-mix'
+	option stack_type 'system'
+	option disable_quic_go_gso '0'
+	option skip_safe_path_check '0'
+	option enable_redirect_dns '0'
+	option enable_custom_domain_dns_server '0'
+	option skip_proxy_address '1'
+	option china_ip_route '1'
+	option intranet_allowed '0'
+	option lan_interface_name 'eth0'
+	option geo_auto_update '0'
+	option geo_update_week_time '1'
+	option geo_update_day_time '0'
+	option geoip_auto_update '0'
+	option geosite_auto_update '0'
+	option geoasn_auto_update '0'
+	option chnr_auto_update '0'
+	option chnr_update_week_time '1'
+	option chnr_update_day_time '0'
+	option auto_restart '0'
+	option auto_restart_week_time '1'
+	option auto_restart_day_time '0'
+	option log_level 'warning'
+	option fakeip_range '198.18.0.1/16'
+	option store_fakeip '1'
+	option custom_fakeip_filter '1'
+	option custom_fakeip_filter_mode 'blacklist'
+	option custom_name_policy '1'
+	option custom_host '1'
+	option enable_tcp_concurrent '1'
+	option enable_unified_delay '1'
+	option find_process_mode '0'
+	option global_client_fingerprint '0'
+	option geodata_loader '0'
+	option enable_geoip_dat '0'
+	option enable_meta_sniffer '1'
+	option enable_meta_sniffer_pure_ip '1'
+	option enable_meta_sniffer_custom '1'
+	option rule_source '1'
+	option enable_custom_clash_rules '1'
+	option cachesize_dns '0'
+	option redirect_dns '0'
+	option create_config '0'
+	option urltest_address_mod '0'
+	option github_address_mod '0'
+	option urltest_interval_mod '60'
+	option tolerance '1'
+	option smart_enable '1'
+	option core_type 'Smart'
+	option enable '1'
+	option restart '0'
+	option custom_fallback_filter '0'
+	option config_path '/etc/openclash/config/Nexitally.yaml'
+
+config dns_servers
+	option type 'udp'
+	option ip '114.114.114.114'
+	option group 'default'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option type 'udp'
+	option ip '119.29.29.29'
+	option group 'default'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '114.114.114.114'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option type 'udp'
+	option ip '223.5.5.5'
+	option group 'default'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '119.29.29.29'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '119.28.28.28'
+	option enabled '0'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option group 'nameserver'
+	option type 'udp'
+	option ip '223.5.5.5'
+	option enabled '0'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option type 'https'
+	option ip 'doh.pub/dns-query'
+	option group 'nameserver'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option type 'https'
+	option ip 'dns.alidns.com/dns-query'
+	option group 'nameserver'
+	option disable_ipv6 '0'
+	option enabled '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '9.9.9.9'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '149.112.112.112'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2620:fe::fe'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2620:fe::9'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '8.8.8.8'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '8.8.4.4'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2001:4860:4860::8888'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2001:4860:4860::8844'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '2001:da8::666'
+	option type 'udp'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.quad9.net'
+	option type 'tls'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.google'
+	option type 'tls'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '1.1.1.1'
+	option type 'tls'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'jp.tiar.app'
+	option type 'tls'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dot.tiar.app'
+	option type 'tls'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.quad9.net/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.google/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.cloudflare.com/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip '1.1.1.1/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'public.dns.iij.jp/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'jp.tiar.app/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'jp.tiarap.org/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option type 'https'
+	option ip 'doh.dnslify.com/dns-query'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.twnic.tw/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dns.oszx.co/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'doh.applied-privacy.net/query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'dnsforge.de/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'doh.ffmuc.net/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config dns_servers
+	option enabled '0'
+	option group 'fallback'
+	option ip 'doh.mullvad.net/dns-query'
+	option type 'https'
+	option disable_ipv6 '0'
+
+config authentication
+	option enabled '1'
+	option username 'Clash'
+	option password 'BIRTCAtl'
+
+config config_subscribe
+	option enabled '1'
+	option name 'CreamData'
+	option address 'https://sub.nysubs.xyz/Config/SSAeadConfig?u=d9eb3dec-d8a7-40c4-84ae-3fe47320cf00&sip002=1'
+	option sub_ua 'clash.meta'
+	option sub_convert '1'
+	option convert_address 'https://api.dler.io/sub'
+	option template '0'
+	option custom_template_url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ACL4SSR_Online_Full_AJ_Home.ini'
+	option emoji 'true'
+	option udp 'true'
+	option skip_cert_verify 'true'
+	option sort 'false'
+	option node_type 'true'
+	option rule_provider 'true'
+	list ex_keyword 'panel'
+
+config config_subscribe
+	option name 'Kuromi'
+	option address 'https://kuromisubs.shop/ad86dafbebeafce53d99dac07f28bdce?type=sip002&protocol=shadowsocks&use=domestic&rule=nodelist'
+	option sub_ua 'clash.meta'
+	option sub_convert '1'
+	option convert_address 'https://api.dler.io/sub'
+	option template '0'
+	option custom_template_url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ACL4SSR_Online_Full_AJ_Home.ini'
+	option emoji 'true'
+	option udp 'true'
+	option skip_cert_verify 'true'
+	option sort 'false'
+	option node_type 'true'
+	option rule_provider 'true'
+	option enabled '0'
+
+config config_subscribe
+	option name 'AmyTelecom'
+	option sub_ua 'clash.meta'
+	option sub_convert '1'
+	option convert_address 'https://api.dler.io/sub'
+	option template '0'
+	option emoji 'true'
+	option udp 'true'
+	option skip_cert_verify 'true'
+	option sort 'false'
+	option node_type 'true'
+	option rule_provider 'true'
+	option custom_template_url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ACL4SSR_Online_Full_AJ_Home.ini'
+	option address 'https://sub.kwk7thgc.com/?L1N1YnNjcmlwdGlvbi9TaGFkb3dSb2NrZXRJbXBvcnRTZXJ2aWNlP3Q9c2lwMDAyJnNpZD03ODAzNSZ0b2tlbj1NR3luc1puNURNbiZtbT04ODEyMSZiMjI2MA=='
+	option enabled '0'
+
+	config config_subscribe
+	option enabled '1'
+	option name 'Nexitally'
+	option address 'https://cdn.metaglide.org/?L2Rvd25sb2FkQ29uZmlnL0NsYXNoLmFzcHg/dD10cm9qYW4mZXE9d2luZG93cyZ1cms9YzNhMzE2ZjUtNWQ2YS00ZjFiLTg1ZDUtMWEyNTljYzk1NWNjJm1tPTk1NDY1Jmt0bW09STZyUWFyNUV1YTBKJTJiMzVyWGdUb1NnJTNkJTNkJmZlMTQ0ODM4NzFlMzQ2MGQ4'
+	option sub_ua 'clash.meta'
+	option sub_convert '1'
+	option convert_address 'https://api.dler.io/sub'
+	option template '0'
+	option emoji 'true'
+	option udp 'true'
+	option skip_cert_verify 'true'
+	option sort 'false'
+	option node_type 'true'
+	option rule_provider 'true'
+	option custom_template_url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ACL4SSR_Online_Full_AJ_Home.ini'
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'Unban_Added'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/Unban_Added.yaml'
+	option interval '60'
+	option position '0'
+	option group '🎯 全球直连'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'Launcher'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/Launcher.yaml'
+	option interval '86400'
+	option position '0'
+	option group '👹 Launcher'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'ChatGPT'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ChatGPT.yaml'
+	option interval '86400'
+	option position '0'
+	option group '🤖 ChatGPT'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'ESPN'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ESPN.yaml'
+	option interval '86400'
+	option position '0'
+	option group '🏌 ESPN'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'HDAV'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/HDAV.yaml'
+	option interval '86400'
+	option position '0'
+	option group '㊙️ HDAV'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'Minecraft'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/Minecraft.yaml'
+	option interval '86400'
+	option position '0'
+	option group '🎃 我的世界'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'Mining_Pool'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/Mining_Pool.yaml'
+	option interval '86400'
+	option position '0'
+	option group '⚒ 矿池服务'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'GFWlist_Added'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/GFWlist_Added.yaml'
+	option interval '60'
+	option position '0'
+	option group '🚀 节点选择'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'ChinaMedia'
+	option group '🌏 国内媒体'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'AI Suite'
+	option group '🤖 ChatGPT'
+	option position '1'
+
+config servers
+	option config 'all'
+	option type 'trojan'
+	option name 'ALI-HK'
+	option server 'ali-hk.b-gfw.sbs'
+	option password '12012'
+	option udp 'true'
+	option skip_cert_verify 'true'
+	option sni 'ali-hk.b-gfw.sbs'
+	option tfo 'false'
+	option ip_version 'ipv4-prefer'
+	option port '12012'
+	option obfs_trojan 'grpc'
+	list alpn 'h2'
+	option manual '1'
+	list groups '🚀 节点选择'
+	list groups '🚂 手动切换'
+	option enabled '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'YouTube(By ACL4SSR)'
+	list rule_name 'YouTube(By lhie1)'
+	option group '📹 油管视频'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	option group '㊙️ HDAV'
+	option position '1'
+	list rule_name 'Porn'
+	list rule_name 'Japonx'
+	list rule_name 'Pornhub(By lhie1)'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Hulu Japan'
+	list rule_name 'Hulu(By lhie1)'
+	option group '🍋 hulu'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Disney Plus'
+	list rule_name 'DisneyPlus(By ACL4SSR)'
+	option group '🐭 Disney Plus'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Netflix(By lhie1)'
+	list rule_name 'Netflix(By ACL4SSR)'
+	option group '🎥 奈飞视频'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	option group '🎮 游戏平台'
+	list rule_name 'Epic'
+	list rule_name 'Steam(By ACL4SSR)'
+	list rule_name 'Steam'
+	list rule_name 'Blizzard'
+	list rule_name 'Sony.yaml'
+	list rule_name 'Sony.list'
+	list rule_name 'Xbox.list'
+	list rule_name 'Xbox.yaml'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Bilibili(By ACL4SSR)'
+	list rule_name 'Bilibili'
+	list rule_name 'BilibiliHMT'
+	option group '📺 哔哩哔哩'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Bahamut(By ACL4SSR)'
+	list rule_name 'Bahamut(By lhie1)'
+	option group '📺 巴哈姆特'
+	option position '1'
+
+config rule_provider_config
+	option enabled '1'
+	option interval '86400'
+	option config 'all'
+	list rule_name 'Telegram(By ACL4SSR)'
+	list rule_name 'Telegram(By lhie1)'
+	option group '📲 电报消息'
+	option position '0'
+
+config rule_provider_config
+        option enabled '1'
+        option interval '86400'
+        option config 'all'
+        list rule_name 'TikTok'
+        option position '0'
+        option group '🚂 手动切换'
