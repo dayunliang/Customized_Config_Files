@@ -36,21 +36,17 @@ show_spinner() {
         printf " [%c] 正在清空目录..." "$spinstr"
         local spinstr=$temp${spinstr%"$temp"}
         sleep $delay
-        printf "\r"
+        printf "\r%-40s\r" " "   # 清空整行避免残留
     done
 }
 
 if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
     echo "🔍 未检测到 OpenWrt 源码根目录。"
-    cd ~  # 切换到用户家目录，方便执行 git clone
-    echo "📁 当前目录已切换到：$PWD"
     read -p "是否自动 clone OpenWrt 仓库并进入？(y/N): " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
-        # 用户可自定义仓库地址（默认 Lean 源）
         read -p "请输入 OpenWrt 仓库 URL (默认: https://github.com/coolsnowwolf/lede.git): " repo_url
         repo_url=${repo_url:-https://github.com/coolsnowwolf/lede.git}
 
-        # 用户可自定义目标目录（默认 lede）
         read -p "请输入目标目录名 (默认: lede): " target_dir
         target_dir=${target_dir:-lede}
 
@@ -59,48 +55,38 @@ if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
             cd "$target_dir"
 
             if [ -z "$(ls -A .)" ]; then
-                # 空目录 → 直接 clone
                 echo "🌐 目录为空，正在克隆 $repo_url ..."
-                git clone --depth=1 "$repo_url" . || {
-                    echo "❌ 克隆失败，请检查 URL 或网络连接"
-                    exit 1
-                }
+                git clone --depth=1 "$repo_url" . || { echo "❌ 克隆失败"; exit 1; }
             else
-                # 非空目录 → 提示是否清空后再 clone
                 read -p "⚠️ 当前目录非空，是否清空后再克隆？(y/N): " clear_confirm
                 if [[ "$clear_confirm" =~ ^[Yy]$ ]]; then
-                    (rm -rf ./* ./.??* ) &   # 后台删除所有文件和隐藏文件
+                    (rm -rf ./* ./.??* ) &
                     pid=$!
-                    show_spinner $pid        # 显示转动动画
-                    wait $pid                # 等待删除完成
+                    show_spinner $pid
+                    wait $pid
                     echo "✅ 目录已清空"
-
                     echo "🌐 开始克隆 $repo_url ..."
-                    git clone --depth=1 "$repo_url" . || {
-                        echo "❌ 克隆失败，请检查 URL 或网络连接"
-                        exit 1
-                    }
+                    git clone --depth=1 "$repo_url" . || { echo "❌ 克隆失败"; exit 1; }
                 else
+                    if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
+                        echo "❌ 当前目录不是有效的 OpenWrt 源码目录，无法继续"
+                        exit 1
+                    fi
                     echo "➡️ 跳过 git clone，继续执行后续步骤..."
                 fi
             fi
         else
             echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
-            git clone --depth=1 "$repo_url" "$target_dir" || {
-                echo "❌ 克隆失败，请检查 URL 或网络连接"
-                exit 1
-            }
+            git clone --depth=1 "$repo_url" "$target_dir" || { echo "❌ 克隆失败"; exit 1; }
             cd "$target_dir"
         fi
         echo "✅ 已进入源码目录：$(pwd)"
     else
-        # 用户拒绝自动 clone，退出并提示
-        script_name=$(basename "$0")
         echo "❌ 请先手动下载源码再运行本脚本"
         echo "示例："
         echo "  git clone https://github.com/coolsnowwolf/lede.git"
         echo "  cd lede"
-        echo "  bash $script_name"
+        echo "  bash $0"
         exit 1
     fi
 fi
