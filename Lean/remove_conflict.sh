@@ -10,6 +10,7 @@ rm -rf feeds/small/luci-app-fchomo
 # Baresip + Apps
 rm -rf feeds/telephony/net/baresip
 rm -rf package/feeds/telephony/baresip-apps
+rm -rf feeds/telephony/baresip-apps
 
 # LingTiGameAcc
 rm -rf package/feeds/istore/luci-app-LingTiGameAcc
