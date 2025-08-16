@@ -25,6 +25,21 @@ fi
 
 # ==== [2] 检查是否在 OpenWrt 源码根目录 ====
 # 判定依据：必须同时存在 scripts/feeds 文件和 package 目录
+
+# spinner 函数：显示转动提示符
+show_spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='|/-\'
+    while ps -p $pid > /dev/null 2>&1; do
+        local temp=${spinstr#?}
+        printf " [%c] 正在清空目录..." "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\r"
+    done
+}
+
 if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
     echo "🔍 未检测到 OpenWrt 源码根目录。"
     cd ~  # 切换到用户家目录，方便执行 git clone
@@ -54,8 +69,13 @@ if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
                 # 非空目录 → 提示是否清空后再 clone
                 read -p "⚠️ 当前目录非空，是否清空后再克隆？(y/N): " clear_confirm
                 if [[ "$clear_confirm" =~ ^[Yy]$ ]]; then
-                    rm -rf ./* ./.??*   # 删除所有文件和隐藏文件（排除.和..）
-                    echo "🧹 目录已清空，开始克隆..."
+                    (rm -rf ./* ./.??* ) &   # 后台删除所有文件和隐藏文件
+                    pid=$!
+                    show_spinner $pid        # 显示转动动画
+                    wait $pid                # 等待删除完成
+                    echo "✅ 目录已清空"
+
+                    echo "🌐 开始克隆 $repo_url ..."
                     git clone --depth=1 "$repo_url" . || {
                         echo "❌ 克隆失败，请检查 URL 或网络连接"
                         exit 1
