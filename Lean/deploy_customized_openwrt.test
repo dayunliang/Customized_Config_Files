@@ -150,6 +150,8 @@ chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
 deploy_file "ShadowSocksR Plus+ 配置" "$TMP_DIR/Lean/files/etc/config/shadowsocksr" "./files/etc/config/shadowsocksr"
 deploy_file "Turbo ACC 网络加速配置" "$TMP_DIR/Lean/files/etc/config/turboacc" "./files/etc/config/turboacc"
 deploy_file "root 用户计划任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
+deploy_file "去除编译循环冲突" "$TMP_DIR/Lean/remove_conflict.sh" "./remove_conflict.sh"
+chmod +x ./remove_conflict.sh || true
 
 # ==== [8] 删除临时目录 ====
 echo "4. 删除临时目录 $TMP_DIR"
@@ -169,6 +171,8 @@ fi
 echo "🛠️ 正在执行 feeds update/install..."
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+./remove_conflict.sh
+
 make defconfig
 
 # ==== [11] 编译 po2lmo 工具 ====
