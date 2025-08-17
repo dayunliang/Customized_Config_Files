@@ -17,4 +17,13 @@ rm -rf package/feeds/istore/luci-app-LingTiGameAcc
 
 # 确保 ssr-plus 不再依赖 dns2socks-rust
 # 自动注释掉那一行
-sed -i 's/^\s*+PACKAGE_$(PKG_NAME)_INCLUDE_DNS2SOCKS_RUST.*/#&/' feeds/small/luci-app-ssr-plus/Makefile
+if [ -f feeds/small/luci-app-ssr-plus/Makefile ]; then
+    if grep -q "PACKAGE_$(PKG_NAME)_INCLUDE_DNS2SOCKS_RUST" feeds/small/luci-app-ssr-plus/Makefile; then
+        sed -i 's/^\s*+PACKAGE_$(PKG_NAME)_INCLUDE_DNS2SOCKS_RUST.*/#&/' feeds/small/luci-app-ssr-plus/Makefile
+        echo "✅ 已注释 dns2socks-rust 依赖"
+    else
+        echo "ℹ️ luci-app-ssr-plus 不包含 dns2socks-rust 依赖，跳过修改"
+    fi
+else
+    echo "⚠️ 未找到 luci-app-ssr-plus/Makefile，跳过修改"
+fi
