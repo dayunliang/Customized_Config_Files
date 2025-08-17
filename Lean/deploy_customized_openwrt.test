@@ -203,14 +203,14 @@ fi
 # ==== [10] 全量更新安装 feeds 并添加 luci-theme-neobird ====
 echo "🛠️ 正在执行 feeds update/install..."
 ./scripts/feeds clean
+./scripts/feeds update -a
+./scripts/feeds install -a
 
 echo "🌈 添加 luci-theme-neobird..."
 mkdir -p package/lean
 rm -rf package/lean/luci-theme-neobird
 git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
 
-./scripts/feeds update -a
-./scripts/feeds install -a
 ./remove_conflict.sh
 
 make defconfig
