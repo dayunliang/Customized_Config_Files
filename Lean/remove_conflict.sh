@@ -19,7 +19,7 @@ rm -rf package/feeds/istore/luci-app-LingTiGameAcc
 # 自动注释掉那一行
 if [ -f feeds/small/luci-app-ssr-plus/Makefile ]; then
     if grep -q "PACKAGE_$(PKG_NAME)_INCLUDE_DNS2SOCKS_RUST" feeds/small/luci-app-ssr-plus/Makefile; then
-        sed -i 's/^\s*+PACKAGE_$(PKG_NAME)_INCLUDE_DNS2SOCKS_RUST.*/#&/' feeds/small/luci-app-ssr-plus/Makefile
+        sed -i 's/^[[:space:]]*+PACKAGE_$(PKG_NAME)_INCLUDE_DNS2SOCKS_RUST/# &/' feeds/small/luci-app-ssr-plus/Makefile
         echo "✅ 已注释 dns2socks-rust 依赖"
     else
         echo "ℹ️ luci-app-ssr-plus 不包含 dns2socks-rust 依赖，跳过修改"
