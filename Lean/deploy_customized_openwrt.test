@@ -146,7 +146,51 @@ deploy_file() {
     safe_cp "$src" "$dst"        # 复制文件
 }
 
-# ==== [7] 部署配置文件 ====
+# ==== [7] 检查 luci feed（po2lmo 工具所在位置） ====
+if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
+    echo "⚠️  feeds.conf.default 缺少 luci 源，已自动追加"
+    echo "src-git luci https://github.com/coolsnowwolf/luci" >> feeds.conf.default
+fi
+
+# 更新 luci feed 并安装 luci-base（包含 po2lmo）
+./scripts/feeds update luci
+./scripts/feeds install luci-base
+
+# ==== [8] 全量更新安装 feeds 并添加 luci-theme-neobird ====
+echo "🛠️ 正在执行 feeds update/install..."
+./scripts/feeds clean
+./scripts/feeds update -a
+./scripts/feeds install -a
+
+echo "🌈 添加 luci-theme-neobird..."
+mkdir -p package/lean
+rm -rf package/lean/luci-theme-neobird
+git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
+
+# ==== [9] 编译 po2lmo 工具 ====
+echo "🛠️ 编译 po2lmo 工具..."
+make package/feeds/luci/luci-base/host/compile V=s
+
+# ==== [10] 首次构建可选下载源码包 ====
+read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
+if [[ "$is_first" =~ ^[Yy]$ ]]; then
+    echo "📥 开始预下载源码包..."
+    while true; do
+        make download -j8 V=s
+        broken=$(find dl -size -1024c)
+        if [ -z "$broken" ]; then
+            echo "✅ 下载完成且校验通过"
+            break
+        else
+            echo "⚠️ 检测到不完整文件，重新下载..."
+            find dl -size -1024c -exec rm -f {} \;
+        fi
+    done
+else
+    echo "✅ 跳过预下载，可直接 make -j\$(nproc) V=s"
+fi
+
+# ==== [11] 部署配置文件 ====
 echo "2. 部署 [$COMPILE_NAME] 编译版本配置文件..."
 
 # .config 文件（编译选项）
@@ -186,57 +230,13 @@ deploy_file "root 用户计划任务" "$TMP_DIR/Lean/files/etc/crontabs/root" ".
 deploy_file "去除编译循环冲突" "$TMP_DIR/Lean/remove_conflict.sh" "./remove_conflict.sh"
 chmod +x ./remove_conflict.sh || true
 
-# ==== [8] 删除临时目录 ====
+# ==== [12] 删除临时目录 ====
 echo "4. 删除临时目录 $TMP_DIR"
 rm -rf "$TMP_DIR"
-
-# ==== [9] 检查 luci feed（po2lmo 工具所在位置） ====
-if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
-    echo "⚠️  feeds.conf.default 缺少 luci 源，已自动追加"
-    echo "src-git luci https://github.com/coolsnowwolf/luci" >> feeds.conf.default
-fi
-
-# 更新 luci feed 并安装 luci-base（包含 po2lmo）
-./scripts/feeds update luci
-./scripts/feeds install luci-base
-
-# ==== [10] 全量更新安装 feeds 并添加 luci-theme-neobird ====
-echo "🛠️ 正在执行 feeds update/install..."
-./scripts/feeds clean
-./scripts/feeds update -a
-./scripts/feeds install -a
-
-echo "🌈 添加 luci-theme-neobird..."
-mkdir -p package/lean
-rm -rf package/lean/luci-theme-neobird
-git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
 
 ./remove_conflict.sh
 
 make defconfig
-
-# ==== [11] 编译 po2lmo 工具 ====
-echo "🛠️ 编译 po2lmo 工具..."
-make package/feeds/luci/luci-base/host/compile V=s
-
-# ==== [12] 首次构建可选下载源码包 ====
-read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
-if [[ "$is_first" =~ ^[Yy]$ ]]; then
-    echo "📥 开始预下载源码包..."
-    while true; do
-        make download -j8 V=s
-        broken=$(find dl -size -1024c)
-        if [ -z "$broken" ]; then
-            echo "✅ 下载完成且校验通过"
-            break
-        else
-            echo "⚠️ 检测到不完整文件，重新下载..."
-            find dl -size -1024c -exec rm -f {} \;
-        fi
-    done
-else
-    echo "✅ 跳过预下载，可直接 make -j\$(nproc) V=s"
-fi
 
 # ==== [13] 显示备份列表 ====
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
