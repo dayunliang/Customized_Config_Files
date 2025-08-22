@@ -3,16 +3,17 @@
 # iKuai Domestic IP Sync Tool
 #
 # 用于同步 GitHub 上的国内 IP 段到 iKuai 自定义运营商 (Domestic)
-# 支持 --dry-run 查看差异，不会真正更新
+# 支持 --dry-run 查看差异和 payload，不会真正更新
 #
 
 IKUAI_HOST="192.168.12.254"
 IKUAI_PROTO="https"
 COOKIE_FILE="/tmp/ikuai_cookie.txt"
 TMPDIR="/tmp/ikuai_domestic_sync"
-REMOTE_URL="https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt"
+#REMOTE_URL="https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt"
+REMOTE_URL="https://raw.githubusercontent.com/mayaxcn/china-ip-list/refs/heads/master/chnroute.txt"
 IKUAI_USER="admin"
-IKUAI_PASS="xxxxx"   # <<<<<< 在这里填入你的 iKuai 密码
+IKUAI_PASS="password"   # <<<<<< 在这里填入你的 iKuai 密码
 
 mkdir -p "$TMPDIR"
 
@@ -21,7 +22,7 @@ login() {
   echo ">>> 登录 iKuai..."
   PASS_MD5=$(echo -n "$IKUAI_PASS" | md5sum | awk '{print $1}')
   LOGIN_JSON=$(curl -skc "$COOKIE_FILE" -H "Content-Type: application/json" \
-    -d "{\"username\":\"$IKUAI_USER\",\"passwd\":\"$PASS_MD5\",\"pass\":\"$IKUAI_USER\"}" \
+    -d "{\"username\":\"$IKUAI_USER\",\"passwd\":\"$PASS_MD5\",\"pass\":\"$IKUAI_PASS\"}" \
     "${IKUAI_PROTO}://${IKUAI_HOST}/Action/login")
 
   if echo "$LOGIN_JSON" | grep -q '"Result":10000'; then
@@ -41,11 +42,20 @@ get_domestic_ids() {
   | jq -r '.Data.data[] | select(.name=="Domestic") | .id'
 }
 
+# 获取 Domestic 完整对象（包含 comment）
+get_domestic_obj() {
+  local id="$1"
+  curl -sk -b "$COOKIE_FILE" -H "Content-Type: application/json" -X POST \
+    -d '{"func_name":"custom_isp","action":"show","param":{"TYPE":"all","limit":"0,5000"}}' \
+    "${IKUAI_PROTO}://${IKUAI_HOST}/Action/call" \
+  | jq -c --argjson ID "$id" '.Data.data[] | select(.id==$ID)'
+}
+
 # 获取本地 Domestic IP 列表（传入 id）
 get_current_ip() {
   local id="$1"
   curl -sk -b "$COOKIE_FILE" -H "Content-Type: application/json" -X POST \
-    -d '{"func_name":"custom_isp","action":"show","param":{"TYPE":"total,data","limit":"0,5000"}}' \
+    -d '{"func_name":"custom_isp","action":"show","param":{"TYPE":"all","limit":"0,5000"}}' \
     "${IKUAI_PROTO}://${IKUAI_HOST}/Action/call" \
   | jq -r --argjson ID "$id" '.Data.data[] | select(.id==$ID) | .ipgroup' \
   | tr ',' '\n' \
@@ -61,36 +71,64 @@ get_remote_ip() {
   | grep -v '^$'
 }
 
-# 更新 Domestic (实际更新)
+# 更新 Domestic (实际更新 / Dry-run)
 update_isp() {
   local id="$1"
   local file="$2"
-  local name="Domestic"
-  local ipdata
+
+  # 获取当前对象（含 comment）
+  local current
+  current=$(get_domestic_obj "$id")
+
+  local comment
+  comment=$(echo "$current" | jq -r '.comment')
+
   ipdata=$(tr '\n' ',' < "$file" | sed 's/,$//')
 
   local payload="$TMPDIR/update_${id}.json"
-  cat > "$payload" <<EOF
+
+  if [[ -n "$comment" && "$comment" != "null" ]]; then
+    cat > "$payload" <<EOF
 {
   "func_name": "custom_isp",
   "action": "edit",
   "param": {
     "id": $id,
-    "name": "$name",
+    "name": "Domestic",
+    "comment": "$comment",
     "ipgroup": "$ipdata"
   }
 }
 EOF
+  else
+    cat > "$payload" <<EOF
+{
+  "func_name": "custom_isp",
+  "action": "edit",
+  "param": {
+    "id": $id,
+    "name": "Domestic",
+    "ipgroup": "$ipdata"
+  }
+}
+EOF
+  fi
 
-  curl -sk -b "$COOKIE_FILE" -H "Content-Type: application/json" \
-    --data-binary "@$payload" \
-    "${IKUAI_PROTO}://${IKUAI_HOST}/Action/call" | jq .
+  if [[ $dry_run -eq 1 ]]; then
+    echo ">>> [Dry-run] 将提交的 payload 内容如下："
+    cat "$payload" | jq .
+  else
+    echo ">>> 提交更新到 iKuai..."
+    curl -sk -b "$COOKIE_FILE" -H "Content-Type: application/json" \
+      --data-binary "@$payload" \
+      "${IKUAI_PROTO}://${IKUAI_HOST}/Action/call" | jq .
+  fi
 }
 
 # 获取本地总条目数
 get_local_total() {
   curl -sk -b "$COOKIE_FILE" -H "Content-Type: application/json" -X POST \
-    -d '{"func_name":"custom_isp","action":"show","param":{"TYPE":"total,data","limit":"0,5000"}}' \
+    -d '{"func_name":"custom_isp","action":"show","param":{"TYPE":"all","limit":"0,5000"}}' \
     "${IKUAI_PROTO}://${IKUAI_HOST}/Action/call" \
   | jq -r '.Data.data[] | select(.name=="Domestic") | .ipgroup' \
   | tr ',' '\n' \
@@ -109,7 +147,7 @@ get_remote_total() {
 
 # 主逻辑
 main() {
-  local dry_run=0
+  dry_run=0
   [[ "$1" == "--dry-run" ]] && dry_run=1
 
   login
@@ -154,7 +192,8 @@ main() {
         update_isp "$local_id" "$remote_file"
       fi
     else
-      echo ">>> Dry-run 模式，不执行更新"
+      echo ">>> Dry-run 模式，不执行更新，只展示 payload"
+      update_isp "$local_id" "$remote_file"
     fi
   done
 
