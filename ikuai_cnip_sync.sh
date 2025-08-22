@@ -12,7 +12,7 @@ COOKIE_FILE="/tmp/ikuai_cookie.txt"
 TMPDIR="/tmp/ikuai_domestic_sync"
 REMOTE_URL="https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt"
 IKUAI_USER="admin"
-IKUAI_PASS="Bairiyishanjin@1107"   # <<<<<< 在这里填入你的 iKuai 密码
+IKUAI_PASS="xxxxx"   # <<<<<< 在这里填入你的 iKuai 密码
 
 mkdir -p "$TMPDIR"
 
