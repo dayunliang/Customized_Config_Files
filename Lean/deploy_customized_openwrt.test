@@ -204,8 +204,8 @@ deploy_file "zzz-default-settings" "$TMP_DIR/Lean/zzz-default-settings.$COMPILE_
 
 # 回程路由脚本
 deploy_file "back-route-checkenv.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
-deploy_file "back-route-complete.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
-deploy_file "back-route-cron.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh" "./files/usr/bin/back-route-cron.sh"
+deploy_file "back-route-complete.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh.$COMPILE_NAME" "./files/usr/bin/back-route-complete.sh"
+deploy_file "back-route-cron.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh.$COMPILE_NAME" "./files/usr/bin/back-route-cron.sh"
 chmod +x ./files/usr/bin/back-route-*.sh || true
 
 # IPSec 配置
