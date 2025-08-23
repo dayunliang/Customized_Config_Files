@@ -10,6 +10,15 @@
 #   5. 多个 ID 更新时合并为一条通知，并显示每个分片的本地/远端条目数
 #
 
+# ====================== 前置依赖检查 ======================
+if ! command -v jq >/dev/null 2>&1; then
+  echo "❌ 未检测到 jq，请先安装 jq 后再运行脚本"
+  echo "   Alpine: apk add jq"
+  echo "   Debian/Ubuntu: apt install -y jq"
+  echo "   CentOS/RHEL: yum install -y jq"
+  exit 1
+fi
+
 # ====================== 基础配置 ======================
 
 IKUAI_HOST="192.168.12.254"     # iKuai 管理地址
