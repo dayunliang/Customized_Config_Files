@@ -1,6 +1,6 @@
 config service 'ipsec'
         option enabled '1'
-        option secret 'beverly'
+        option secret 'Beverly'
         option clientip '10.11.8.100/24'
 
 config ipsec_users
