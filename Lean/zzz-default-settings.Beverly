@@ -307,6 +307,60 @@ uci commit dropbear
 #/usr/bin/mdns-repeater eth1.50 eth1.80 eth1.90 &
 
 # =============================================================================
+# 16. WireGuard 默认配置与公私钥生成
+# =============================================================================
+WG_DIR="/etc/wireguard"
+WG_PRIV="$WG_DIR/privatekey"
+WG_PUB="$WG_DIR/publickey"
+
+# 创建目录并设置权限
+mkdir -p $WG_DIR
+chmod 700 $WG_DIR
+
+if [ ! -f "$WG_PRIV" ]; then
+    umask 077
+    wg genkey > "$WG_PRIV"
+    chmod 600 "$WG_PRIV"
+    wg pubkey < "$WG_PRIV" > "$WG_PUB"
+
+    # 配置 wg0 接口（默认监听 51820，可按需修改）
+    uci -q batch <<-EOF
+      set network.wg0="interface"
+      set network.wg0.proto='wireguard'
+      set network.wg0.private_key="$(cat $WG_PRIV)"
+      set network.wg0.listen_port='51820'
+      set network.wg0.addresses='10.0.0.1/24'
+      commit network
+EOF
+
+    uci -q batch <<-EOF
+      add network.wireguard_wg0
+      set network.@wireguard_wg0[-1].description='Riviera'
+      list allowed_ips='10.0.0.2/32'
+      list allowed_ips='10.29.2.0/24'
+      set network.@wireguard_wg0[-1].endpoint_port='51820'
+      commit network
+EOF
+
+    # 配置防火墙 zone，允许 WireGuard 流量
+    uci -q batch <<-EOF
+      add firewall.zone
+      set firewall.@zone[-1].name='wg'
+      set firewall.@zone[-1].input='ACCEPT'
+      set firewall.@zone[-1].forward='ACCEPT'
+      set firewall.@zone[-1].output='ACCEPT'
+      add_list firewall.@zone[-1].network='wg0'
+      add firewall.forwarding
+      set firewall.@forwarding[-1].src='wg'
+      set firewall.@forwarding[-1].dest='lan'
+      add firewall.forwarding
+      set firewall.@forwarding[-1].src='wg'
+      set firewall.@forwarding[-1].dest='wan'
+      commit firewall
+EOF
+fi
+
+# =============================================================================
 # 脚本执行完毕后删除自身，避免再次执行
 # =============================================================================
 rm -f /etc/uci-defaults/zzz-default-settings
