@@ -1,7 +1,7 @@
 config service 'ipsec'
         option enabled '1'
-        option secret 'beverly'
-        option clientip '10.29.3.100/24'
+        option secret 'DOITCHINA'
+        option clientip '192.168.2.100/24'
 
 config ipsec_users
         option enabled '1'
