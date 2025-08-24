@@ -333,14 +333,16 @@ if [ ! -f "$WG_PRIV" ]; then
       commit network
 EOF
 
-    uci -q batch <<-EOF
-      add network.wireguard_wg0
-      set network.@wireguard_wg0[-1].description='Riviera'
-      list allowed_ips='10.0.0.2/32'
-      list allowed_ips='10.29.2.0/24'
-      set network.@wireguard_wg0[-1].endpoint_port='51820'
-      commit network
-EOF
+    # 添加一个 peer 段（使用逐条 uci，避免 batch 丢失）
+    uci add network wireguard_wg0
+    uci set network.@wireguard_wg0[-1].description='Riviera'
+    uci add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.2/32'
+    uci add_list network.@wireguard_wg0[-1].allowed_ips='10.92.2.0/24'
+    uci add_list network.@wireguard_wg0[-1].allowed_ips='10.92.80.0/24'
+    uci add_list network.@wireguard_wg0[-1].allowed_ips='10.92.90.0/24'
+    uci set network.@wireguard_wg0[-1].endpoint_host='riviera.3322.org'
+    uci set network.@wireguard_wg0[-1].endpoint_port='51820'
+    uci commit network
 
     # 配置防火墙 zone，允许 WireGuard 流量
     uci -q batch <<-EOF
