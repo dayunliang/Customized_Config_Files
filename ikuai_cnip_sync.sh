@@ -15,6 +15,7 @@ IKUAI_PROTO="https"
 COOKIE_FILE="/tmp/ikuai_cookie.txt"
 TMPDIR="/tmp/ikuai_domestic_sync"
 REMOTE_URL="https://raw.githubusercontent.com/mayaxcn/china-ip-list/refs/heads/master/chnroute.txt"
+#REMOTE_URL="https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt"
 IKUAI_USER="admin"
 IKUAI_PASS="password"
 
