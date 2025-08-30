@@ -86,13 +86,25 @@ update_isp() {
   payload="$TMPDIR/update_${id}.json"
 
   if [[ -n "$comment" && "$comment" != "null" ]]; then
-    cat > "$payload" <<EOF
+    if [[ -n "$ipdata" ]]; then
+      cat > "$payload" <<EOF
 {"func_name":"custom_isp","action":"edit","param":{"id":$id,"name":"Domestic","comment":"$comment","ipgroup":"$ipdata"}}
 EOF
+    else
+      cat > "$payload" <<EOF
+{"func_name":"custom_isp","action":"edit","param":{"id":$id,"name":"Domestic","comment":"$comment"}}
+EOF
+    fi
   else
-    cat > "$payload" <<EOF
+    if [[ -n "$ipdata" ]]; then
+      cat > "$payload" <<EOF
 {"func_name":"custom_isp","action":"edit","param":{"id":$id,"name":"Domestic","ipgroup":"$ipdata"}}
 EOF
+    else
+      cat > "$payload" <<EOF
+{"func_name":"custom_isp","action":"edit","param":{"id":$id,"name":"Domestic"}}
+EOF
+    fi
   fi
 
   if [[ $dry_run -eq 1 ]]; then
@@ -137,7 +149,7 @@ main() {
   echo "$REMOTE_IP" | tail -n +5001 > "$TMPDIR/remote_part2.txt"
 
   before_count=$(get_local_total)
-  total_diff=0
+  updated_flag=0   # 标记是否有更新
 
   for ((i=0;i<2;i++)); do
     local_id=${DOMESTIC_IDS[$i]}
@@ -145,17 +157,18 @@ main() {
     local_file="$TMPDIR/local$((i+1)).txt"
     get_current_ip "$local_id" > "$local_file"
 
-    if [[ -s "$local_file" ]]; then
-      diff_count=$(comm -3 <(sort "$local_file") <(sort "$remote_file") | wc -l)
+    # === 差异检测：用 cmp 判断两个文件是否完全一致 ===
+    if cmp -s "$local_file" "$remote_file"; then
+      diff_flag=0
     else
-      diff_count=$(wc -l < "$remote_file")
+      diff_flag=1
     fi
-    total_diff=$((total_diff+diff_count))
 
-    if [[ $dry_run -eq 0 && $diff_count -gt 0 ]]; then
+    if [[ $dry_run -eq 0 && $diff_flag -eq 1 ]]; then
       update_isp "$local_id" "$remote_file"
+      updated_flag=1
     elif [[ $dry_run -eq 1 ]]; then
-      echo ">>> Dry-run: ID=$local_id 差异=$diff_count"
+      echo ">>> Dry-run: ID=$local_id ${diff_flag:+有差异}"
       update_isp "$local_id" "$remote_file"
     fi
   done
@@ -163,12 +176,19 @@ main() {
   after_count=$(get_local_total)
   remote_count=$(get_remote_total)
 
-  if [[ $total_diff -eq 0 ]]; then
+  if [[ $updated_flag -eq 0 ]]; then
     echo ">>> [结果] 无更新"
     echo "Local=$before_count  Remote=$remote_count"
   else
-    echo ">>> [结果] 有更新，共 $total_diff 条"
+    echo ">>> [结果] 有更新"
     echo "更新前=$before_count  更新后=$after_count"
+
+    # === 微信推送（只在有更新时发送，带换行） ===
+    msg="有更新  
+更新前=$before_count  
+更新后=$after_count  
+执行时间：$(date '+%Y-%m-%d %H:%M:%S')"
+    notify_wechat "$msg"
   fi
 
   echo ">>> 完成"
