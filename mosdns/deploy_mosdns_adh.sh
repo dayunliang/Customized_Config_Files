@@ -176,8 +176,8 @@ cleanup_environment
 # --------------------------------------------------------------------------
 echo "[8/14] 部署 adh_cn..."
 mkdir -p "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn -o "$ADH_CN_DIR/docker-compose.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn -o "$ADH_CN_DIR/docker-compose.yaml"
 cd "$ADH_CN_DIR"
 docker-compose up -d --force-recreate   # 强制重新创建并启动容器
 
@@ -186,8 +186,8 @@ docker-compose up -d --force-recreate   # 强制重新创建并启动容器
 # --------------------------------------------------------------------------
 echo "[9/14] 部署 adh_gfw..."
 mkdir -p "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw -o "$ADH_GFW_DIR/docker-compose.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw -o "$ADH_GFW_DIR/docker-compose.yaml"
 cd "$ADH_GFW_DIR"
 docker-compose up -d --force-recreate
 
@@ -196,8 +196,8 @@ docker-compose up -d --force-recreate
 # --------------------------------------------------------------------------
 echo "[10/14] 下载 MosDNS 配置及 update.sh..."
 cd "$MOSDNS_DIR"
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns -o ./docker-compose.yaml
-curl -fsSL https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh -o ./update.sh
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns -o ./docker-compose.yaml
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh -o ./update.sh
 chmod +x update.sh
 ./update.sh   # 初次执行更新脚本
 
@@ -220,7 +220,7 @@ mkdir -p "$MOSDNS_DIR/rules-dat"
 mkdir -p "$MOSDNS_DIR/config/rule"
 cd "$MOSDNS_DIR/config"
 for f in config_custom.yaml dns.yaml dat_exec.yaml; do
-  curl -fsSL "https://goppx.com/https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$f"
+  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$f"
 done
 cd rule
 : > whitelist.txt
