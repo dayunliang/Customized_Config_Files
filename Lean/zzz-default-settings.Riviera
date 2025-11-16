@@ -221,13 +221,11 @@ uci set firewall.@redirect[-1].proto='tcpudp'
 uci set firewall.@redirect[-1].target='DNAT'
 uci set firewall.@redirect[-1].dest_port='53'
 
-# 12.8 WAN 白名单：10.29.2.0/24 允许访问 22/80/443
+# 12.8 WAN 白名单：10.29.2.0/24 不限端口放行
 uci add firewall.rule
 uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
 uci set firewall.@rule[-1].src='wan'
 uci set firewall.@rule[-1].src_ip='10.29.2.0/24'
-uci set firewall.@rule[-1].proto='tcp'
-uci set firewall.@rule[-1].dest_port='22 80 443'
 uci set firewall.@rule[-1].target='ACCEPT'
 uci set firewall.@rule[-1].family='ipv4'
 
@@ -260,7 +258,17 @@ uci -q batch << 'EOF'
   add network wireguard_wg0
   set network.@wireguard_wg0[-1].description='Beverly'
   set network.@wireguard_wg0[-1].public_key='HR8WnvOBHDjjO0drG+W2XbhStkVOFfLL6gmUjfycWH8='
-  set network.@wireguard_wg0[-1].endpoint_host='be
+  set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.sbs'
+  set network.@wireguard_wg0[-1].endpoint_port='58120'
+  set network.@wireguard_wg0[-1].persistent_keepalive='25'
+  set network.@wireguard_wg0[-1].route_allowed_ips='1'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.1/32'
+  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.12.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.80.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.90.0/24'
+EOF
+
+uci commit network
 
 # =============================================================================
 # 15. 脚本执行完毕后删除自身，避免再次执行
