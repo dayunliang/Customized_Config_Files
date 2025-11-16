@@ -4465,7 +4465,7 @@ CONFIG_WOLFSSL_HAS_OCSP=y
 CONFIG_WOLFSSL_HAS_WPAS=y
 CONFIG_WOLFSSL_HAS_ECC25519=y
 # CONFIG_WOLFSSL_HAS_ECC448 is not set
-CONFIG_WOLFSSL_HAS_OPENVPN=y
+# CONFIG_WOLFSSL_HAS_OPENVPN=y
 CONFIG_WOLFSSL_ALT_NAMES=y
 # end of wolfSSL Library Configuration
 
@@ -6231,7 +6231,7 @@ CONFIG_PACKAGE_ip-full=y
 # CONFIG_PACKAGE_softethervpn5-client is not set
 # CONFIG_PACKAGE_softethervpn5-server is not set
 # CONFIG_PACKAGE_sstp-client is not set
-CONFIG_PACKAGE_strongswan=y
+# CONFIG_PACKAGE_strongswan=y
 
 #
 # Configuration
