@@ -209,9 +209,9 @@ deploy_file "back-route-cron.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh
 chmod +x ./files/usr/bin/back-route-*.sh || true
 
 # IPSec 配置
-deploy_file "IPSec 配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf.$COMPILE_NAME" "./files/etc/ipsec.conf"
-deploy_file "IPSec 密码文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets.$COMPILE_NAME" "./files/etc/ipsec.secrets"
-deploy_file "IPSec Web 配置" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server.$COMPILE_NAME" "./files/etc/config/luci-app-ipsec-server"
+#deploy_file "IPSec 配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf.$COMPILE_NAME" "./files/etc/ipsec.conf"
+#deploy_file "IPSec 密码文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets.$COMPILE_NAME" "./files/etc/ipsec.secrets"
+#deploy_file "IPSec Web 配置" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server.$COMPILE_NAME" "./files/etc/config/luci-app-ipsec-server"
 
 # OpenClash 配置和规则
 deploy_file "Openclash 配置" "$TMP_DIR/Lean/files/etc/config/openclash.$COMPILE_NAME" "./files/etc/config/openclash"
