@@ -86,28 +86,29 @@ sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 
 # =============================================================================
-# 11. 网络与 DHCP 静态设置（针对 IPv4） + 取消 LAN 桥接 + 彻底关闭 IPv6
+# 11. 网络与 DHCP 静态设置（针对 IPv4） + 保持 DSA 桥接 + 彻底关闭 IPv6
 # =============================================================================
 # 说明：
-#  - 原有 br-lan 桥接已删除，LAN 仅使用 eth0
-#  - LAN: 10.29.122.144/24，不分配任何 IPv6 前缀
-#  - WAN: 10.29.2.144/24，网关 10.29.2.1，DNS 10.29.2.10,10.29.2.11
+#  - 保留 DSA 默认的 br-lan 桥，LAN 绑定 device=br-lan（桥里只有 eth0）
+#  - LAN: 10.29.122.144/24，不提供 DHCP（由 iKuai 提供），禁用 IPv6
+#  - WAN: 10.29.2.144/24，网关 10.29.2.1，DNS 10.29.2.10
 #  - 内核层面与 odhcpd 层面都禁用 IPv6
 
-# 删除旧的 lan.ifname 列表和类型（取消桥接）
+# 清理旧的 swconfig 风格字段
 uci delete network.lan.ifname 2>/dev/null || true
 uci delete network.lan.type   2>/dev/null || true
+uci delete network.wan.ifname 2>/dev/null || true
 
-# 配置 LAN 为纯 eth0 静态 IP
-uci set network.lan.ifname='eth0'
+# ===== LAN：br-lan + 静态 IPv4 =====
+uci set network.lan.device='br-lan'
 uci set network.lan.proto='static'
 uci set network.lan.ipaddr='10.29.122.144'
 uci set network.lan.netmask='255.255.255.0'
 
-# 禁用 LAN 分配任何 IPv6 前缀
+# 禁用 LAN IPv6 前缀分配
 uci set network.lan.ip6assign='0'
 
-# 配置 DHCP: lan 段禁止 DHCPv6/RA，且关闭 IPv4 DHCP 服务（由 iKuai 统一提供）
+# DHCP：LAN 不发 IPv4 DHCP，也禁用 DHCPv6/RA
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
 uci set dhcp.lan.ignore='1'
@@ -115,9 +116,8 @@ uci set dhcp.lan.dhcpv6='disabled'
 uci set dhcp.lan.ra='disabled'
 uci set dhcp.lan.ra_management='0'
 
-# WAN 配置
-uci delete network.wan.ifname 2>/dev/null || true
-uci set network.wan.ifname='eth1'
+# ===== WAN：eth1 + 静态 IPv4 =====
+uci set network.wan.device='eth1'
 uci set network.wan.proto='static'
 uci set network.wan.ipaddr='10.29.2.144'
 uci set network.wan.netmask='255.255.255.0'
@@ -125,26 +125,21 @@ uci set network.wan.gateway='10.29.2.1'
 uci set network.wan.dns='10.29.2.10'
 uci set network.wan.broadcast='10.29.2.255'
 
-# 保存并应用（第一次）
 uci commit network
 uci commit dhcp
 
-# 禁用 WAN 分配任何 IPv6 前缀（可选）
-uci set network.wan.ip6assign='0'
-
-# 删除默认 wan6（IPv6 WAN）接口及其 DHCP 配置
+# 删除默认 wan6 接口及其 DHCP 配置
 uci delete network.wan6  2>/dev/null
 uci delete dhcp.wan6     2>/dev/null
-
 uci commit network
 uci commit dhcp
 
-# 删除 ip6assign 字段，让 LuCI 显示“已禁用”
+# 为了 LuCI 显示“已禁用”，清理 ip6assign 字段
 uci delete network.lan.ip6assign 2>/dev/null
 uci delete network.wan.ip6assign 2>/dev/null
 uci commit network
 
-# 重启 network 服务，使静态 IPv4 + lan DHCPv6/RA 禁用立即生效
+# 重启网络服务
 /etc/init.d/network restart
 
 # —— 内核层面彻底禁用 IPv6 + 停用 odhcpd 服务 —— 
@@ -154,81 +149,87 @@ net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 EOF
 
-# 立即加载 sysctl，使内核层面禁用 IPv6 生效
 sysctl -p >/dev/null 2>&1
 
-# 停用 odhcpd 服务，并禁止其开机自启，彻底关闭 DHCPv6/RA
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
 
 # =============================================================================
-# 12. 防火墙策略设置与 DNS 重定向（fw3）
+# 12. 防火墙策略设置（fw3）
 #      - 默认：input/drop, forward/drop, output/accept
-#      - LAN：全部 ACCEPT（本地管理）
-#      - WAN：默认拒绝，仅白名单网段可访问本机
-#      - WG：单独创建 zone（wg），允许 wg → lan / wg → wan
+#      - zone：lan / wan / wg0 三个
+#      - 转发：lan→wg0、wg0→lan
+#      - WAN 白名单：10.29.2.0/24 可访问本机 22/80/443
 # =============================================================================
 
-# 12.1 默认策略：INPUT/FORWARD DROP，OUTPUT ACCEPT
+# 12.1 默认策略
 uci set firewall.@defaults[0].input='DROP'
 uci set firewall.@defaults[0].forward='DROP'
 uci set firewall.@defaults[0].output='ACCEPT'
 
-# 12.2 LAN 区域：全部 ACCEPT（用于本地管理）
-# 一般情况下 firewall.@zone[0] 为 lan，如有变动可在运行环境中调整
-uci set firewall.@zone[0].input='ACCEPT'
-uci set firewall.@zone[0].output='ACCEPT'
-uci set firewall.@zone[0].forward='ACCEPT'
+# 12.2 清理旧 zone / forwarding（避免残留）
+uci -q delete firewall.lan
+uci -q delete firewall.wan
+uci -q delete firewall.wg0
+while uci -q delete firewall.@forwarding[0]; do :; done
 
-# 12.3 WAN 区域：入站/转发默认 DROP，仅出站 ACCEPT
-# 一般情况下 firewall.@zone[1] 为 wan
-uci set firewall.@zone[1].input='DROP'
-uci set firewall.@zone[1].output='ACCEPT'
-uci set firewall.@zone[1].forward='DROP'
+# 12.3 重建 lan zone
+uci add firewall.zone
+uci rename firewall.@zone[-1]='lan'
+uci set firewall.lan.name='lan'
+uci set firewall.lan.input='ACCEPT'
+uci set firewall.lan.output='ACCEPT'
+uci set firewall.lan.forward='ACCEPT'
+uci set firewall.lan.network='lan'
 
-# 12.4 DNS 重定向：拦截所有 TCP/UDP 53 端口并 DNAT 到本机 53
-uci -q batch <<-EOF
-  add firewall.redirect
-  set firewall.@redirect[-1].name='dns_redirect'
-  set firewall.@redirect[-1].src='*'
-  set firewall.@redirect[-1].src_dport='53'
-  set firewall.@redirect[-1].family='ipv4'
-  set firewall.@redirect[-1].proto='tcpudp'
-  set firewall.@redirect[-1].target='DNAT'
-  set firewall.@redirect[-1].dest_port='53'
-EOF
+# 12.4 重建 wan zone（NAT）
+uci add firewall.zone
+uci rename firewall.@zone[-1]='wan'
+uci set firewall.wan.name='wan'
+uci set firewall.wan.input='REJECT'
+uci set firewall.wan.output='ACCEPT'
+uci set firewall.wan.forward='REJECT'
+uci set firewall.wan.masq='1'
+uci set firewall.wan.mtu_fix='1'
+uci set firewall.wan.network='wan'
 
-# 12.5 WAN 白名单：
-#      仅允许 10.29.2.0/24 与 10.29.90.0/24 从 WAN 接口访问本机（任意端口）
+# 12.5 重建 wg0 zone
+uci add firewall.zone
+uci rename firewall.@zone[-1]='wg0'
+uci set firewall.wg0.name='wg0'
+uci set firewall.wg0.input='ACCEPT'
+uci set firewall.wg0.output='ACCEPT'
+uci set firewall.wg0.forward='ACCEPT'
+uci set firewall.wg0.network='wg0'
+
+# 12.6 转发关系：lan→wg0、wg0→lan
+uci add firewall.forwarding
+uci set firewall.@forwarding[-1].src='lan'
+uci set firewall.@forwarding[-1].dest='wg0'
+
+uci add firewall.forwarding
+uci set firewall.@forwarding[-1].src='wg0'
+uci set firewall.@forwarding[-1].dest='lan'
+
+# 12.7 DNS 重定向：拦截所有 TCP/UDP 53 到本机 53（仅 IPv4）
+uci add firewall.redirect
+uci set firewall.@redirect[-1].name='dns_redirect'
+uci set firewall.@redirect[-1].src='*'
+uci set firewall.@redirect[-1].src_dport='53'
+uci set firewall.@redirect[-1].family='ipv4'
+uci set firewall.@redirect[-1].proto='tcpudp'
+uci set firewall.@redirect[-1].target='DNAT'
+uci set firewall.@redirect[-1].dest_port='53'
+
+# 12.8 WAN 白名单：10.29.2.0/24 允许访问 22/80/443
 uci add firewall.rule
-uci set firewall.@rule[-1].name='Allow-WhiteList-10.29.2.0-24'
+uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
 uci set firewall.@rule[-1].src='wan'
 uci set firewall.@rule[-1].src_ip='10.29.2.0/24'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].dest_port='22 80 443'
 uci set firewall.@rule[-1].target='ACCEPT'
-
-uci add firewall.rule
-uci set firewall.@rule[-1].name='Allow-WhiteList-10.29.90.0-24'
-uci set firewall.@rule[-1].src='wan'
-uci set firewall.@rule[-1].src_ip='10.29.90.0/24'
-uci set firewall.@rule[-1].target='ACCEPT'
-
-# 12.6 WG 区域：创建 wg zone，并允许 wg → lan / wg → wan
-uci -q batch << 'EOF'
-  add firewall.zone
-  set firewall.@zone[-1].name='wg'
-  set firewall.@zone[-1].input='ACCEPT'
-  set firewall.@zone[-1].output='ACCEPT'
-  set firewall.@zone[-1].forward='ACCEPT'
-  add_list firewall.@zone[-1].network='wg0'
-
-  add firewall.forwarding
-  set firewall.@forwarding[-1].src='wg'
-  set firewall.@forwarding[-1].dest='lan'
-
-  add firewall.forwarding
-  set firewall.@forwarding[-1].src='wg'
-  set firewall.@forwarding[-1].dest='wan'
-EOF
+uci set firewall.@rule[-1].family='ipv4'
 
 uci commit firewall
 /etc/init.d/firewall restart
@@ -249,8 +250,8 @@ uci -q batch << 'EOF'
   set network.wg0='interface'
   set network.wg0.proto='wireguard'
   set network.wg0.private_key='cG7D/+cChdDJiCgVONWwiQ29I1Diebi8biaLFruX4nA='
-  set network.wg0.listen_port='51820'
-  set network.wg0.addresses='10.0.0.2/24'
+  set network.wg0.listen_port='58120'
+  list network.wg0.addresses='10.0.0.2/24'
 
   # 清理旧 peer（如果存在）
   delete network.@wireguard_wg0[0]
@@ -259,17 +260,7 @@ uci -q batch << 'EOF'
   add network wireguard_wg0
   set network.@wireguard_wg0[-1].description='Beverly'
   set network.@wireguard_wg0[-1].public_key='HR8WnvOBHDjjO0drG+W2XbhStkVOFfLL6gmUjfycWH8='
-  set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.sbs'
-  set network.@wireguard_wg0[-1].endpoint_port='51820'
-  set network.@wireguard_wg0[-1].persistent_keepalive='25'
-  set network.@wireguard_wg0[-1].route_allowed_ips='1'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.1/32'
-  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.12.0/24'
-  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.80.0/24'
-  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.90.0/24'
-EOF
-
-uci commit network
+  set network.@wireguard_wg0[-1].endpoint_host='be
 
 # =============================================================================
 # 15. 脚本执行完毕后删除自身，避免再次执行
