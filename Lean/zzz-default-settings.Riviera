@@ -222,60 +222,55 @@ uci delete dropbear.@dropbear[0].Interface
 uci commit dropbear
 
 # =============================================================================
-# 14. WireGuard 默认配置与公私钥生成
+# 14. 固定 WireGuard 配置（使用当前运行的公私钥）
 # =============================================================================
-WG_DIR="/etc/wireguard"
-WG_PRIV="$WG_DIR/privatekey"
-WG_PUB="$WG_DIR/publickey"
 
-# 创建目录并设置权限
-mkdir -p $WG_DIR
-chmod 700 $WG_DIR
+uci -q batch << 'EOF'
+  # wg0 主接口
+  set network.wg0='interface'
+  set network.wg0.proto='wireguard'
+  set network.wg0.private_key='cG7D/+cChdDJiCgVONWwiQ29I1Diebi8biaLFruX4nA='
+  set network.wg0.listen_port='51820'
+  set network.wg0.addresses='10.0.0.2/24'
 
-if [ ! -f "$WG_PRIV" ]; then
-    umask 077
-    wg genkey > "$WG_PRIV"
-    chmod 600 "$WG_PRIV"
-    wg pubkey < "$WG_PRIV" > "$WG_PUB"
+  # 清理旧 peer（如果存在）
+  delete network.@wireguard_wg0[0]
 
-    # 配置 wg0 接口（默认监听 51820，可按需修改）
-    uci -q batch <<-EOF
-      set network.wg0="interface"
-      set network.wg0.proto='wireguard'
-      set network.wg0.private_key="$(cat $WG_PRIV)"
-      set network.wg0.listen_port='51820'
-      set network.wg0.addresses='10.0.0.2/24'
-      commit network
+  # 添加 Beverly 作为 peer
+  add network wireguard_wg0
+  set network.@wireguard_wg0[-1].description='Beverly'
+  set network.@wireguard_wg0[-1].public_key='HR8WnvOBHDjjO0drG+W2XbhStkVOFfLL6gmUjfycWH8='
+  set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.sbs'
+  set network.@wireguard_wg0[-1].endpoint_port='51820'
+  set network.@wireguard_wg0[-1].persistent_keepalive='25'
+  set network.@wireguard_wg0[-1].route_allowed_ips='1'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.1/32'
+  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.12.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.80.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='192.168.90.0/24'
 EOF
 
-    # 添加一个 peer 段（使用逐条 uci，避免 batch 丢失）
-    uci add network wireguard_wg0
-    uci set network.@wireguard_wg0[-1].description='Beverly'
-    uci add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.1/32'
-    uci add_list network.@wireguard_wg0[-1].allowed_ips='192.168.12.0/24'
-    uci add_list network.@wireguard_wg0[-1].allowed_ips='192.168.80.0/24'
-    uci add_list network.@wireguard_wg0[-1].allowed_ips='192.168.90.0/24'
-    uci set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.sbs'
-    uci set network.@wireguard_wg0[-1].endpoint_port='51820'
-    uci commit network
+uci commit network
 
-    # 配置防火墙 zone，允许 WireGuard 流量
-    uci -q batch <<-EOF
-      add firewall.zone
-      set firewall.@zone[-1].name='wg'
-      set firewall.@zone[-1].input='ACCEPT'
-      set firewall.@zone[-1].forward='ACCEPT'
-      set firewall.@zone[-1].output='ACCEPT'
-      add_list firewall.@zone[-1].network='wg0'
-      add firewall.forwarding
-      set firewall.@forwarding[-1].src='wg'
-      set firewall.@forwarding[-1].dest='lan'
-      add firewall.forwarding
-      set firewall.@forwarding[-1].src='wg'
-      set firewall.@forwarding[-1].dest='wan'
-      commit firewall
+# 防火墙（zone：wg）
+uci -q batch << 'EOF'
+  add firewall.zone
+  set firewall.@zone[-1].name='wg'
+  set firewall.@zone[-1].input='ACCEPT'
+  set firewall.@zone[-1].output='ACCEPT'
+  set firewall.@zone[-1].forward='ACCEPT'
+  add_list firewall.@zone[-1].network='wg0'
+
+  add firewall.forwarding
+  set firewall.@forwarding[-1].src='wg'
+  set firewall.@forwarding[-1].dest='lan'
+
+  add firewall.forwarding
+  set firewall.@forwarding[-1].src='wg'
+  set firewall.@forwarding[-1].dest='wan'
 EOF
-fi
+
+uci commit firewall
 
 # =============================================================================
 # 15. 脚本执行完毕后删除自身，避免再次执行
