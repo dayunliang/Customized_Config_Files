@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# 要检查的 WireGuard 接口和对端 DDNS
+WG_IF="wg0"
+PEER_DDNS="beverly.b-gfw.sbs"
+
+# 1. 解析 DDNS 当前 IP
+NEW_IP=$(nslookup "$PEER_DDNS" 2>/dev/null | awk '/Address [0-9]/{print $3; exit}')
+
+# 如果解析失败就算了，不动 WG，避免误操作
+[ -z "$NEW_IP" ] && exit 0
+
+# 2. 读取当前 WG 正在使用的 endpoint IP
+CURRENT_IP=$(wg show "$WG_IF" 2>/dev/null | awk '/endpoint:/{print $2}' | cut -d: -f1)
+
+# 如果当前没有 endpoint（还没连上），也视为需要尝试刷新
+if [ -z "$CURRENT_IP" ]; then
+    logger -t wg-ddns "No current endpoint, restarting $WG_IF (DDNS=$PEER_DDNS -> $NEW_IP)"
+    ifdown "$WG_IF" 2>/dev/null
+    ifup "$WG_IF"
+    exit 0
+fi
+
+# 3. 对比 IP，如果不一样就重启 WG 接口
+if [ "$NEW_IP" != "$CURRENT_IP" ]; then
+    logger -t wg-ddns "Endpoint changed: $CURRENT_IP -> $NEW_IP, restarting $WG_IF"
+    ifdown "$WG_IF" 2>/dev/null
+    ifup "$WG_IF"
+fi
+
+# 一样就什么都不做，安静退出
+exit 0
