@@ -223,6 +223,10 @@ chmod +x ./files/etc/openclash/dns_enable_false.sh || true
 deploy_file "Openclash 节点配置脚本" "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh" "./files/usr/share/openclash/yml_proxys_set.sh"
 chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
 
+# WireGuard 网络接口刷新脚本
+deploy_file "WireGuard_Refresh.sh" "$TMP_DIR/Lean/files/usr/bin/WireGuard_Refresh.sh.$COMPILE_NAME" "./files/usr/bin/WireGuard_Refresh.sh"
+chmod +x ./files/usr/bin/WireGuard_Refresh.sh || true
+
 # 其它网络加速、计划任务等配置
 deploy_file "ShadowSocksR Plus+ 配置" "$TMP_DIR/Lean/files/etc/config/shadowsocksr" "./files/etc/config/shadowsocksr"
 deploy_file "Turbo ACC 网络加速配置" "$TMP_DIR/Lean/files/etc/config/turboacc" "./files/etc/config/turboacc"
