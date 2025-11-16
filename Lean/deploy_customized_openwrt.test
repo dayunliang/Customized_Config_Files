@@ -240,7 +240,27 @@ rm -rf "$TMP_DIR"
 
 ./remove_conflict.sh
 
+echo "=== 调试：make defconfig 前 .config 中的 ssr-plus ==="
+grep -n 'luci-app-ssr-plus' .config || echo "make defconfig 前 .config 中没有 ssr-plus"
+
 make defconfig
+
+echo "=== 调试：make defconfig 后 .config 中的 ssr-plus ==="
+grep -n 'luci-app-ssr-plus' .config || echo "make defconfig 后 .config 中没有 ssr-plus"
+
+echo "=== 强制关闭 luci-app-ssr-plus 及其中文包 ==="
+sed -i '/CONFIG_PACKAGE_luci-app-ssr-plus/d' .config
+sed -i '/CONFIG_PACKAGE_luci-i18n-ssr-plus-zh-cn/d' .config
+sed -i '/CONFIG_DEFAULT_luci-app-ssr-plus/d' .config
+
+cat >> .config <<'EOF'
+# CONFIG_PACKAGE_luci-app-ssr-plus is not set
+# CONFIG_PACKAGE_luci-i18n-ssr-plus-zh-cn is not set
+# CONFIG_DEFAULT_luci-app-ssr-plus is not set
+EOF
+
+echo "=== 最终确认 .config 中的 ssr-plus 配置 ==="
+grep -n 'luci-app-ssr-plus' .config || echo "最终 .config 中已经没有 ssr-plus 相关选项"
 
 # ==== [13] 显示备份列表 ====
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
