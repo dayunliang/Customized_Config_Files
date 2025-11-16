@@ -41,24 +41,26 @@ rm -f /usr/lib/lua/luci/view/admin_status/index/{mwan,upnp,ddns,minidlna}.htm
 # 5. 重命名 “Services” 菜单为 “NAS”
 # =============================================================================
 for ctl in aria2 hd_idle samba samba4 minidlna transmission mjpg-streamer p910nd usb_printer xunlei; do
-          sed -i 's/"services"/"nas"/g' /usr/lib/lua/luci/controller/${ctl}.lua
-  done
-  for view in overview_status minidlna_status; do
-            sed -i 's/services/nas/g' /usr/lib/lua/luci/view/${view}.htm
-    done
+  [ -f "/usr/lib/lua/luci/controller/${ctl}.lua" ] && \
+    sed -i 's/"services"/"nas"/g' /usr/lib/lua/luci/controller/${ctl}.lua
+done
+for view in overview_status minidlna_status; do
+  [ -f "/usr/lib/lua/luci/view/${view}.htm" ] && \
+    sed -i 's/services/nas/g' /usr/lib/lua/luci/view/${view}.htm
+done
 
 # =============================================================================
 # 6. 更换 OPKG 源为阿里云，注释第三方源
 # =============================================================================
 sed -i 's|https://downloads.openwrt.org|https://mirrors.aliyun.com/openwrt|g' /etc/opkg/distfeeds.conf
-sed -i '/smpackage/s/^/#/' /etc/opkg/distfeeds.conf
-sed -i '/kenzo/s/^/#/'    /etc/opkg/distfeeds.conf
-sed -i '/small/s/^/#/'    /etc/opkg/distfeeds.conf
-sed -i '/openwrt_istore/s|^|#|' /etc/opkg/distfeeds.conf
-sed -i '/check_signature/s/^/#/' /etc/opkg.conf
+sed -i '/smpackage/s/^/#/'         /etc/opkg/distfeeds.conf
+sed -i '/kenzo/s/^/#/'             /etc/opkg/distfeeds.conf
+sed -i '/small/s/^/#/'             /etc/opkg/distfeeds.conf
+sed -i '/openwrt_istore/s|^|#|'    /etc/opkg/distfeeds.conf
+sed -i '/check_signature/s/^/#/'   /etc/opkg.conf
 
 # =============================================================================
-# 7. 重置 root 密码
+# 7. 重置 root 密码（默认 admin / password 方案请按需调整）
 # =============================================================================
 sed -i 's#root::0:0:99999:7:::#root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::#g' /etc/shadow
 
@@ -93,8 +95,8 @@ echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 #  - 内核层面与 odhcpd 层面都禁用 IPv6
 
 # 删除旧的 lan.ifname 列表和类型（取消桥接）
-uci delete network.lan.ifname || true
-uci delete network.lan.type   || true
+uci delete network.lan.ifname 2>/dev/null || true
+uci delete network.lan.type   2>/dev/null || true
 
 # 配置 LAN 为纯 eth0 静态 IP
 uci set network.lan.ifname='eth0'
@@ -105,7 +107,7 @@ uci set network.lan.netmask='255.255.255.0'
 # 禁用 LAN 分配任何 IPv6 前缀
 uci set network.lan.ip6assign='0'
 
-# 配置 DHCP: lan 段禁止 DHCPv6/RA，且关闭 IPv4 DHCP 服务
+# 配置 DHCP: lan 段禁止 DHCPv6/RA，且关闭 IPv4 DHCP 服务（由 iKuai 统一提供）
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
 uci set dhcp.lan.ignore='1'
@@ -114,41 +116,33 @@ uci set dhcp.lan.ra='disabled'
 uci set dhcp.lan.ra_management='0'
 
 # WAN 配置
-uci delete network.wan.ifname || true
+uci delete network.wan.ifname 2>/dev/null || true
 uci set network.wan.ifname='eth1'
 uci set network.wan.proto='static'
 uci set network.wan.ipaddr='10.29.2.144'
 uci set network.wan.netmask='255.255.255.0'
 uci set network.wan.gateway='10.29.2.1'
-uci set network.wan.dns='10.29.2.10 10.29.2.11'
+uci set network.wan.dns='10.29.2.10'
 uci set network.wan.broadcast='10.29.2.255'
 
-# 保存并应用
+# 保存并应用（第一次）
 uci commit network
 uci commit dhcp
 
 # 禁用 WAN 分配任何 IPv6 前缀（可选）
 uci set network.wan.ip6assign='0'
 
-# ========== 新增：删除默认 wan6（IPv6 WAN）接口及其 DHCP 配置 ==========
-uci delete network.wan6 2>/dev/null
-uci delete dhcp.wan6 2>/dev/null
+# 删除默认 wan6（IPv6 WAN）接口及其 DHCP 配置
+uci delete network.wan6  2>/dev/null
+uci delete dhcp.wan6     2>/dev/null
 
 uci commit network
 uci commit dhcp
 
-# ───────────────────────────────────────────────────
-# 禁用 LAN 的 IPv6 前缀分配字段
-# 删除 ip6assign 选项，让 LuCI 显示“已禁用”
-uci delete network.lan.ip6assign
-
-# 禁用 WAN6 的自动获取字段
-# （对于自动获取 IPv6 前缀的接口，删除 auto 也能让其变为“未指定”）
-uci delete network.wan.ip6assign
-
-# 保存改动
+# 删除 ip6assign 字段，让 LuCI 显示“已禁用”
+uci delete network.lan.ip6assign 2>/dev/null
+uci delete network.wan.ip6assign 2>/dev/null
 uci commit network
-# ───────────────────────────────────────────────────
 
 # 重启 network 服务，使静态 IPv4 + lan DHCPv6/RA 禁用立即生效
 /etc/init.d/network restart
@@ -167,26 +161,32 @@ sysctl -p >/dev/null 2>&1
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
 
-# ============================================================================
-# 12. 防火墙策略设置与 DNS 重定向（UCI + 可选 nft）
+# =============================================================================
+# 12. 防火墙策略设置与 DNS 重定向（fw3）
+#      - 默认：input/drop, forward/drop, output/accept
+#      - LAN：全部 ACCEPT（本地管理）
+#      - WAN：默认拒绝，仅白名单网段可访问本机
+#      - WG：单独创建 zone（wg），允许 wg → lan / wg → wan
 # =============================================================================
 
-# —— 12.1 将 INPUT、OUTPUT、FORWARD 全部设为 ACCEPT —— 
-uci set firewall.@defaults[0].input='ACCEPT'
+# 12.1 默认策略：INPUT/FORWARD DROP，OUTPUT ACCEPT
+uci set firewall.@defaults[0].input='DROP'
+uci set firewall.@defaults[0].forward='DROP'
 uci set firewall.@defaults[0].output='ACCEPT'
-uci set firewall.@defaults[0].forward='ACCEPT'
 
-# 12.2 设置 WAN 区域为 ACCEPT（入站/出站/转发）
-uci set firewall.@zone[1].input='ACCEPT'
-uci set firewall.@zone[1].output='ACCEPT'
-uci set firewall.@zone[1].forward='ACCEPT'
-
-# 可选：设置 LAN 区域同样全部为 ACCEPT（不需要可删掉）
+# 12.2 LAN 区域：全部 ACCEPT（用于本地管理）
+# 一般情况下 firewall.@zone[0] 为 lan，如有变动可在运行环境中调整
 uci set firewall.@zone[0].input='ACCEPT'
 uci set firewall.@zone[0].output='ACCEPT'
 uci set firewall.@zone[0].forward='ACCEPT'
 
-# 12.3 DNS 重定向：拦截所有 TCP/UDP 53 端口并 DNAT 到本机 53 —— 
+# 12.3 WAN 区域：入站/转发默认 DROP，仅出站 ACCEPT
+# 一般情况下 firewall.@zone[1] 为 wan
+uci set firewall.@zone[1].input='DROP'
+uci set firewall.@zone[1].output='ACCEPT'
+uci set firewall.@zone[1].forward='DROP'
+
+# 12.4 DNS 重定向：拦截所有 TCP/UDP 53 端口并 DNAT 到本机 53
 uci -q batch <<-EOF
   add firewall.redirect
   set firewall.@redirect[-1].name='dns_redirect'
@@ -198,33 +198,52 @@ uci -q batch <<-EOF
   set firewall.@redirect[-1].dest_port='53'
 EOF
 
-# 12.4 可选 nftables 规则（如果不使用 nftables，可注释掉以下部分） —— 
-# nft -- add table ip nat
-# nft -- add chain ip nat PREROUTING { type nat hook prerouting priority 0 \; }
-# nft -- add rule ip nat PREROUTING udp dport 53 dnat to :53
-# nft -- add rule ip nat PREROUTING tcp dport 53 dnat to :53
-# nft -- add table ip6 nat
-# nft -- add chain ip6 nat PREROUTING { type nat hook prerouting priority 0 \; }
-# nft -- add rule ip6 nat PREROUTING udp dport 53 dnat to :53
-# nft -- add rule ip6 nat PREROUTING tcp dport 53 dnat to :53
+# 12.5 WAN 白名单：
+#      仅允许 10.29.2.0/24 与 10.29.90.0/24 从 WAN 接口访问本机（任意端口）
+uci add firewall.rule
+uci set firewall.@rule[-1].name='Allow-WhiteList-10.29.2.0-24'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].src_ip='10.29.2.0/24'
+uci set firewall.@rule[-1].target='ACCEPT'
+
+uci add firewall.rule
+uci set firewall.@rule[-1].name='Allow-WhiteList-10.29.90.0-24'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].src_ip='10.29.90.0/24'
+uci set firewall.@rule[-1].target='ACCEPT'
+
+# 12.6 WG 区域：创建 wg zone，并允许 wg → lan / wg → wan
+uci -q batch << 'EOF'
+  add firewall.zone
+  set firewall.@zone[-1].name='wg'
+  set firewall.@zone[-1].input='ACCEPT'
+  set firewall.@zone[-1].output='ACCEPT'
+  set firewall.@zone[-1].forward='ACCEPT'
+  add_list firewall.@zone[-1].network='wg0'
+
+  add firewall.forwarding
+  set firewall.@forwarding[-1].src='wg'
+  set firewall.@forwarding[-1].dest='lan'
+
+  add firewall.forwarding
+  set firewall.@forwarding[-1].src='wg'
+  set firewall.@forwarding[-1].dest='wan'
+EOF
 
 uci commit firewall
-
-# 如果将来升级为 firewall4，可取消以下注释以清空 nftables 默认规则
-# [ -x /usr/sbin/fw4 ] && fw4 flush
-
 /etc/init.d/firewall restart
 
 # =============================================================================
 # 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口
+#      实际访问权限仍由防火墙控制（见第 12 段）
 # =============================================================================
-uci delete dropbear.@dropbear[0].Interface
+uci delete dropbear.@dropbear[0].Interface 2>/dev/null
 uci commit dropbear
 
 # =============================================================================
 # 14. 固定 WireGuard 配置（使用当前运行的公私钥）
+#      这里只负责 /etc/config/network，防火墙已在第 12 段集中配置
 # =============================================================================
-
 uci -q batch << 'EOF'
   # wg0 主接口
   set network.wg0='interface'
@@ -251,26 +270,6 @@ uci -q batch << 'EOF'
 EOF
 
 uci commit network
-
-# 防火墙（zone：wg）
-uci -q batch << 'EOF'
-  add firewall.zone
-  set firewall.@zone[-1].name='wg'
-  set firewall.@zone[-1].input='ACCEPT'
-  set firewall.@zone[-1].output='ACCEPT'
-  set firewall.@zone[-1].forward='ACCEPT'
-  add_list firewall.@zone[-1].network='wg0'
-
-  add firewall.forwarding
-  set firewall.@forwarding[-1].src='wg'
-  set firewall.@forwarding[-1].dest='lan'
-
-  add firewall.forwarding
-  set firewall.@forwarding[-1].src='wg'
-  set firewall.@forwarding[-1].dest='wan'
-EOF
-
-uci commit firewall
 
 # =============================================================================
 # 15. 脚本执行完毕后删除自身，避免再次执行
