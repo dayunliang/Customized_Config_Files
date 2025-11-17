@@ -158,7 +158,7 @@ sysctl -p >/dev/null 2>&1
 # 12. 防火墙策略设置（fw3）
 #      - 默认：input/drop, forward/drop, output/accept
 #      - zone：lan / wan / wg0 三个
-#      - 转发：lan→wg0、wg0→lan
+#      - 转发：lan→wan、lan→wg0、wg0→lan
 #      - WAN 白名单：10.29.2.0/24 可访问本机 22/80/443
 # =============================================================================
 
@@ -167,42 +167,51 @@ uci set firewall.@defaults[0].input='DROP'
 uci set firewall.@defaults[0].forward='DROP'
 uci set firewall.@defaults[0].output='ACCEPT'
 
-# 12.2 清理旧 zone / forwarding（避免残留）
-uci -q delete firewall.lan
-uci -q delete firewall.wan
-uci -q delete firewall.wg0
+# 12.2 清理旧的 lan/wan/wg0 zone 和所有 forwarding
+# 注意：这里按 option name 删除，而不是错误地假定 section 名叫 lan/wan/wg0
+for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+    name="$(uci -q get ${sec}.name 2>/dev/null)"
+    case "$name" in
+        lan|wan|wg0)
+            uci -q delete "$sec"
+        ;;
+    esac
+done
+
+# 删掉所有旧的 forwarding
 while uci -q delete firewall.@forwarding[0]; do :; done
 
 # 12.3 重建 lan zone
 uci add firewall.zone
-uci rename firewall.@zone[-1]='lan'
-uci set firewall.lan.name='lan'
-uci set firewall.lan.input='ACCEPT'
-uci set firewall.lan.output='ACCEPT'
-uci set firewall.lan.forward='ACCEPT'
-uci set firewall.lan.network='lan'
+uci set firewall.@zone[-1].name='lan'
+uci set firewall.@zone[-1].input='ACCEPT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='ACCEPT'
+uci add_list firewall.@zone[-1].network='lan'
 
 # 12.4 重建 wan zone（NAT）
 uci add firewall.zone
-uci rename firewall.@zone[-1]='wan'
-uci set firewall.wan.name='wan'
-uci set firewall.wan.input='REJECT'
-uci set firewall.wan.output='ACCEPT'
-uci set firewall.wan.forward='REJECT'
-uci set firewall.wan.masq='1'
-uci set firewall.wan.mtu_fix='1'
-uci set firewall.wan.network='wan'
+uci set firewall.@zone[-1].name='wan'
+uci set firewall.@zone[-1].input='REJECT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='REJECT'
+uci set firewall.@zone[-1].masq='1'
+uci set firewall.@zone[-1].mtu_fix='1'
+uci add_list firewall.@zone[-1].network='wan'
 
 # 12.5 重建 wg0 zone
 uci add firewall.zone
-uci rename firewall.@zone[-1]='wg0'
-uci set firewall.wg0.name='wg0'
-uci set firewall.wg0.input='ACCEPT'
-uci set firewall.wg0.output='ACCEPT'
-uci set firewall.wg0.forward='ACCEPT'
-uci set firewall.wg0.network='wg0'
+uci set firewall.@zone[-1].name='wg0'
+uci set firewall.@zone[-1].input='ACCEPT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='ACCEPT'
+uci add_list firewall.@zone[-1].network='wg0'
 
-# 12.6 转发关系：lan→wg0、wg0→lan
+# 12.6 转发关系：lan→wan、lan→wg0、wg0→lan
+uci add firewall.forwarding
+uci set firewall.@forwarding[-1].src='lan'
+uci set firewall.@forwarding[-1].dest='wan'
+
 uci add firewall.forwarding
 uci set firewall.@forwarding[-1].src='lan'
 uci set firewall.@forwarding[-1].dest='wg0'
@@ -221,11 +230,13 @@ uci set firewall.@redirect[-1].proto='tcpudp'
 uci set firewall.@redirect[-1].target='DNAT'
 uci set firewall.@redirect[-1].dest_port='53'
 
-# 12.8 WAN 白名单：10.29.2.0/24 不限端口放行
+# 12.8 WAN 白名单：10.29.2.0/24 可访问本机 22/80/443（按需放行端口）
 uci add firewall.rule
 uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
 uci set firewall.@rule[-1].src='wan'
 uci set firewall.@rule[-1].src_ip='10.29.2.0/24'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].dest_port='22 80 443'
 uci set firewall.@rule[-1].target='ACCEPT'
 uci set firewall.@rule[-1].family='ipv4'
 
