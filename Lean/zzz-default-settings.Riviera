@@ -99,8 +99,8 @@ uci delete network.lan.ifname 2>/dev/null || true
 uci delete network.lan.type   2>/dev/null || true
 uci delete network.wan.ifname 2>/dev/null || true
 
-# ===== LAN：br-lan + 静态 IPv4 =====
-uci set network.lan.device='br-lan'
+# ===== LAN：静态 IPv4 =====
+uci set network.lan.device='eth0'
 uci set network.lan.proto='static'
 uci set network.lan.ipaddr='10.29.122.144'
 uci set network.lan.netmask='255.255.255.0'
