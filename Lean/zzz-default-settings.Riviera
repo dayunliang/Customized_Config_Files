@@ -89,7 +89,6 @@ echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 # 11. 网络与 DHCP 静态设置（针对 IPv4） + 保持 DSA 桥接 + 彻底关闭 IPv6
 # =============================================================================
 # 说明：
-#  - 保留 DSA 默认的 br-lan 桥，LAN 绑定 device=br-lan（桥里只有 eth0）
 #  - LAN: 10.29.122.144/24，不提供 DHCP（由 iKuai 提供），禁用 IPv6
 #  - WAN: 10.29.2.144/24，网关 10.29.2.1，DNS 10.29.2.10
 #  - 内核层面与 odhcpd 层面都禁用 IPv6
@@ -154,9 +153,10 @@ sysctl -p >/dev/null 2>&1
 # =============================================================================
 # 12. 防火墙 wg0 相关设置（在默认 firewall 上叠加，而不是重建 lan/wan）
 #      - 保留出厂 lan/wan 配置
-#      - 如果不存在 wg0 区域则创建
-#      - 如果不存在 lan→wg0、wg0→lan 转发则添加
-#      - 如果不存在 dns_redirect / Allow-WAN-LAN-Admin 则添加
+#      - 创建 wg0 区域
+#      - 创建 lan↔wg0 转发
+#      - DNS 重定向 + WAN 管理白名单
+#      - WAN→WG0 不做全局转发，只对特定 IP 放行（见 12.5）
 # =============================================================================
 
 # 12.1 确保 wg0 zone 存在
@@ -175,7 +175,7 @@ if [ -z "$WGZONE" ]; then
   uci add_list firewall.@zone[-1].network='wg0'
 fi
 
-# 12.2 确保存在 lan→wg0 转发
+# 12.2 确保存在 lan→wg0 / wg0→lan 转发（仅站点互访用，不涉及 WAN）
 HAS_LAN_WG0=0
 HAS_WG0_LAN=0
 for sec in $(uci -q show firewall | grep "=forwarding" | cut -d= -f1); do
@@ -215,7 +215,7 @@ done
   uci set firewall.@redirect[-1].dest_port='53'
 }
 
-# 12.4 WAN 管理白名单：若不存在则允许 10.29.2.0/24 访问本机 22/80/443
+# 12.4 WAN 管理白名单：允许 10.29.2.0/24 和 10.10.20.2–5 访问本机 22/80/443
 HAS_WAN_ADMIN=0
 for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -226,7 +226,27 @@ done
   uci add firewall rule >/dev/null
   uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
   uci set firewall.@rule[-1].src='wan'
-  uci set firewall.@rule[-1].src_ip='10.29.2.0/24 10.10.20.2/32'
+  # 10.29.2.0/24 + 10.10.20.2-5
+  uci set firewall.@rule[-1].src_ip='10.29.2.0/24 10.10.20.2 10.10.20.3 10.10.20.4 10.10.20.5'
+  uci set firewall.@rule[-1].proto='all'
+  uci set firewall.@rule[-1].target='ACCEPT'
+  uci set firewall.@rule[-1].family='ipv4'
+}
+
+# 12.5 WAN→WG0 精确放行：仅允许 10.10.20.2–5 从 wan 进入 wg0
+HAS_VPN_WG_RULE=0
+for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "Allow-VPN-to-wg0" ] && HAS_VPN_WG_RULE=1 && break
+done
+
+[ "$HAS_VPN_WG_RULE" -eq 0 ] && {
+  uci add firewall rule >/dev/null
+  uci set firewall.@rule[-1].name='Allow-VPN-to-wg0'
+  uci set firewall.@rule[-1].src='wan'
+  # 只允许 10.10.20.2–5 进入 wg0
+  uci set firewall.@rule[-1].src_ip='10.10.20.2 10.10.20.3 10.10.20.4 10.10.20.5'
+  uci set firewall.@rule[-1].dest='wg0'
   uci set firewall.@rule[-1].proto='all'
   uci set firewall.@rule[-1].target='ACCEPT'
   uci set firewall.@rule[-1].family='ipv4'
