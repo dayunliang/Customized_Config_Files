@@ -18,7 +18,7 @@
 ### —— 可按需调整 —— ###
 LAN_NET=10.29.122.0/24     # 旁路由 LAN 侧网段
 ROUTE_TABLE=100            # 回程路由表编号
-GW=10.29.2.254          # 主路由（iKuai LAN）网关
+GW=10.29.2.1               # 主路由（iKuai LAN）网关
 WAN_IF=eth1                # 旁路由到主路由 LAN 的接口
 CLASH_MARK=0x162           # OpenClash 默认打标
 
