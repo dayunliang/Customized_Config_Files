@@ -155,9 +155,25 @@ sysctl -p >/dev/null 2>&1
 #      - 保留出厂 lan/wan 配置
 #      - 创建 wg0 区域
 #      - 创建 lan↔wg0 转发
+#      -（新增）创建 wg0↔wan 转发
 #      - DNS 重定向 + WAN 管理白名单
 #      - WAN→WG0 不做全局转发，只对特定 IP 放行（见 12.5）
+#      -（新增）确保 wan zone 里包含 network 'wan'
 # =============================================================================
+
+# 12.0 确保 wan zone 里包含 network 'wan'
+WANZONE=""
+for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "wan" ] && WANZONE="$sec" && break
+done
+
+if [ -n "$WANZONE" ]; then
+  # 读出当前 wan zone 的 network 字段
+  CUR_NETS="$(uci -q get ${WANZONE}.network 2>/dev/null || echo "")"
+  # 如果不包含 'wan'，则补上一条
+  echo "$CUR_NETS" | grep -qw 'wan' || uci add_list ${WANZONE}.network='wan'
+fi
 
 # 12.1 确保 wg0 zone 存在
 WGZONE=""
@@ -175,26 +191,48 @@ if [ -z "$WGZONE" ]; then
   uci add_list firewall.@zone[-1].network='wg0'
 fi
 
-# 12.2 确保存在 lan→wg0 / wg0→lan 转发（仅站点互访用，不涉及 WAN）
+# 12.2 确保存在 lan↔wg0 / wg0↔wan / wan↔wg0 转发
 HAS_LAN_WG0=0
 HAS_WG0_LAN=0
+HAS_WG0_WAN=0
+HAS_WAN_WG0=0
+
 for sec in $(uci -q show firewall | grep "=forwarding" | cut -d= -f1); do
   src="$(uci -q get ${sec}.src 2>/dev/null)"
   dest="$(uci -q get ${sec}.dest 2>/dev/null)"
+
   [ "$src" = "lan" -a "$dest" = "wg0" ] && HAS_LAN_WG0=1
   [ "$src" = "wg0" -a "$dest" = "lan" ] && HAS_WG0_LAN=1
+  [ "$src" = "wg0" -a "$dest" = "wan" ] && HAS_WG0_WAN=1
+  [ "$src" = "wan" -a "$dest" = "wg0" ] && HAS_WAN_WG0=1
 done
 
+# lan -> wg0：Riviera 访问 Beverly
 [ "$HAS_LAN_WG0" -eq 0 ] && {
   uci add firewall forwarding >/dev/null
   uci set firewall.@forwarding[-1].src='lan'
   uci set firewall.@forwarding[-1].dest='wg0'
 }
 
+# wg0 -> lan：Beverly 访问 Riviera LAN（10.29.122.0/24）
 [ "$HAS_WG0_LAN" -eq 0 ] && {
   uci add firewall forwarding >/dev/null
   uci set firewall.@forwarding[-1].src='wg0'
   uci set firewall.@forwarding[-1].dest='lan'
+}
+
+# wg0 -> wan：Beverly 访问 Riviera 网关/服务（10.29.2.0/24）
+[ "$HAS_WG0_WAN" -eq 0 ] && {
+  uci add firewall forwarding >/dev/null
+  uci set firewall.@forwarding[-1].src='wg0'
+  uci set firewall.@forwarding[-1].dest='wan'
+}
+
+# wan -> wg0：Riviera 网关侧访问 Beverly（10.29.2.x 发起到 192.168.12.x 等）
+[ "$HAS_WAN_WG0" -eq 0 ] && {
+  uci add firewall forwarding >/dev/null
+  uci set firewall.@forwarding[-1].src='wan'
+  uci set firewall.@forwarding[-1].dest='wg0'
 }
 
 # 12.3 DNS 重定向：仅针对 lan，把 TCP/UDP 53 重定向到本机 53（仅 IPv4）
@@ -215,7 +253,7 @@ done
   uci set firewall.@redirect[-1].dest_port='53'
 }
 
-# 12.4 WAN 管理白名单：允许 10.29.2.0/24 和 10.10.20.2–5 访问本机 22/80/443
+# 12.4 WAN 管理白名单：允许 10.29.2.0/24 和 10.10.20.2–5 访问本机（22/80/443）
 HAS_WAN_ADMIN=0
 for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -233,7 +271,7 @@ done
   uci set firewall.@rule[-1].family='ipv4'
 }
 
-# 12.5 WAN→WG0 精确放行：仅允许 10.10.20.2–5 从 wan 进入 wg0
+# 12.5 WAN→WG0 精确放行：仅允许 10.10.20.2–5 从 wan 进入 wg0（叠加在 zone 转发之上）
 HAS_VPN_WG_RULE=0
 for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -254,6 +292,7 @@ done
 
 uci commit firewall
 /etc/init.d/firewall restart
+# 202511201931
 
 # =============================================================================
 # 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口
