@@ -161,6 +161,30 @@ sysctl -p >/dev/null 2>&1
 #      -（新增）确保 wan zone 里包含 network 'wan'
 # =============================================================================
 
+# 如果 network.lan 没有设置 device / ifname，则默认绑定 eth0
+LAN_DEV="$(uci -q get network.lan.device 2>/dev/null || echo '')"
+LAN_IFNAME="$(uci -q get network.lan.ifname 2>/dev/null || echo '')"
+
+if [ -z "$LAN_DEV" ] && [ -z "$LAN_IFNAME" ]; then
+  # 新语法：优先使用 device（适配 DSA）
+  uci set network.lan.device='eth0'
+  # 旧语法（某些版本）：如果你想兼容老版本，也可以顺手写一份 ifname
+  # uci set network.lan.ifname='eth0'
+fi
+
+# 如果 network.wan 没有设置 device / ifname，则默认绑定 eth1
+WAN_DEV="$(uci -q get network.wan.device 2>/dev/null || echo '')"
+WAN_IFNAME="$(uci -q get network.wan.ifname 2>/dev/null || echo '')"
+
+if [ -z "$WAN_DEV" ] && [ -z "$WAN_IFNAME" ]; then
+  uci set network.wan.device='eth1'
+  # 同理，可选兼容旧语法：
+  # uci set network.wan.ifname='eth1'
+fi
+
+uci commit network
+
+
 # 12.0 确保 wan zone 里包含 network 'wan'
 WANZONE=""
 for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
@@ -292,7 +316,7 @@ done
 
 uci commit firewall
 /etc/init.d/firewall restart
-# 202511201931
+# 202511201939
 
 # =============================================================================
 # 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口
