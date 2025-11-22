@@ -17,48 +17,81 @@
 
 set -e  # 遇到任何命令出错立即退出（防止错误继续执行）
 
-# ==== [0] 环境检查 ====
+# ==== [1] 环境检查 ====
 if [ -z "$BASH_VERSION" ]; then
     echo "❗ 必须在 bash 环境下执行此脚本，sh 环境不支持！"
     exit 1
 fi
 
-# ==== [1] 检查是否在 OpenWrt 源码根目录 ====
+# ==== [2] 检查是否在 OpenWrt 源码根目录 ====
 # 判定依据：必须同时存在 scripts/feeds 文件和 package 目录
+
+# spinner 函数：显示转动提示符
+show_spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='|/-\'
+    while ps -p $pid > /dev/null 2>&1; do
+        local temp=${spinstr#?}
+        printf " [%c] 正在清空目录..." "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\r%-40s\r" " "   # 清空整行避免残留
+    done
+}
+
 if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
     echo "🔍 未检测到 OpenWrt 源码根目录。"
-    cd ~  # 切换到用户家目录，方便执行 git clone
-    echo "📁 当前目录已切换到：$PWD"
     read -p "是否自动 clone OpenWrt 仓库并进入？(y/N): " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
-        # 用户可自定义仓库地址（默认 Lean 源）
         read -p "请输入 OpenWrt 仓库 URL (默认: https://github.com/coolsnowwolf/lede.git): " repo_url
         repo_url=${repo_url:-https://github.com/coolsnowwolf/lede.git}
 
-        # 用户可自定义目标目录（默认 lede）
         read -p "请输入目标目录名 (默认: lede): " target_dir
         target_dir=${target_dir:-lede}
 
-        echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
-        git clone --depth=1 "$repo_url" "$target_dir" || {
-            echo "❌ 克隆失败，请检查 URL 或网络连接"
-            exit 1
-        }
-        cd "$target_dir"
+        if [ -d "$target_dir" ]; then
+            echo "⚠️ 目录 $target_dir 已存在，进入该目录..."
+            cd "$target_dir"
+
+            if [ -z "$(ls -A .)" ]; then
+                echo "🌐 目录为空，正在克隆 $repo_url ..."
+                git clone --depth=1 "$repo_url" . || { echo "❌ 克隆失败"; exit 1; }
+            else
+                read -p "⚠️ 当前目录非空，是否清空后再克隆？(y/N): " clear_confirm
+                if [[ "$clear_confirm" =~ ^[Yy]$ ]]; then
+                    (rm -rf ./* ./.??* ) &
+                    pid=$!
+                    show_spinner $pid
+                    wait $pid
+                    echo "✅ 目录已清空"
+                    echo "🌐 开始克隆 $repo_url ..."
+                    git clone --depth=1 "$repo_url" . || { echo "❌ 克隆失败"; exit 1; }
+                else
+                    if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
+                        echo "❌ 当前目录不是有效的 OpenWrt 源码目录，无法继续"
+                        exit 1
+                    fi
+                    echo "➡️ 跳过 git clone，继续执行后续步骤..."
+                fi
+            fi
+        else
+            echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
+            git clone --depth=1 "$repo_url" "$target_dir" || { echo "❌ 克隆失败"; exit 1; }
+            cd "$target_dir"
+        fi
         echo "✅ 已进入源码目录：$(pwd)"
     else
-        # 用户拒绝自动 clone，退出并提示
-        script_name=$(basename "$0")
         echo "❌ 请先手动下载源码再运行本脚本"
         echo "示例："
         echo "  git clone https://github.com/coolsnowwolf/lede.git"
         echo "  cd lede"
-        echo "  bash $script_name"
+        echo "  bash $0"
         exit 1
     fi
 fi
 
-# ==== [2] 基本变量 ====
+# ==== [3] 基本变量 ====
 REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git" # 配置文件仓库
 TMP_DIR=$(mktemp -d)    # 临时目录（脚本结束会删除）
 TS=$(date +%Y%m%d-%H%M%S) # 当前时间戳，用于备份文件命名
@@ -71,7 +104,24 @@ if ! git clone --depth=1 "$REPO_URL" "$TMP_DIR"; then
     exit 1
 fi
 
-# ==== [4] 定义安全复制函数（带备份） ====
+# ==== [4] 编译版本选择逻辑 ====
+echo
+echo "请选择要部署的编译版本："
+echo " 1) Beverly"
+echo " 2) Riviera"
+echo " 3) DOITCHINA"
+read -p "请输入数字 (1-3): " compile_choice
+
+case "$compile_choice" in
+  1) COMPILE_NAME="Beverly" ;;
+  2) COMPILE_NAME="Riviera" ;;
+  3) COMPILE_NAME="DOITCHINA" ;;
+  *) echo "❌ 无效选择：$compile_choice"; exit 1 ;;
+esac
+echo "已选择编译版本：$COMPILE_NAME"
+echo
+
+# ==== [5] 定义安全复制函数（带备份） ====
 safe_cp() {
     src="$1"  # 源文件
     dst="$2"  # 目标文件
@@ -83,7 +133,7 @@ safe_cp() {
     cp -vf "$src" "$dst"  # 覆盖复制新文件
 }
 
-# ==== [5] 部署文件函数 ====
+# ==== [6] 部署文件函数 ====
 deploy_file() {
     desc="$1" # 描述（方便日志输出）
     src="$2"  # 源路径
@@ -96,46 +146,7 @@ deploy_file() {
     safe_cp "$src" "$dst"        # 复制文件
 }
 
-# ==== [6] 部署配置文件 ====
-echo "2. 部署自定义配置文件..."
-# .config 文件（编译选项）
-deploy_file ".config" "$TMP_DIR/Lean/config" "./.config"
-# feeds.conf.default（feeds 源列表）
-deploy_file "feeds.conf.default" "$TMP_DIR/Lean/feeds.conf.default" "./feeds.conf.default"
-# 默认系统设置（包含编译后的默认配置）
-deploy_file "zzz-default-settings" "$TMP_DIR/Lean/zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings"
-
-# 回程路由脚本
-deploy_file "back-route-checkenv.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
-deploy_file "back-route-complete.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh" "./files/usr/bin/back-route-complete.sh"
-deploy_file "back-route-cron.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh" "./files/usr/bin/back-route-cron.sh"
-chmod +x ./files/usr/bin/back-route-*.sh || true
-
-# IPSec 配置
-deploy_file "IPSec 配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf" "./files/etc/ipsec.conf"
-deploy_file "IPSec 密码文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets" "./files/etc/ipsec.secrets"
-deploy_file "IPSec Web 配置" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server" "./files/etc/config/luci-app-ipsec-server"
-
-# OpenClash 配置和规则
-deploy_file "Openclash 配置" "$TMP_DIR/Lean/files/etc/config/openclash" "./files/etc/config/openclash"
-deploy_file "Openclash 自定义规则" "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list" "./files/etc/openclash/custom/openclash_custom_rules.list"
-deploy_file "Openclash 规则列表" "$TMP_DIR/Lean/files/usr/share/openclash/res/rule_providers.list" "./files/usr/share/openclash/res/rule_providers.list"
-
-deploy_file "Openclash DNS false 修改脚本" "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh" "./files/etc/openclash/dns_enable_false.sh"
-chmod +x ./files/etc/openclash/dns_enable_false.sh || true
-deploy_file "Openclash 节点配置脚本" "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh" "./files/usr/share/openclash/yml_proxys_set.sh"
-chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
-
-# 其它网络加速、计划任务等配置
-deploy_file "ShadowSocksR Plus+ 配置" "$TMP_DIR/Lean/files/etc/config/shadowsocksr" "./files/etc/config/shadowsocksr"
-deploy_file "Turbo ACC 网络加速配置" "$TMP_DIR/Lean/files/etc/config/turboacc" "./files/etc/config/turboacc"
-deploy_file "root 用户计划任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
-
-# ==== [7] 删除临时目录 ====
-echo "4. 删除临时目录 $TMP_DIR"
-rm -rf "$TMP_DIR"
-
-# ==== [8] 检查 luci feed（po2lmo 工具所在位置） ====
+# ==== [7] 检查 luci feed（po2lmo 工具所在位置） ====
 if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
     echo "⚠️  feeds.conf.default 缺少 luci 源，已自动追加"
     echo "src-git luci https://github.com/coolsnowwolf/luci" >> feeds.conf.default
@@ -145,17 +156,22 @@ fi
 ./scripts/feeds update luci
 ./scripts/feeds install luci-base
 
-# ==== [9] 全量更新 feeds 并安装 ====
+# ==== [8] 全量更新安装 feeds 并添加 luci-theme-neobird ====
 echo "🛠️ 正在执行 feeds update/install..."
+./scripts/feeds clean
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-make defconfig
 
-# ==== [10] 编译 po2lmo 工具 ====
+echo "🌈 添加 luci-theme-neobird..."
+mkdir -p package/lean
+rm -rf package/lean/luci-theme-neobird
+git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
+
+# ==== [9] 编译 po2lmo 工具 ====
 echo "🛠️ 编译 po2lmo 工具..."
 make package/feeds/luci/luci-base/host/compile V=s
 
-# ==== [11] 首次构建可选下载源码包 ====
+# ==== [10] 首次构建可选下载源码包 ====
 read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
 if [[ "$is_first" =~ ^[Yy]$ ]]; then
     echo "📥 开始预下载源码包..."
@@ -174,7 +190,62 @@ else
     echo "✅ 跳过预下载，可直接 make -j\$(nproc) V=s"
 fi
 
-# ==== [12] 显示备份列表 ====
+# ==== [11] 部署配置文件 ====
+echo "2. 部署 [$COMPILE_NAME] 编译版本配置文件..."
+
+# .config 文件（编译选项）
+deploy_file ".config" "$TMP_DIR/Lean/config.$COMPILE_NAME" "./.config"
+
+# feeds.conf.default（feeds 源列表）
+deploy_file "feeds.conf.default" "$TMP_DIR/Lean/feeds.conf.default.$COMPILE_NAME" "./feeds.conf.default"
+
+# 默认系统设置（包含编译后的默认配置）
+deploy_file "zzz-default-settings" "$TMP_DIR/Lean/zzz-default-settings.$COMPILE_NAME" "./package/lean/default-settings/files/zzz-default-settings"
+
+# 回程路由脚本
+deploy_file "back-route-checkenv.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-checkenv.sh" "./files/usr/bin/back-route-checkenv.sh"
+deploy_file "back-route-complete.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-complete.sh.$COMPILE_NAME" "./files/usr/bin/back-route-complete.sh"
+deploy_file "back-route-cron.sh" "$TMP_DIR/Lean/files/usr/bin/back-route-cron.sh.$COMPILE_NAME" "./files/usr/bin/back-route-cron.sh"
+chmod +x ./files/usr/bin/back-route-*.sh || true
+
+# IPSec 配置
+#deploy_file "IPSec 配置文件" "$TMP_DIR/Lean/files/etc/ipsec.conf.$COMPILE_NAME" "./files/etc/ipsec.conf"
+#deploy_file "IPSec 密码文件" "$TMP_DIR/Lean/files/etc/ipsec.secrets.$COMPILE_NAME" "./files/etc/ipsec.secrets"
+#deploy_file "IPSec Web 配置" "$TMP_DIR/Lean/files/etc/config/luci-app-ipsec-server.$COMPILE_NAME" "./files/etc/config/luci-app-ipsec-server"
+
+# OpenClash 配置和规则
+deploy_file "Openclash 配置" "$TMP_DIR/Lean/files/etc/config/openclash.$COMPILE_NAME" "./files/etc/config/openclash"
+deploy_file "Openclash 自定义规则" "$TMP_DIR/Lean/files/etc/openclash/custom/openclash_custom_rules.list.$COMPILE_NAME" "./files/etc/openclash/custom/openclash_custom_rules.list"
+deploy_file "Openclash 规则列表" "$TMP_DIR/Lean/files/usr/share/openclash/res/rule_providers.list" "./files/usr/share/openclash/res/rule_providers.list"
+
+deploy_file "Openclash DNS false 修改脚本" "$TMP_DIR/Lean/files/etc/openclash/dns_enable_false.sh" "./files/etc/openclash/dns_enable_false.sh"
+chmod +x ./files/etc/openclash/dns_enable_false.sh || true
+deploy_file "Openclash 节点配置脚本" "$TMP_DIR/Lean/files/usr/share/openclash/yml_proxys_set.sh" "./files/usr/share/openclash/yml_proxys_set.sh"
+chmod +x ./files/usr/share/openclash/yml_proxys_set.sh || true
+
+# WireGuard 网络接口刷新脚本
+deploy_file "WireGuard_Refresh.sh" "$TMP_DIR/Lean/files/usr/bin/WireGuard_Refresh.sh.$COMPILE_NAME" "./files/usr/bin/WireGuard_Refresh.sh"
+chmod +x ./files/usr/bin/WireGuard_Refresh.sh || true
+
+# 其它网络加速、计划任务等配置
+deploy_file "ShadowSocksR Plus+ 配置" "$TMP_DIR/Lean/files/etc/config/shadowsocksr" "./files/etc/config/shadowsocksr"
+deploy_file "Turbo ACC 网络加速配置" "$TMP_DIR/Lean/files/etc/config/turboacc" "./files/etc/config/turboacc"
+deploy_file "root 用户计划任务" "$TMP_DIR/Lean/files/etc/crontabs/root" "./files/etc/crontabs/root"
+deploy_file "去除编译循环冲突" "$TMP_DIR/Lean/remove_conflict.sh" "./remove_conflict.sh"
+chmod +x ./remove_conflict.sh || true
+
+# ==== [12] 删除临时目录 ====
+echo "4. 删除临时目录 $TMP_DIR"
+rm -rf "$TMP_DIR"
+
+./remove_conflict.sh
+
+make defconfig
+
+# 第二次：在 defconfig 之后兜底修正 .config（再次关掉 ssr-plus）
+./remove_conflict.sh
+
+# ==== [13] 显示备份列表 ====
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
     echo "🗂️ 本次备份的文件："
     for f in "${BACKUP_LIST[@]}"; do echo "  $f"; done
@@ -182,7 +253,7 @@ else
     echo "🗂️ 本次没有文件被覆盖，因此没有备份"
 fi
 
-# ==== [13] 总结 ====
+# ==== [14] 总结 ====
 echo "📋 执行步骤总结："
 echo "-------------------------------------------------------"
 echo "✅ 部署定制文件"
@@ -192,7 +263,7 @@ echo "✅ 编译 po2lmo 工具"
 echo "✅ （可选）下载源码包并校验"
 echo "-------------------------------------------------------"
 
-# ==== [14] 完成提示 ====
+# ==== [15] 完成提示 ====
 echo "🚀 配置部署完成！"
-echo "📂 当前目录：$(pwd)"
+echo "👉 请运行: cd $(pwd) 进入源码目录"
 echo "💡 可执行：make -j\$(nproc) V=s"
