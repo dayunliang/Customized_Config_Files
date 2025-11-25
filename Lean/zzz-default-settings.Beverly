@@ -235,52 +235,171 @@ sysctl -p >/dev/null 2>&1
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
 
-# ============================================================================
-# 12. 防火墙策略设置与 DNS 重定向（UCI + 可选 nft）
+# =============================================================================
+# 12. 防火墙 wg0 相关设置（在默认 firewall 上叠加，而不是重建 lan/wan）
+#      - 保留出厂 lan/wan 配置
+#      - 创建 wg0 区域
+#      - 创建 lan↔wg0 转发
+#      -（新增）创建 wg0↔wan 转发
+#      - DNS 重定向 + WAN 管理白名单
+#      - WAN→WG0 不做全局转发，只对特定 IP 放行（见 12.5）
+#      -（新增）确保 wan zone 里包含 network 'wan'
 # =============================================================================
 
-# —— 12.1 将 INPUT、OUTPUT、FORWARD 全部设为 ACCEPT —— 
-uci set firewall.@defaults[0].input='ACCEPT'
-uci set firewall.@defaults[0].output='ACCEPT'
-uci set firewall.@defaults[0].forward='ACCEPT'
+# 如果 network.lan 没有设置 device / ifname，则默认绑定 eth0
+LAN_DEV="$(uci -q get network.lan.device 2>/dev/null || echo '')"
+LAN_IFNAME="$(uci -q get network.lan.ifname 2>/dev/null || echo '')"
 
-# 12.2 设置 WAN 区域为 ACCEPT（入站/出站/转发）
-uci set firewall.@zone[1].input='ACCEPT'
-uci set firewall.@zone[1].output='ACCEPT'
-uci set firewall.@zone[1].forward='ACCEPT'
+if [ -z "$LAN_DEV" ] && [ -z "$LAN_IFNAME" ]; then
+  # 新语法：优先使用 device（适配 DSA）
+  uci set network.lan.device='eth0'
+  # 旧语法（某些版本）：如果你想兼容老版本，也可以顺手写一份 ifname
+  # uci set network.lan.ifname='eth0'
+fi
 
-# 可选：设置 LAN 区域同样全部为 ACCEPT（不需要可删掉）
-uci set firewall.@zone[0].input='ACCEPT'
-uci set firewall.@zone[0].output='ACCEPT'
-uci set firewall.@zone[0].forward='ACCEPT'
+# 如果 network.wan 没有设置 device / ifname，则默认绑定 eth1
+WAN_DEV="$(uci -q get network.wan.device 2>/dev/null || echo '')"
+WAN_IFNAME="$(uci -q get network.wan.ifname 2>/dev/null || echo '')"
 
-# 12.3 DNS 重定向：拦截所有 TCP/UDP 53 端口并 DNAT 到本机 53 —— 
-uci -q batch <<-EOF
-  add firewall.redirect
-  set firewall.@redirect[-1].name='dns_redirect'
-  set firewall.@redirect[-1].src='*'
-  set firewall.@redirect[-1].src_dport='53'
-  set firewall.@redirect[-1].family='ipv4'
-  set firewall.@redirect[-1].proto='tcpudp'
-  set firewall.@redirect[-1].target='DNAT'
-  set firewall.@redirect[-1].dest_port='53'
-EOF
+if [ -z "$WAN_DEV" ] && [ -z "$WAN_IFNAME" ]; then
+  uci set network.wan.device='eth1'
+  # 同理，可选兼容旧语法：
+  # uci set network.wan.ifname='eth1'
+fi
 
-# 12.4 可选 nftables 规则（如果不使用 nftables，可注释掉以下部分） —— 
-# nft -- add table ip nat
-# nft -- add chain ip nat PREROUTING { type nat hook prerouting priority 0 \; }
-# nft -- add rule ip nat PREROUTING udp dport 53 dnat to :53
-# nft -- add rule ip nat PREROUTING tcp dport 53 dnat to :53
-# nft -- add table ip6 nat
-# nft -- add chain ip6 nat PREROUTING { type nat hook prerouting priority 0 \; }
-# nft -- add rule ip6 nat PREROUTING udp dport 53 dnat to :53
-# nft -- add rule ip6 nat PREROUTING tcp dport 53 dnat to :53
+uci commit network
+
+
+# 12.0 确保 wan zone 里包含 network 'wan'
+WANZONE=""
+for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "wan" ] && WANZONE="$sec" && break
+done
+
+if [ -n "$WANZONE" ]; then
+  # 读出当前 wan zone 的 network 字段
+  CUR_NETS="$(uci -q get ${WANZONE}.network 2>/dev/null || echo "")"
+  # 如果不包含 'wan'，则补上一条
+  echo "$CUR_NETS" | grep -qw 'wan' || uci add_list ${WANZONE}.network='wan'
+fi
+
+# 12.1 确保 wg0 zone 存在
+WGZONE=""
+for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "wg0" ] && WGZONE="$sec" && break
+done
+
+if [ -z "$WGZONE" ]; then
+  uci add firewall zone >/dev/null
+  uci set firewall.@zone[-1].name='wg0'
+  uci set firewall.@zone[-1].input='ACCEPT'
+  uci set firewall.@zone[-1].output='ACCEPT'
+  uci set firewall.@zone[-1].forward='ACCEPT'
+  uci add_list firewall.@zone[-1].network='wg0'
+fi
+
+# 12.2 确保存在 lan↔wg0 / wg0↔wan / wan↔wg0 转发
+HAS_LAN_WG0=0
+HAS_WG0_LAN=0
+HAS_WG0_WAN=0
+HAS_WAN_WG0=0
+
+for sec in $(uci -q show firewall | grep "=forwarding" | cut -d= -f1); do
+  src="$(uci -q get ${sec}.src 2>/dev/null)"
+  dest="$(uci -q get ${sec}.dest 2>/dev/null)"
+
+  [ "$src" = "lan" -a "$dest" = "wg0" ] && HAS_LAN_WG0=1
+  [ "$src" = "wg0" -a "$dest" = "lan" ] && HAS_WG0_LAN=1
+  [ "$src" = "wg0" -a "$dest" = "wan" ] && HAS_WG0_WAN=1
+  [ "$src" = "wan" -a "$dest" = "wg0" ] && HAS_WAN_WG0=1
+done
+
+# lan -> wg0：Riviera 访问 Riviera
+[ "$HAS_LAN_WG0" -eq 0 ] && {
+  uci add firewall forwarding >/dev/null
+  uci set firewall.@forwarding[-1].src='lan'
+  uci set firewall.@forwarding[-1].dest='wg0'
+}
+
+# wg0 -> lan：Riviera 访问 Beverly LAN（192.168.122.0/24）
+[ "$HAS_WG0_LAN" -eq 0 ] && {
+  uci add firewall forwarding >/dev/null
+  uci set firewall.@forwarding[-1].src='wg0'
+  uci set firewall.@forwarding[-1].dest='lan'
+}
+
+# wg0 -> wan：Riviera 访问 Beverly 网关/服务（192.168.12.0/24）
+[ "$HAS_WG0_WAN" -eq 0 ] && {
+  uci add firewall forwarding >/dev/null
+  uci set firewall.@forwarding[-1].src='wg0'
+  uci set firewall.@forwarding[-1].dest='wan'
+}
+
+# wan -> wg0：Beverly 网关侧访问 Riviera（192.168.12.x 发起到 10.29.2.x 等）
+[ "$HAS_WAN_WG0" -eq 0 ] && {
+  uci add firewall forwarding >/dev/null
+  uci set firewall.@forwarding[-1].src='wan'
+  uci set firewall.@forwarding[-1].dest='wg0'
+}
+
+# 12.3 DNS 重定向：仅针对 lan，把 TCP/UDP 53 重定向到本机 53（仅 IPv4）
+HAS_DNS_REDIRECT=0
+for sec in $(uci -q show firewall | grep "=redirect" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "dns_redirect" ] && HAS_DNS_REDIRECT=1 && break
+done
+
+[ "$HAS_DNS_REDIRECT" -eq 0 ] && {
+  uci add firewall redirect >/dev/null
+  uci set firewall.@redirect[-1].name='dns_redirect'
+  uci set firewall.@redirect[-1].src='lan'
+  uci set firewall.@redirect[-1].src_dport='53'
+  uci set firewall.@redirect[-1].family='ipv4'
+  uci set firewall.@redirect[-1].proto='tcpudp'
+  uci set firewall.@redirect[-1].target='DNAT'
+  uci set firewall.@redirect[-1].dest_port='53'
+}
+
+# 12.4 WAN 管理白名单：允许 192.168.12.0/24 和 10.10.10.2–5 访问本机（22/80/443）
+HAS_WAN_ADMIN=0
+for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "Allow-WAN-LAN-Admin" ] && HAS_WAN_ADMIN=1 && break
+done
+
+[ "$HAS_WAN_ADMIN" -eq 0 ] && {
+  uci add firewall rule >/dev/null
+  uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
+  uci set firewall.@rule[-1].src='wan'
+  # 10.29.2.0/24 + 10.10.20.2-5
+  uci set firewall.@rule[-1].src_ip='192.168.12.0/24 10.10.10.2 10.10.10.3 10.10.10.4 10.10.10.5'
+  uci set firewall.@rule[-1].proto='all'
+  uci set firewall.@rule[-1].target='ACCEPT'
+  uci set firewall.@rule[-1].family='ipv4'
+}
+
+# 12.5 WAN→WG0 精确放行：仅允许 10.10.10.2–5 从 wan 进入 wg0（叠加在 zone 转发之上）
+HAS_VPN_WG_RULE=0
+for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
+  name="$(uci -q get ${sec}.name 2>/dev/null)"
+  [ "$name" = "Allow-VPN-to-wg0" ] && HAS_VPN_WG_RULE=1 && break
+done
+
+[ "$HAS_VPN_WG_RULE" -eq 0 ] && {
+  uci add firewall rule >/dev/null
+  uci set firewall.@rule[-1].name='Allow-VPN-to-wg0'
+  uci set firewall.@rule[-1].src='wan'
+  # 只允许 10.10.20.2–5 进入 wg0
+  uci set firewall.@rule[-1].src_ip='10.10.10.2 10.10.10.3 10.10.10.4 10.10.10.5'
+  uci set firewall.@rule[-1].dest='wg0'
+  uci set firewall.@rule[-1].proto='all'
+  uci set firewall.@rule[-1].target='ACCEPT'
+  uci set firewall.@rule[-1].family='ipv4'
+}
 
 uci commit firewall
-
-# 如果将来升级为 firewall4，可取消以下注释以清空 nftables 默认规则
-# [ -x /usr/sbin/fw4 ] && fw4 flush
-
 /etc/init.d/firewall restart
 
 # =============================================================================
