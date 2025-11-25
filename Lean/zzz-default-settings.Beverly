@@ -459,8 +459,6 @@ EOF
     uci add_list network.@wireguard_wg0[-1].allowed_ips='10.29.2.0/24'
     uci add_list network.@wireguard_wg0[-1].allowed_ips='10.29.80.0/24'
     uci add_list network.@wireguard_wg0[-1].allowed_ips='10.29.90.0/24'
-    uci set network.@wireguard_wg0[-1].endpoint_host='riviera.3322.org'
-    uci set network.@wireguard_wg0[-1].endpoint_port='51820'
     uci commit network
 
     # 配置防火墙 zone，允许 WireGuard 流量
