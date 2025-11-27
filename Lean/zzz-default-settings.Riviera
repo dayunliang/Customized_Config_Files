@@ -150,6 +150,12 @@ sysctl -p >/dev/null 2>&1
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
 
+# 仅 Riviera 上执行（或写回 zzz 第11段之后）
+uci set network.lan.ifname='eth0'
+uci set network.wan.ifname='eth1'
+uci commit network
+/etc/init.d/network restart
+
 # =============================================================================
 # 12. 防火墙 wg0 相关设置（在默认 firewall 上叠加，而不是重建 lan/wan）
 #      - 保留出厂 lan/wan 配置
