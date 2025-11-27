@@ -212,9 +212,6 @@ uci delete network.wan.ip6assign
 uci commit network
 # ───────────────────────────────────────────────────
 
-# 重启 network 服务，使静态 IPv4 + lan DHCPv6/RA 禁用立即生效
-/etc/init.d/network restart
-
 # —— 内核层面彻底禁用 IPv6 + 停用 odhcpd 服务 —— 
 grep -q 'disable_ipv6' /etc/sysctl.conf || cat << 'EOF' >> /etc/sysctl.conf
 net.ipv6.conf.all.disable_ipv6 = 1
@@ -400,7 +397,6 @@ done
 }
 
 uci commit firewall
-/etc/init.d/firewall restart
 
 # =============================================================================
 # 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口
@@ -507,7 +503,9 @@ uci -q batch << 'EOF'
 EOF
 
 uci commit firewall
-/etc/init.d/firewall restart
+uci commit network
+/etc/init.d/network reload
+/etc/init.d/firewall reload
 
 # =============================================================================
 # 脚本执行完毕后删除自身，避免再次执行
