@@ -489,6 +489,23 @@ if need_fwd wg0 wan; then
   uci set firewall.@forwarding[-1].dest='wan'
 fi
 
+# === 在 Beverly 上补齐 Riviera 作为 peer（对齐你现网段）===
+uci -q batch << 'EOF'
+  add network wireguard_wg0
+  set network.@wireguard_wg0[-1].description='Riviera'
+  # 这里用你之前贴过的 Riviera 公钥（已在你配置中出现）
+  set network.@wireguard_wg0[-1].public_key='4kY/LleOD1EsJ0tEqQ0SdgAa3BGeDYwv06QltDC9Kko='
+  # 让 Riviera 主动连即可，Beverly 可不必写 endpoint（方便对端漂移/roaming）
+  set network.@wireguard_wg0[-1].persistent_keepalive='25'
+  set network.@wireguard_wg0[-1].route_allowed_ips='1'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.2/32'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.2.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.80.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.90.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.122.0/24'
+  add_list network.@wireguard_wg0[-1].allowed_ips='10.10.20.0/24'
+EOF
+
 uci commit firewall
 /etc/init.d/firewall restart
 
