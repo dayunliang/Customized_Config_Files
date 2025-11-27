@@ -319,7 +319,7 @@ done
 }
 
 uci commit firewall
-/etc/init.d/firewall restart
+# /etc/init.d/firewall restart
 # 202511201939
 
 # =============================================================================
