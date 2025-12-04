@@ -1,0 +1,3 @@
+*/4 * * * * /usr/bin/back-route-cron.sh
+0 5 * * * /usr/share/openclash/openclash.sh
+*/5 * * * * /usr/bin/WireGuard_Refresh.sh
