@@ -273,7 +273,7 @@ read -p "是否为 ${COMPILE_NAME} 注入 WireGuard 私钥到模板？(y/N): " i
 if [[ "$inject_wgkey" =~ ^[Yy]$ ]]; then
   # 交互式输入（隐藏回显）+ 基本格式校验
   while true; do
-    read -s -p "请输入 ${COMPILE_NAME} 的 WireGuard 私钥（典型44字符，末尾=）： " WG_PRIVKEY
+    read -p "请输入 ${COMPILE_NAME} 的 WireGuard 私钥（典型44字符，末尾=）： " WG_PRIVKEY
     echo
     if [[ "$WG_PRIVKEY" =~ ^[A-Za-z0-9+/]{43}=$ ]]; then
       break
