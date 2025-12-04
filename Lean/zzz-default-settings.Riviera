@@ -337,7 +337,7 @@ uci -q batch << 'EOF'
   # wg0 主接口
   set network.wg0='interface'
   set network.wg0.proto='wireguard'
-  set network.wg0.private_key='cG7D/+cChdDJiCgVONWwiQ29I1Diebi8biaLFruX4nA='
+  set network.wg0.private_key='__WG_PRIVKEY__'
   set network.wg0.listen_port='51820'
   list network.wg0.addresses='10.0.0.2/24'
 
