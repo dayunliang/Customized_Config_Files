@@ -11,7 +11,8 @@
 #   6. 执行 feeds update/install + make defconfig
 #   7. 强制编译 po2lmo（解决 default-settings 编译时报错问题）
 #   8. 首次构建可选执行 make download 并循环校验下载完整性
-#   9. 输出执行摘要和备份清单
+#   9. 在复制前注入 WireGuard 私钥到模板（或生成 uci-defaults 兜底）
+#  10. 输出执行摘要和备份清单
 # 作者：https://github.com/dayunliang
 # ===========================================================================
 
@@ -122,8 +123,6 @@ echo "已选择编译版本：$COMPILE_NAME"
 echo
 
 # ==== [5] 复制与统计（保留备份） ====
-# 说明：即使是 overlay 目录，也保留一次备份，方便你对比
-declare -a BACKUP_LIST
 __DEPLOY_HITS=""
 __DEPLOY_SKIPS=""
 
@@ -143,10 +142,10 @@ safe_cp() {
 }
 
 # 源与目标根目录
-SRC_ROOT="${TMP_DIR}/Lean/files"   # 你的“overlay 源”（按相对路径部署）
+SRC_ROOT="${TMP_DIR}/Lean/files"   # overlay 源（按相对路径部署）
 DST_ROOT="./files"                 # OpenWrt overlay 目标根
 
-# ==== [6] 新版部署函数（缺失也视为成功） ====
+# ==== [6] 部署函数（缺失也视为成功） ====
 
 # 6.1 部署 overlay 文件：两层选择（<rel>.<COMPILE_NAME> → <rel>），并 chmod
 # 用法：deploy_file "usr/bin/back-route-complete.sh" "755"
@@ -174,7 +173,7 @@ deploy_file() {
   return 0
 }
 
-# 6.2 部署“仓库根”特例文件：两层选择（<name>.<COMPILE_NAME> → <name>），并 chmod
+# 6.2 部署“仓库根”文件：两层选择（<name>.<COMPILE_NAME> → <name>），并 chmod
 # 用法：deploy_root "config" "./.config" "644"
 #       deploy_root "feeds.conf.default" "./feeds.conf.default" "644"
 #       deploy_root "zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings" "755"
@@ -203,7 +202,7 @@ deploy_root() {
   return 0
 }
 
-# 6.3 统一汇总（文案小改：显示 SKIPPED OK）
+# 6.3 汇总
 deploy_summary() {
   printf '\n[SUMMARY] Profile=%s\n' "${COMPILE_NAME}"
 
@@ -261,7 +260,7 @@ if [[ "$is_first" =~ ^[Yy]$ ]]; then
         fi
     done
 else
-    echo "✅ 跳过预下载，可直接 make -j\$(nproc) V=s"
+    echo "✅ 跳过预下载，可直接 make -j$(nproc) V=s"
 fi
 
 # ==== [10.2] WireGuard 私钥注入（复制前在模板中替换占位符） ====
@@ -286,11 +285,9 @@ if [[ "$inject_wgkey" =~ ^[Yy]$ ]]; then
   # 仅在临时克隆目录 $TMP_DIR 内替换，优先站点化文件，其次默认文件
   echo "🔎 正在扫描模板中的占位符 __WG_PRIVKEY__ ..."
   # 站点优先：*.${COMPILE_NAME}
-  mapfile -t SITE_MATCHES < <(grep -RIl --null -e '__WG_PRIVKEY__' \
-      "${TMP_DIR}/Lean" --include="*.${COMPILE_NAME}" 2>/dev/null || true)
+  mapfile -t SITE_MATCHES < <(grep -RIl -e '__WG_PRIVKEY__' "${TMP_DIR}/Lean" --include="*.${COMPILE_NAME}" 2>/dev/null || true)
   # 默认兜底：无后缀
-  mapfile -t DEF_MATCHES < <(grep -RIl --null -e '__WG_PRIVKEY__' \
-      "${TMP_DIR}/Lean" --exclude="*.${COMPILE_NAME}" 2>/dev/null || true)
+  mapfile -t DEF_MATCHES  < <(grep -RIl -e '__WG_PRIVKEY__' "${TMP_DIR}/Lean" --exclude="*.${COMPILE_NAME}" 2>/dev/null || true)
 
   REPLACED=0
   if [ ${#SITE_MATCHES[@]} -gt 0 ]; then
@@ -352,46 +349,47 @@ fi
 echo "2. 部署 [$COMPILE_NAME] 编译版本配置文件..."
 
 # 11.1 仓库根（Lean/ 下）—— 站点优先，缺失也视为成功
-deploy_root "config"    "./.config"    "644"
-deploy_root "feeds.conf.default"    "./feeds.conf.default"    "644"
-deploy_root "zzz-default-settings"    "./package/lean/default-settings/files/zzz-default-settings"    "755"
-deploy_root "remove_conflict.sh"    "./remove_conflict.sh"    "755"
+deploy_root "config"                 "./.config"                                                 "644"
+deploy_root "feeds.conf.default"     "./feeds.conf.default"                                      "644"
+deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
+deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                                      "755"
 
 # 11.2 overlay（Lean/files/ 下）—— 传相对路径 + 权限；站点优先，缺失也成功
 # 回程路由脚本
-deploy_file "usr/bin/back-route-checkenv.sh"            "755"
-deploy_file "usr/bin/back-route-complete.sh"            "755"
-deploy_file "usr/bin/back-route-cron.sh"                "755"
+deploy_file "usr/bin/back-route-checkenv.sh"         "755"
+deploy_file "usr/bin/back-route-complete.sh"         "755"
+deploy_file "usr/bin/back-route-cron.sh"             "755"
 
 # IPSec（如需启用，按需取消注释）
-# deploy_file "etc/ipsec.conf"                           "644"
-# deploy_file "etc/ipsec.secrets"                        "600"
-# deploy_file "etc/config/luci-app-ipsec-server"         "644"
+# deploy_file "etc/ipsec.conf"                          "644"
+# deploy_file "etc/ipsec.secrets"                       "600"
+# deploy_file "etc/config/luci-app-ipsec-server"        "644"
 
 # OpenClash 配置与脚本
-deploy_file "etc/config/openclash"                      "644"
+deploy_file "etc/config/openclash"                   "644"
 deploy_file "etc/openclash/custom/openclash_custom_rules.list" "644"
 deploy_file "usr/share/openclash/res/rule_providers.list"      "644"
-deploy_file "etc/openclash/dns_enable_false.sh"         "755"
-deploy_file "usr/share/openclash/yml_proxys_set.sh"     "755"
+deploy_file "etc/openclash/dns_enable_false.sh"      "755"
+deploy_file "usr/share/openclash/yml_proxys_set.sh"  "755"
 
 # WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
-deploy_file "usr/bin/WireGuard_Refresh.sh"              "755"
+deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
 
 # 其它网络加速、计划任务等
-deploy_file "etc/config/turboacc"                       "644"
-deploy_file "etc/crontabs/root"                         "600"
+deploy_file "etc/config/turboacc"                    "644"
+deploy_file "etc/crontabs/root"                      "600"
 
 # ==== [12] 删除临时目录 ====
 echo "4. 删除临时目录 $TMP_DIR"
 rm -rf "$TMP_DIR"
 
 ./remove_conflict.sh
-
 make defconfig
-
 # 第二次：在 defconfig 之后兜底修正 .config（再次关掉 ssr-plus）
 ./remove_conflict.sh
+
+# 展示部署摘要
+deploy_summary
 
 # ==== [13] 显示备份列表 ====
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
@@ -409,9 +407,10 @@ echo "✅ 自动备份已有配置"
 echo "✅ 执行 feeds update/install & make defconfig"
 echo "✅ 编译 po2lmo 工具"
 echo "✅ （可选）下载源码包并校验"
+echo "✅ WireGuard 私钥占位符注入/兜底 uci-defaults"
 echo "-------------------------------------------------------"
 
 # ==== [15] 完成提示 ====
 echo "🚀 配置部署完成！"
-echo "👉 请运行: cd $(pwd) 进入源码目录"
-echo "💡 可执行：make -j\$(nproc) V=s"
+echo "👉 当前源码目录: $(pwd)"
+echo "💡 可执行：make -j$(nproc) V=s"
