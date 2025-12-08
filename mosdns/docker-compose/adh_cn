@@ -2,7 +2,6 @@ services:
   adguardhome:
     image: adguard/adguardhome:latest
     container_name: adh_cn
-    runtime: "crun"
     restart: unless-stopped
     ports:
       - "54:53/tcp"
