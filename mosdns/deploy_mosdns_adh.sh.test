@@ -1,6 +1,6 @@
 #!/bin/sh
 ###############################################################################
-# MosDNS + ADH 一键部署（集成 crun 修复/注册 + compose 强制 runtime: crun）
+# MosDNS + ADH 一键部署（依赖：已用 docker_alpine.sh 配好 Docker/Compose/crun）
 # 适用：Alpine Linux，Docker 29+/containerd 2.x，默认使用 docker compose v2
 ###############################################################################
 set -e
@@ -29,7 +29,7 @@ wait_sock() { # 等待 docker.sock 最多 N 秒
   return 1
 }
 restart_daemons() {
-  rc-service docker stop >/dev/null 2>&1 || true
+  rc-service docker stop  >/dev/null 2>&1 || true
   rc-service containerd stop >/dev/null 2>&1 || true
   rm -rf /run/containerd/io.containerd.runtime.v2.task/moby/* >/dev/null 2>&1 || true
   rc-service containerd start >/dev/null 2>&1 || true
@@ -40,28 +40,6 @@ docker_info_brief() {
   docker info 2>/dev/null | awk '
     /Server Version|Default Runtime|Runtimes|Storage Driver|Backing Filesystem|Cgroup Version/ {print}
   '
-}
-# 给 compose 文件注入 `runtime: crun`（在 container_name 或 image 行后插入）
-inject_crun_runtime() {
-  f="$1"
-  [ -s "$f" ] || return 0
-  if grep -q 'runtime:[[:space:]]*crun' "$f"; then
-    return 0
-  fi
-  # 优先在 container_name 后插
-  if grep -q 'container_name:' "$f"; then
-    awk '
-      {print}
-      /container_name:/ && !ins {print "    runtime: crun"; ins=1}
-    ' "$f" > "$f.tmp" && mv "$f.tmp" "$f" && return 0
-  fi
-  # 否则在 image 后插
-  if grep -q 'image:' "$f"; then
-    awk '
-      {print}
-      /image:/ && !ins {print "    runtime: crun"; ins=1}
-    ' "$f" > "$f.tmp" && mv "$f.tmp" "$f" && return 0
-  fi
 }
 
 # ===== [1/14] APK 源 =====
@@ -100,52 +78,21 @@ set fileencodings=ucs-bom,utf-8,default,latin1
 EOF
 ok "中文环境与 Vim 已配置"
 
-# ===== [4/14] Docker/Containerd/crun 安装与注册 =====
-echo "[4/14] 安装 Docker / containerd / crun / compose..."
-apk add --no-cache docker containerd runc crun docker-cli docker-cli-buildx docker-cli-compose openrc >/dev/null 2>&1 || true
-rc-update add containerd default >/dev/null 2>&1 || true
-rc-update add docker default >/dev/null 2>&1 || true
-
-# 内核 / cgroup2 / bridge-nf
-modprobe overlay 2>/dev/null || true
-modprobe br_netfilter 2>/dev/null || true
-mkdir -p /sys/fs/cgroup
-mount | grep -q "type cgroup2" || mount -t cgroup2 none /sys/fs/cgroup 2>/dev/null || true
-rc-update add cgroups default >/dev/null 2>&1 || true
-rc-service cgroups start >/dev/null 2>&1 || true
-sysctl -w net.bridge.bridge-nf-call-iptables=1  >/dev/null 2>&1 || true
-sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >/dev/null 2>&1 || true
-
-# daemon.json：镜像加速器 + 注册 crun 并设默认
-echo "[5/14] 配置 Docker 镜像加速与默认 runtime..."
-mkdir -p /etc/docker
-[ -s /etc/docker/daemon.json ] || echo '{}' > /etc/docker/daemon.json
-cp /etc/docker/daemon.json /etc/docker/daemon.json.bak.$(date +%Y%m%d%H%M%S)
-jq '
-  ."registry-mirrors"=[
-    "https://docker.m.daocloud.io",
-    "https://dockerproxy.com",
-    "https://mirror.baidubce.com",
-    "https://docker.nju.edu.cn",
-    "https://docker.mirrors.sjtug.sjtu.edu.cn",
-    "https://mirror.iscas.ac.cn"
-  ]
-  | ."default-runtime"="crun"
-  | .runtimes = (.runtimes // {})
-  | .runtimes.crun.path="/usr/bin/crun"
-' /etc/docker/daemon.json > /etc/docker/daemon.json.new && mv /etc/docker/daemon.json.new /etc/docker/daemon.json
-
-# containerd 基础 config（默认 runc，避免告警）
-[ -s /etc/containerd/config.toml ] || containerd config default >/etc/containerd/config.toml 2>/dev/null || true
-
-echo "[6/14] 重启 containerd / docker..."
-restart_daemons || { err "dockerd 未就绪"; exit 1; }
-ok "dockerd socket 就绪"
-info "Docker 信息："
+# ===== [4/14] Docker/Containerd/Compose（只做最小校验与提示）=====
+echo "[4/14] 校验 Docker 与 Compose..."
+if ! command -v docker >/dev/null 2>&1; then err "未检测到 docker，请先运行 docker_alpine.sh"; exit 1; fi
+if ! docker compose version >/dev/null 2>&1; then err "未检测到 docker compose v2，请在 docker_alpine.sh 中启用"; exit 1; fi
+ok "Docker 与 Compose 就绪"
+info "Docker 信息（简要）："
 docker_info_brief || true
 
-# ===== [7/14] 清理环境（端口/容器/进程 + 目录）=====
-echo "[7/14] 清理旧容器并释放端口（53/54/55）..."
+# ===== [5/14] 重启守护进程并等待 sock（幂等保障）=====
+echo "[5/14] 重启 containerd / docker..."
+restart_daemons || { err "dockerd 未就绪"; exit 1; }
+ok "dockerd socket 就绪"
+
+# ===== [6/14] 清理环境（端口/容器/进程 + 目录）=====
+echo "[6/14] 清理旧容器并释放端口（53/54/55）..."
 PORTS="53 54 55"
 TMP_CONTAINER=$(mktemp); TMP_PROCESS=$(mktemp)
 
@@ -190,51 +137,46 @@ rm -rf "$MOSDNS_DIR" "$ADH_CN_DIR" "$ADH_GFW_DIR"
 mkdir -p "$MOSDNS_DIR" "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work" "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
 ok "环境清理完成"
 
-# ===== [8/14] 部署 ADH_CN =====
-echo "[8/14] 部署 adh_cn..."
+# ===== [7/14] 部署 ADH_CN =====
+echo "[7/14] 部署 adh_cn..."
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml \
   -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn \
   -o "$ADH_CN_DIR/docker-compose.yaml"
-# 注入 runtime: crun
-inject_crun_runtime "$ADH_CN_DIR/docker-compose.yaml"
 ( cd "$ADH_CN_DIR" && docker compose down -v >/dev/null 2>&1 || true )
 ( cd "$ADH_CN_DIR" && docker compose up -d )
 ok "adh_cn 已启动"
 
-# ===== [9/14] 部署 ADH_GFW =====
-echo "[9/14] 部署 adh_gfw..."
+# ===== [8/14] 部署 ADH_GFW =====
+echo "[8/14] 部署 adh_gfw..."
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml \
   -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw \
   -o "$ADH_GFW_DIR/docker-compose.yaml"
-inject_crun_runtime "$ADH_GFW_DIR/docker-compose.yaml"
 ( cd "$ADH_GFW_DIR" && docker compose down -v >/dev/null 2>&1 || true )
 ( cd "$ADH_GFW_DIR" && docker compose up -d )
 ok "adh_gfw 已启动"
 
-# ===== [10/14] MosDNS 资源 =====
-echo "[10/14] 下载 MosDNS compose 与 update.sh..."
+# ===== [9/14] MosDNS 资源 =====
+echo "[9/14] 下载 MosDNS compose 与 update.sh..."
 cd "$MOSDNS_DIR"
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns \
   -o ./docker-compose.yaml
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh \
   -o ./update.sh
 chmod +x ./update.sh
-# 给 mosdns compose 注入 runtime: crun
-inject_crun_runtime "$MOSDNS_DIR/docker-compose.yaml"
 ./update.sh || true
 ok "MosDNS 资源已准备"
 
-# ===== [11/14] cron 自动更新 =====
-echo "[11/14] 设置 cron 自动更新..."
+# ===== [10/14] cron 自动更新 =====
+echo "[10/14] 设置 cron 自动更新..."
 touch "$CRONTAB_FILE"
 sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
 echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
 ok "Cron 规则已更新"
 
-# ===== [12/14] 规则与空白名单 =====
-echo "[12/14] 下载规则与空白名单..."
+# ===== [11/14] 规则与空白名单 =====
+echo "[11/14] 下载规则与空白名单..."
 mkdir -p "$MOSDNS_DIR/rules-dat" "$MOSDNS_DIR/config/rule"
 : > "$MOSDNS_DIR/rules-dat/geoip_private.txt"
 : > "$MOSDNS_DIR/rules-dat/hosts.txt"
@@ -245,28 +187,29 @@ done
 : > "$MOSDNS_DIR/config/rule/greylist.txt"
 ok "规则与白/灰名单已就绪"
 
-# ===== [13/14] 启动 MosDNS =====
-echo "[13/14] 启动 MosDNS..."
+# ===== [12/14] 启动 MosDNS =====
+echo "[12/14] 启动 MosDNS..."
 cd "$MOSDNS_DIR"
 docker compose up -d --force-recreate
 ok "MosDNS 已启动"
 
-# ===== [14/14] 验证与汇总 =====
-echo "[14/14] 验证服务与端口..."
+# ===== [13/14] 验证与端口探测 =====
+echo "[13/14] 验证服务与端口..."
 echo "—— docker ps ——"
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1,20p'
 
-# 端口探测（仅 TCP）
+# TCP 端口探测（按常用映射）
 command -v nc >/dev/null 2>&1 && {
   nc -zv 127.0.0.1 81   >/dev/null 2>&1 && ok "ADH_CN UI 81 OK"     || warn "ADH_CN UI 81 未监听"
   nc -zv 127.0.0.1 3001 >/dev/null 2>&1 && ok "ADH_CN 向导 3001 OK" || warn "ADH_CN 向导 3001 未监听"
   nc -zv 127.0.0.1 54   >/dev/null 2>&1 && ok "ADH_CN DNS 54/TCP OK"|| warn "ADH_CN DNS 54/TCP 未监听"
 
-  nc -zv 127.0.0.1 82   >/dev/null 2>&1 && ok "ADH_GFW UI 82 OK"     || warn "ADH_GFW UI 82 未监听（如你映射 82）"
-  nc -zv 127.0.0.1 3002 >/dev/null 2>&1 && ok "ADH_GFW 向导 3002 OK" || warn "ADH_GFW 向导 3002 未监听（如你映射 3002）"
+  nc -zv 127.0.0.1 82   >/dev/null 2>&1 && ok "ADH_GFW UI 82 OK"     || warn "ADH_GFW UI 82 未监听（如你的 compose 没映射则忽略）"
+  nc -zv 127.0.0.1 3002 >/dev/null 2>&1 && ok "ADH_GFW 向导 3002 OK" || warn "ADH_GFW 向导 3002 未监听（如你的 compose 没映射则忽略）"
   nc -zv 127.0.0.1 55   >/dev/null 2>&1 && ok "ADH_GFW DNS 55/TCP OK"|| warn "ADH_GFW DNS 55/TCP 未监听"
 } || true
 
+# ===== [14/14] 汇总 =====
 echo "==== docker info (brief) ====" >> "$REPORT"
 docker_info_brief >> "$REPORT" 2>&1 || true
 
