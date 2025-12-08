@@ -1,80 +1,128 @@
 #!/bin/sh
-set -Eeuo pipefail
+###############################################################################
+# MosDNS + ADH 一键部署（集成 crun 修复/注册 + compose 强制 runtime: crun）
+# 适用：Alpine Linux，Docker 29+/containerd 2.x，默认使用 docker compose v2
+###############################################################################
+set -e
 
-# ===== 可调参数 =====
-RESET_CONFIG="${RESET_CONFIG:-0}"                       # 0=保留历史配置 1=清空重建 conf/work
-FORCE_DISABLE_AGH_DHCP="${FORCE_DISABLE_AGH_DHCP:-1}"  # 1=启动前强制关闭 AGH DHCP
-
-# 目录
-MOSDNS_DIR="$HOME/mosdns"
-ADH_CN_DIR="$HOME/adh_cn"
-ADH_GFW_DIR="$HOME/adh_gfw"
+# ===== 基本变量 =====
+MOSDNS_DIR="${HOME}/mosdns"
+ADH_CN_DIR="${HOME}/adh_cn"
+ADH_GFW_DIR="${HOME}/adh_gfw"
 CRONTAB_FILE="/etc/crontabs/root"
+REPORT="/root/mosdns_adh_deploy_$(date +%Y%m%d_%H%M%S).log"
 
-# 端口
-PORT_CN_DNS=54
-PORT_GFW_DNS=55
-PORT_CN_WEB=30054
-PORT_GFW_WEB=30055
+# ===== 彩色输出 =====
+G='\033[32m'; R='\033[31m'; Y='\033[33m'; B='\033[34m'; N='\033[0m'
+ok(){   printf "${G}✔${N} %s\n" "$*"; }
+warn(){ printf "${Y}▲${N} %s\n" "$*"; }
+err(){  printf "${R}✘${N} %s\n" "$*"; }
+info(){ printf "${B}i${N} %s\n" "$*"; }
 
-log(){ printf "\033[1;32m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*"; }
-warn(){ printf "\033[1;33m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*"; }
-die(){ printf "\033[1;31m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*"; exit 1; }
-
-# raw → jsDelivr
-to_jsdelivr(){
-  echo "$1" | sed -E '
-    s#^https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/refs/heads/([^/]+)/(.*)$#https://cdn.jsdelivr.net/gh/\1/\2@\3/\4#; t
-    s#^https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.*)$#https://cdn.jsdelivr.net/gh/\1/\2@\3/\4#
-  '
-}
-
-# 双重回退下载：GitHub Raw → jsDelivr
-fetch(){
-  url="$1"; shift
-  jsd="$(to_jsdelivr "$url")"
-  for u in "$url" "$jsd"; do
-    [ -n "$u" ] || continue
-    curl -fL --retry 3 --retry-delay 1 --connect-timeout 8 "$u" "$@" && return 0
+# ===== 小工具函数 =====
+wait_sock() { # 等待 docker.sock 最多 N 秒
+  N="${1:-20}"
+  for _ in $(seq 1 "$N"); do
+    [ -S /var/run/docker.sock ] && return 0
+    sleep 1
   done
   return 1
 }
-
-ensure_dns_and_ca(){
-  [ -s /etc/resolv.conf ] || printf "nameserver 1.1.1.1\nnameserver 8.8.8.8\n" >/etc/resolv.conf
-  apk info -e ca-certificates >/dev/null 2>&1 || apk add --no-cache ca-certificates >/dev/null 2>&1 || true
-  update-ca-certificates >/dev/null 2>&1 || true
+restart_daemons() {
+  rc-service docker stop >/dev/null 2>&1 || true
+  rc-service containerd stop >/dev/null 2>&1 || true
+  rm -rf /run/containerd/io.containerd.runtime.v2.task/moby/* >/dev/null 2>&1 || true
+  rc-service containerd start >/dev/null 2>&1 || true
+  rc-service docker start >/dev/null 2>&1 || true
+  wait_sock 25
+}
+docker_info_brief() {
+  docker info 2>/dev/null | awk '
+    /Server Version|Default Runtime|Runtimes|Storage Driver|Backing Filesystem|Cgroup Version/ {print}
+  '
+}
+# 给 compose 文件注入 `runtime: crun`（在 container_name 或 image 行后插入）
+inject_crun_runtime() {
+  f="$1"
+  [ -s "$f" ] || return 0
+  if grep -q 'runtime:[[:space:]]*crun' "$f"; then
+    return 0
+  fi
+  # 优先在 container_name 后插
+  if grep -q 'container_name:' "$f"; then
+    awk '
+      {print}
+      /container_name:/ && !ins {print "    runtime: crun"; ins=1}
+    ' "$f" > "$f.tmp" && mv "$f.tmp" "$f" && return 0
+  fi
+  # 否则在 image 后插
+  if grep -q 'image:' "$f"; then
+    awk '
+      {print}
+      /image:/ && !ins {print "    runtime: crun"; ins=1}
+    ' "$f" > "$f.tmp" && mv "$f.tmp" "$f" && return 0
+  fi
 }
 
-ensure_crun_default(){
-  # 安装 docker/containerd/crun 及常用工具
-  apk add --no-cache docker containerd crun jq net-tools curl vim musl-locales musl-locales-lang less open-vm-tools || true
-  rc-update add open-vm-tools default || true
-  rc-service open-vm-tools start || true
+# ===== [1/14] APK 源 =====
+echo "[1/14] 设置 APK 镜像源为中科大..."
+if ! grep -q ustc /etc/apk/repositories 2>/dev/null; then
+cat >/etc/apk/repositories <<-'EOF'
+https://mirrors.ustc.edu.cn/alpine/latest-stable/main
+https://mirrors.ustc.edu.cn/alpine/latest-stable/community
+EOF
+apk update
+fi
+ok "APK 源已就绪"
 
-  # 写 daemon.json：设 crun 为默认并保留镜像加速
-  mkdir -p /etc/docker
-  if [ -f /etc/docker/daemon.json ]; then
-    tmp=/etc/docker/daemon.json.tmp.$$
-    jq '
-      .runtimes = (.runtimes // {}) |
-      .runtimes.crun = {"path": "/usr/bin/crun"} |
-      ."default-runtime" = "crun" |
-      ."registry-mirrors" = (."registry-mirrors" // [
-        "https://docker.m.daocloud.io",
-        "https://dockerproxy.com",
-        "https://mirror.baidubce.com",
-        "https://docker.nju.edu.cn",
-        "https://docker.mirrors.sjtug.sjtu.edu.cn",
-        "https://mirror.iscas.ac.cn"
-      ])
-    ' /etc/docker/daemon.json > "$tmp" && mv -f "$tmp" /etc/docker/daemon.json
-  else
-    cat >/etc/docker/daemon.json <<-'EOF'
-{
-  "runtimes": { "crun": { "path": "/usr/bin/crun" } },
-  "default-runtime": "crun",
-  "registry-mirrors": [
+# ===== [2/14] 基础包 =====
+echo "[2/14] 安装基础包..."
+apk add --no-cache open-vm-tools jq curl vim musl-locales musl-locales-lang less \
+  net-tools iptables ip6tables c-ares nftables >/dev/null 2>&1 || true
+rc-update add open-vm-tools default >/dev/null 2>&1 || true
+rc-service open-vm-tools start >/dev/null 2>&1 || true
+ok "基础包安装完成"
+
+# ===== [3/14] 本地化（可选）=====
+echo "[3/14] 配置中文环境与 Vim..."
+cat >/etc/profile.d/locale.sh <<'EOF'
+export LANG=zh_CN.UTF-8
+export LC_CTYPE=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
+EOF
+chmod +x /etc/profile.d/locale.sh
+. /etc/profile.d/locale.sh
+cat >/etc/vim/vimrc <<'EOF'
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,default,latin1
+EOF
+ok "中文环境与 Vim 已配置"
+
+# ===== [4/14] Docker/Containerd/crun 安装与注册 =====
+echo "[4/14] 安装 Docker / containerd / crun / compose..."
+apk add --no-cache docker containerd runc crun docker-cli docker-cli-buildx docker-cli-compose openrc >/dev/null 2>&1 || true
+rc-update add containerd default >/dev/null 2>&1 || true
+rc-update add docker default >/dev/null 2>&1 || true
+
+# 内核 / cgroup2 / bridge-nf
+modprobe overlay 2>/dev/null || true
+modprobe br_netfilter 2>/dev/null || true
+mkdir -p /sys/fs/cgroup
+mount | grep -q "type cgroup2" || mount -t cgroup2 none /sys/fs/cgroup 2>/dev/null || true
+rc-update add cgroups default >/dev/null 2>&1 || true
+rc-service cgroups start >/dev/null 2>&1 || true
+sysctl -w net.bridge.bridge-nf-call-iptables=1  >/dev/null 2>&1 || true
+sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >/dev/null 2>&1 || true
+
+# daemon.json：镜像加速器 + 注册 crun 并设默认
+echo "[5/14] 配置 Docker 镜像加速与默认 runtime..."
+mkdir -p /etc/docker
+[ -s /etc/docker/daemon.json ] || echo '{}' > /etc/docker/daemon.json
+cp /etc/docker/daemon.json /etc/docker/daemon.json.bak.$(date +%Y%m%d%H%M%S)
+jq '
+  ."registry-mirrors"=[
     "https://docker.m.daocloud.io",
     "https://dockerproxy.com",
     "https://mirror.baidubce.com",
@@ -82,169 +130,148 @@ ensure_crun_default(){
     "https://docker.mirrors.sjtug.sjtu.edu.cn",
     "https://mirror.iscas.ac.cn"
   ]
-}
-EOF
-  fi
+  | ."default-runtime"="crun"
+  | .runtimes = (.runtimes // {})
+  | .runtimes.crun.path="/usr/bin/crun"
+' /etc/docker/daemon.json > /etc/docker/daemon.json.new && mv /etc/docker/daemon.json.new /etc/docker/daemon.json
 
-  # 避免 OpenRC 覆盖 config-file
-  [ -f /etc/conf.d/docker ] && sed -i 's#--config-file=[^"]*##g' /etc/conf.d/docker || true
+# containerd 基础 config（默认 runc，避免告警）
+[ -s /etc/containerd/config.toml ] || containerd config default >/etc/containerd/config.toml 2>/dev/null || true
 
-  # 重启并清理运行态
-  rc-service docker stop || true
-  rc-service containerd stop 2>/dev/null || true
-  pkill -f containerd-shim 2>/dev/null || true
-  rm -rf /run/containerd/* /var/run/docker/*
+echo "[6/14] 重启 containerd / docker..."
+restart_daemons || { err "dockerd 未就绪"; exit 1; }
+ok "dockerd socket 就绪"
+info "Docker 信息："
+docker_info_brief || true
 
-  rc-service containerd start 2>/dev/null || true
-  rc-service docker start
+# ===== [7/14] 清理环境（端口/容器/进程 + 目录）=====
+echo "[7/14] 清理旧容器并释放端口（53/54/55）..."
+PORTS="53 54 55"
+TMP_CONTAINER=$(mktemp); TMP_PROCESS=$(mktemp)
 
-  # 校验 & 最小容器自检
-  docker info | grep -qi 'Default Runtime: crun' || {
-    echo 'DOCKER_OPTS="--config-file=/etc/docker/daemon.json"' > /etc/conf.d/docker
-    rc-service docker restart
-  }
-  docker info | grep -qi 'Default Runtime: crun' || die "默认运行时未切到 crun"
-  docker run --rm alpine:3.20 echo ok >/dev/null 2>&1 || die "docker 最小容器自检失败"
-}
-
-cleanup_ports(){
-  PORTS="53 54 55"
-  log "[清理端口] 释放 53/54/55 ..."
-  for P in $PORTS; do
-    # 容器
-    for ID in $(docker ps --format '{{.ID}} {{.Ports}}' | grep ":$P->" | awk '{print $1}' | sort -u); do
-      docker stop "$ID" >/dev/null 2>&1 || true
-      docker rm "$ID"   >/dev/null 2>&1 || true
-    done
-    # 本地进程（排除 docker-proxy，它会随容器清理）
-    for PID in $(netstat -tulpn 2>/dev/null | grep ":$P " | awk '{print $NF}' | awk -F/ '/^[0-9]+\//{print $1}' | sort -u); do
-      kill "$PID" 2>/dev/null || kill -9 "$PID" 2>/dev/null || true
-    done
+for PORT in $PORTS; do
+  docker ps --format '{{.ID}} {{.Names}} {{.Ports}}' | grep ":$PORT->" | while read ID NAME _; do
+    echo "$PORT $ID $NAME" >> "$TMP_CONTAINER"
   done
-}
-
-prepare_dirs(){
-  for D in "$MOSDNS_DIR" "$ADH_CN_DIR" "$ADH_GFW_DIR"; do
-    [ "$RESET_CONFIG" = "1" ] && rm -rf "$D" || true
-    mkdir -p "$D"
-  done
-}
-
-disable_agh_dhcp(){
-  yaml="$1"
-  [ "$FORCE_DISABLE_AGH_DHCP" = "1" ] || return 0
-  [ -f "$yaml" ] || return 0
-  if grep -qE '^\s*dhcp:\s*$' "$yaml"; then
-    sed -i '0,/^\s*enabled:\s*.*/s//  enabled: false/' "$yaml" || true
-  else
-    printf "\n# injected by deploy script\ndhcp:\n  enabled: false\n" >> "$yaml"
-  fi
-}
-
-compose_up(){
-  dir="$1"; name="$2"; want_dns_port="$3"; want_web_port="$4"
-
-  # 先确保目录存在，再下载
-  mkdir -p "$dir/work" "$dir/conf"
-
-  if [ "$name" = "adh_cn" ]; then
-    fetch https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml -o "$dir/conf/AdGuardHome.yaml" || die "下载 adh_cn.yaml 失败"
-    fetch https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn -o "$dir/docker-compose.yaml" || die "下载 adh_cn compose 失败"
-  else
-    fetch https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml -o "$dir/conf/AdGuardHome.yaml" || die "下载 adh_gfw.yaml 失败"
-    fetch https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw -o "$dir/docker-compose.yaml" || die "下载 adh_gfw compose 失败"
-  fi
-
-  # 关闭 DHCP（可配）
-  disable_agh_dhcp "$dir/conf/AdGuardHome.yaml"
-
-  # 端口提示（不强改，避免误伤你的仓库写法）
-  if ! grep -q "${want_dns_port}:53" "$dir/docker-compose.yaml"; then
-    warn "$name 的 docker-compose.yaml 未发现端口映射 ${want_dns_port}:53，请确认仓库端口配置是否与你规划一致。"
-  fi
-  ( cd "$dir" && docker-compose up -d --force-recreate )
-}
-
-deploy_mosdns(){
-  mkdir -p "$MOSDNS_DIR"
-  fetch https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns -o "$MOSDNS_DIR/docker-compose.yaml" || die "下载 mosdns compose 失败"
-
-  # 加强版 update.sh（带回退）
-  cat > "$MOSDNS_DIR/update.sh" <<'UPDATE'
-#!/bin/sh
-set -eu
-MOSDNS_DIR="${MOSDNS_DIR:-$HOME/mosdns}"
-RULES_DAT_DIR="$MOSDNS_DIR/rules-dat"
-mkdir -p "$RULES_DAT_DIR"
-command -v curl >/dev/null 2>&1 || apk add --no-cache curl >/dev/null 2>&1 || true
-apk info -e ca-certificates >/dev/null 2>&1 || apk add --no-cache ca-certificates >/dev/null 2>&1 || true
-update-ca-certificates >/dev/null 2>&1 || true
-to_jsdelivr(){ echo "$1" | sed -E 's#^https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/refs/heads/([^/]+)/(.*)$#https://cdn.jsdelivr.net/gh/\1/\2@\3/\4#; t; s#^https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/([^/]+)/(.*)$#https://cdn.jsdelivr.net/gh/\1/\2@\3/\4#'; }
-fetch(){ url="$1"; shift; jsd="$(to_jsdelivr "$url")"; for u in "$url" "$jsd"; do curl -fL --retry 3 --retry-delay 1 --connect-timeout 8 "$u" "$@" && exit 0; done; exit 1; }
-LIST=$(cat << 'EOF'
-https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt geoip_cn.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/reject-list.txt geosite_category-ads-all.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt geosite_geolocation-!cn.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt geosite_cn.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt geosite_gfw.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/china-list.txt geosite_cn_extra.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt geosite_cn_apple.txt
-https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt geosite_cn_google.txt
-EOF
-)
-TOTAL=$(printf "%s\n" "$LIST" | wc -l | tr -d ' ')
-i=1
-printf "%s\n" "$LIST" | while IFS=' ' read -r url name; do
-  [ -n "$url" ] || continue
-  echo "[$i/$TOTAL] $name ..."
-  if fetch "$url" -o "$RULES_DAT_DIR/$name"; then
-    echo "  -> saved"
-  else
-    echo "  !! failed"
-  fi
-  i=$((i+1))
 done
-echo "All lists updated in ${RULES_DAT_DIR}."
-UPDATE
-  chmod +x "$MOSDNS_DIR/update.sh"
 
-  ( cd "$MOSDNS_DIR" && "$MOSDNS_DIR/update.sh" )
-  ( cd "$MOSDNS_DIR" && docker-compose up -d --force-recreate )
-}
+for PORT in $PORTS; do
+  netstat -tulpn 2>/dev/null | grep ":$PORT" | while read -r line; do
+    proto=$(echo "$line" | awk '{print $1}')
+    pid_info=$(echo "$line" | awk '{print $NF}')
+    echo "$pid_info" | grep -qE '^[0-9]+/[^[:space:]]+$' || continue
+    pid=$(echo "$pid_info" | cut -d'/' -f1)
+    name=$(echo "$pid_info" | cut -d'/' -f2)
+    [ "$name" = "docker-proxy" ] && docker ps | grep -q "$PORT" && continue
+    echo "$PORT $proto $pid $name" >> "$TMP_PROCESS"
+  done
+done
 
-# ===== 主流程 =====
-log "[1/14] 设置 APK 源（USTC）"
-grep -q ustc /etc/apk/repositories 2>/dev/null || {
-  cat >/etc/apk/repositories <<-'EOF'
-https://mirrors.ustc.edu.cn/alpine/latest-stable/main
-https://mirrors.ustc.edu.cn/alpine/latest-stable/community
-EOF
-  apk update || true
-}
-ensure_dns_and_ca
+if [ ! -s "$TMP_CONTAINER" ] && [ ! -s "$TMP_PROCESS" ]; then
+  ok "无端口占用"
+else
+  [ -s "$TMP_CONTAINER" ] && awk '{printf "  → 容器 %s (%s) 监听 %s\n", $3, $2, $1}' "$TMP_CONTAINER"
+  [ -s "$TMP_PROCESS" ] && awk '{printf "  → 进程 %-16s PID=%s 占用 %s/%s\n", $4, $3, $1, $2}' "$TMP_PROCESS"
+  # 非交互默认直接处理
+  [ -s "$TMP_CONTAINER" ] && sort -u "$TMP_CONTAINER" | awk '{print $2}' | sort -u | while read ID; do
+    docker stop "$ID" >/dev/null 2>&1 || true
+    docker rm "$ID"   >/dev/null 2>&1 || true
+  done
+  [ -s "$TMP_PROCESS" ] && awk '{print $3}' "$TMP_PROCESS" | sort -u | while read PID; do
+    kill "$PID" 2>/dev/null || kill -9 "$PID" 2>/dev/null || true
+  done
+  ok "端口占用已释放"
+fi
+rm -f "$TMP_CONTAINER" "$TMP_PROCESS"
 
-log "[2/14] 安装并配置 Docker + crun"
-ensure_crun_default
+# 清理旧目录
+echo "🧹 清理旧配置目录..."
+rm -rf "$MOSDNS_DIR" "$ADH_CN_DIR" "$ADH_GFW_DIR"
+mkdir -p "$MOSDNS_DIR" "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work" "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
+ok "环境清理完成"
 
-log "[3/14] 释放端口占用"
-cleanup_ports
+# ===== [8/14] 部署 ADH_CN =====
+echo "[8/14] 部署 adh_cn..."
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml \
+  -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn \
+  -o "$ADH_CN_DIR/docker-compose.yaml"
+# 注入 runtime: crun
+inject_crun_runtime "$ADH_CN_DIR/docker-compose.yaml"
+( cd "$ADH_CN_DIR" && docker compose down -v >/dev/null 2>&1 || true )
+( cd "$ADH_CN_DIR" && docker compose up -d )
+ok "adh_cn 已启动"
 
-log "[4/14] 准备目录（RESET_CONFIG=${RESET_CONFIG})"
-prepare_dirs
+# ===== [9/14] 部署 ADH_GFW =====
+echo "[9/14] 部署 adh_gfw..."
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml \
+  -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw \
+  -o "$ADH_GFW_DIR/docker-compose.yaml"
+inject_crun_runtime "$ADH_GFW_DIR/docker-compose.yaml"
+( cd "$ADH_GFW_DIR" && docker compose down -v >/dev/null 2>&1 || true )
+( cd "$ADH_GFW_DIR" && docker compose up -d )
+ok "adh_gfw 已启动"
 
-log "[5/14] 部署 adh_cn"
-compose_up "$ADH_CN_DIR" "adh_cn" "$PORT_CN_DNS" "$PORT_CN_WEB"
+# ===== [10/14] MosDNS 资源 =====
+echo "[10/14] 下载 MosDNS compose 与 update.sh..."
+cd "$MOSDNS_DIR"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns \
+  -o ./docker-compose.yaml
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh \
+  -o ./update.sh
+chmod +x ./update.sh
+# 给 mosdns compose 注入 runtime: crun
+inject_crun_runtime "$MOSDNS_DIR/docker-compose.yaml"
+./update.sh || true
+ok "MosDNS 资源已准备"
 
-log "[6/14] 部署 adh_gfw"
-compose_up "$ADH_GFW_DIR" "adh_gfw" "$PORT_GFW_DNS" "$PORT_GFW_WEB"
-
-log "[7/14] 部署 mosdns"
-deploy_mosdns
-
-log "[8/14] 写入 cron（每周一 04:00 自更新）"
+# ===== [11/14] cron 自动更新 =====
+echo "[11/14] 设置 cron 自动更新..."
 touch "$CRONTAB_FILE"
 sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
 echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
+ok "Cron 规则已更新"
 
-log "✅ 部署完成；健康检查："
-docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+# ===== [12/14] 规则与空白名单 =====
+echo "[12/14] 下载规则与空白名单..."
+mkdir -p "$MOSDNS_DIR/rules-dat" "$MOSDNS_DIR/config/rule"
+: > "$MOSDNS_DIR/rules-dat/geoip_private.txt"
+: > "$MOSDNS_DIR/rules-dat/hosts.txt"
+for f in config_custom.yaml dns.yaml dat_exec.yaml; do
+  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$MOSDNS_DIR/config/$f"
+done
+: > "$MOSDNS_DIR/config/rule/whitelist.txt"
+: > "$MOSDNS_DIR/config/rule/greylist.txt"
+ok "规则与白/灰名单已就绪"
+
+# ===== [13/14] 启动 MosDNS =====
+echo "[13/14] 启动 MosDNS..."
+cd "$MOSDNS_DIR"
+docker compose up -d --force-recreate
+ok "MosDNS 已启动"
+
+# ===== [14/14] 验证与汇总 =====
+echo "[14/14] 验证服务与端口..."
+echo "—— docker ps ——"
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1,20p'
+
+# 端口探测（仅 TCP）
+command -v nc >/dev/null 2>&1 && {
+  nc -zv 127.0.0.1 81   >/dev/null 2>&1 && ok "ADH_CN UI 81 OK"     || warn "ADH_CN UI 81 未监听"
+  nc -zv 127.0.0.1 3001 >/dev/null 2>&1 && ok "ADH_CN 向导 3001 OK" || warn "ADH_CN 向导 3001 未监听"
+  nc -zv 127.0.0.1 54   >/dev/null 2>&1 && ok "ADH_CN DNS 54/TCP OK"|| warn "ADH_CN DNS 54/TCP 未监听"
+
+  nc -zv 127.0.0.1 82   >/dev/null 2>&1 && ok "ADH_GFW UI 82 OK"     || warn "ADH_GFW UI 82 未监听（如你映射 82）"
+  nc -zv 127.0.0.1 3002 >/dev/null 2>&1 && ok "ADH_GFW 向导 3002 OK" || warn "ADH_GFW 向导 3002 未监听（如你映射 3002）"
+  nc -zv 127.0.0.1 55   >/dev/null 2>&1 && ok "ADH_GFW DNS 55/TCP OK"|| warn "ADH_GFW DNS 55/TCP 未监听"
+} || true
+
+echo "==== docker info (brief) ====" >> "$REPORT"
+docker_info_brief >> "$REPORT" 2>&1 || true
+
+ok "✅ 所有服务部署完成"
+echo "📌 查看 MosDNS 日志：  cd $MOSDNS_DIR && docker compose logs -f mosdns"
+echo "📌 查看 ADH_CN 日志：  cd $ADH_CN_DIR && docker compose logs -f"
+echo "📌 查看 ADH_GFW 日志： cd $ADH_GFW_DIR && docker compose logs -f"
+echo "🧾 报告：$REPORT"
