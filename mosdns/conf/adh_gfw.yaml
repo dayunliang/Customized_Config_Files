@@ -23,11 +23,10 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - 94.140.14.140
-    - 8.8.8.8
-    - 8.8.4.4
-    - 1.1.1.1
-    - 9.9.9.9
+    - https://dns.nextdns.io
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+    - https://dns.quad9.net/dns-query
   upstream_dns_file: ""
   bootstrap_dns:
     - 223.5.5.5
