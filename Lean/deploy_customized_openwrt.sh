@@ -269,7 +269,7 @@ fi
 ./scripts/feeds update luci
 ./scripts/feeds install luci-base
 
-# ==== [8] 全量更新安装 feeds 并添加 luci-theme-neobird ====
+# ==== [8] 全量更新安装 feeds ====
 # 清理旧索引 -> 全量 update -> 全量 install。
 # 之后单独 clone 主题到 package/lean 目录，保证树结构简洁。
 echo "🛠️ 正在执行 feeds update/install..."
