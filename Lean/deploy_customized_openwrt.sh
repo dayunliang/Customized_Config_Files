@@ -258,7 +258,43 @@ deploy_summary() {
   fi
 }
 
-# ==== [7] 检查 luci feed（po2lmo 工具所在位置） ====
+# ==== [7] 部署配置文件 ====
+# 进入具体拷贝阶段：先部署仓库根（.config、feeds.conf.default、zzz-default-settings、remove_conflict.sh），
+# 再部署 overlay（Lean/files 下的相对路径）。缺失任何文件均视为“跳过成功”。
+echo "2. 部署 [$COMPILE_NAME] 编译版本配置文件..."
+
+# 11.1 仓库根（Lean/ 下）
+deploy_root "config"                 "./.config"                                                  "644"
+deploy_root "feeds.conf.default"     "./feeds.conf.default"                                       "644"
+deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
+deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                                       "755"
+
+# 11.2 overlay（Lean/files/ 下）
+# 回程路由脚本（环境检测/一次性修复/定时巡检）
+deploy_file "usr/bin/back-route-checkenv.sh"         "755"
+deploy_file "usr/bin/back-route-complete.sh"         "755"
+deploy_file "usr/bin/back-route-cron.sh"             "755"
+
+# IPSec（如需启用，按需取消注释）
+# deploy_file "etc/ipsec.conf"                          "644"
+# deploy_file "etc/ipsec.secrets"                       "600"
+# deploy_file "etc/config/luci-app-ipsec-server"        "644"
+
+# OpenClash 配置与脚本（规则/自定义脚本/启停辅助）
+deploy_file "etc/config/openclash"                   "644"
+deploy_file "etc/openclash/custom/openclash_custom_rules.list" "644"
+deploy_file "usr/share/openclash/res/rule_providers.list"      "644"
+deploy_file "etc/openclash/dns_enable_false.sh"      "755"
+deploy_file "usr/share/openclash/yml_proxys_set.sh"  "755"
+
+# WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
+deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
+
+# 其它网络加速、计划任务等（依据仓库是否提供而定）
+deploy_file "etc/config/turboacc"                    "644"
+deploy_file "etc/crontabs/root"                      "600"
+
+# ==== [8] 检查 luci feed（po2lmo 工具所在位置） ====
 # 若 feeds.conf.default 未声明 luci 源，则自动追加，以确保后续能安装到 luci-base。
 if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
     echo "⚠️  feeds.conf.default 缺少 luci 源，已自动追加"
@@ -269,7 +305,7 @@ fi
 ./scripts/feeds update luci
 ./scripts/feeds install luci-base
 
-# ==== [8] 全量更新安装 feeds ====
+# ==== [9] 全量更新安装 feeds ====
 # 清理旧索引 -> 全量 update -> 全量 install。
 # 之后单独 clone 主题到 package/lean 目录，保证树结构简洁。
 echo "🛠️ 正在执行 feeds update/install..."
@@ -283,13 +319,13 @@ echo "🛠️ 正在执行 feeds update/install..."
 #rm -rf package/lean/luci-theme-neobird
 #git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
 
-# ==== [9] 编译 po2lmo 工具 ====
+# ==== [10] 编译 po2lmo 工具 ====
 # 一些 default-settings/luci 翻译场景需要 po2lmo；
 # 通过 "luci-base/host/compile" 构建 host 侧工具，避免缺工具导致的编译报错。
 echo "🛠️ 编译 po2lmo 工具..."
 make package/feeds/luci/luci-base/host/compile V=s
 
-# ==== [10.1] 首次构建可选下载源码包 ====
+# ==== [11.1] 首次构建可选下载源码包 ====
 # 交互式确认：若是首次构建，则执行 make download 并对 dl/ 下的小文件（<1024B）进行清理重下，
 # 直到无损坏文件为止，从而最大程度避免后续编译阶段的缺包问题。
 read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
@@ -310,7 +346,7 @@ else
     echo "✅ 跳过预下载，可直接 make -j$(nproc) V=s"
 fi
 
-# ==== [10.2] WireGuard 私钥注入（复制前在模板中替换占位符） ====
+# ==== [11.2] WireGuard 私钥注入（复制前在模板中替换占位符） ====
 # 约定：在模板文件里使用占位符 __WG_PRIVKEY__；
 # 本段逻辑会：
 #  1) 交互读取私钥（做长度/字符集粗校验）
@@ -398,42 +434,6 @@ EOF_UCI
 else
   echo "⏭️ 跳过私钥注入。"
 fi
-
-# ==== [11] 部署配置文件 ====
-# 进入具体拷贝阶段：先部署仓库根（.config、feeds.conf.default、zzz-default-settings、remove_conflict.sh），
-# 再部署 overlay（Lean/files 下的相对路径）。缺失任何文件均视为“跳过成功”。
-echo "2. 部署 [$COMPILE_NAME] 编译版本配置文件..."
-
-# 11.1 仓库根（Lean/ 下）
-deploy_root "config"                 "./.config"                                                  "644"
-deploy_root "feeds.conf.default"     "./feeds.conf.default"                                       "644"
-deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
-deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                                       "755"
-
-# 11.2 overlay（Lean/files/ 下）
-# 回程路由脚本（环境检测/一次性修复/定时巡检）
-deploy_file "usr/bin/back-route-checkenv.sh"         "755"
-deploy_file "usr/bin/back-route-complete.sh"         "755"
-deploy_file "usr/bin/back-route-cron.sh"             "755"
-
-# IPSec（如需启用，按需取消注释）
-# deploy_file "etc/ipsec.conf"                          "644"
-# deploy_file "etc/ipsec.secrets"                       "600"
-# deploy_file "etc/config/luci-app-ipsec-server"        "644"
-
-# OpenClash 配置与脚本（规则/自定义脚本/启停辅助）
-deploy_file "etc/config/openclash"                   "644"
-deploy_file "etc/openclash/custom/openclash_custom_rules.list" "644"
-deploy_file "usr/share/openclash/res/rule_providers.list"      "644"
-deploy_file "etc/openclash/dns_enable_false.sh"      "755"
-deploy_file "usr/share/openclash/yml_proxys_set.sh"  "755"
-
-# WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
-deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
-
-# 其它网络加速、计划任务等（依据仓库是否提供而定）
-deploy_file "etc/config/turboacc"                    "644"
-deploy_file "etc/crontabs/root"                      "600"
 
 # ==== [12] 删除临时目录 ====
 # 安全清理：部署结束后移除临时克隆仓库目录，避免遗留敏感内容。
