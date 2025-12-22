@@ -278,10 +278,10 @@ echo "🛠️ 正在执行 feeds update/install..."
 ./scripts/feeds install -a
 
 # 添加主题（如已存在则先删除再 clone 保持最新）
-#echo "🌈 添加 luci-theme-neobird..."
-#mkdir -p package/lean
-#rm -rf package/lean/luci-theme-neobird
-#git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
+echo "🌈 添加 luci-theme-neobird..."
+mkdir -p package/lean
+rm -rf package/lean/luci-theme-neobird
+git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
 
 # ==== [10] 编译 po2lmo 工具 ====
 # 一些 default-settings/luci 翻译场景需要 po2lmo；
