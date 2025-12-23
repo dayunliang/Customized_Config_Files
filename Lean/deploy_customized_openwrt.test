@@ -258,6 +258,47 @@ deploy_summary() {
   fi
 }
 
+# ==== [11] 部署配置文件 ====
+# 进入具体拷贝阶段：先部署仓库根（.config、feeds.conf.default、zzz-default-settings、remove_conflict.sh），
+# 再部署 overlay（Lean/files 下的相对路径）。缺失任何文件均视为“跳过成功”。
+echo "2. 部署 [$COMPILE_NAME] 编译版本配置文件..."
+
+# 11.1 仓库根（Lean/ 下）
+deploy_root "config"                 "./.config"                                                  "644"
+deploy_root "feeds.conf.default"     "./feeds.conf.default"                                       "644"
+deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
+deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                                       "755"
+
+# 11.2 overlay（Lean/files/ 下）
+# 回程路由脚本（环境检测/一次性修复/定时巡检）
+deploy_file "usr/bin/back-route-checkenv.sh"         "755"
+deploy_file "usr/bin/back-route-complete.sh"         "755"
+deploy_file "usr/bin/back-route-cron.sh"             "755"
+
+# IPSec（如需启用，按需取消注释）
+# deploy_file "etc/ipsec.conf"                          "644"
+# deploy_file "etc/ipsec.secrets"                       "600"
+# deploy_file "etc/config/luci-app-ipsec-server"        "644"
+
+# OpenClash 配置与脚本（规则/自定义脚本/启停辅助）
+deploy_file "etc/config/openclash"                   "644"
+deploy_file "etc/openclash/custom/openclash_custom_rules.list" "644"
+deploy_file "usr/share/openclash/res/rule_providers.list"      "644"
+deploy_file "etc/openclash/dns_enable_false.sh"      "755"
+deploy_file "usr/share/openclash/yml_proxys_set.sh"  "755"
+
+# WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
+deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
+
+# 其它网络加速、计划任务等（依据仓库是否提供而定）
+deploy_file "etc/config/turboacc"                    "644"
+deploy_file "etc/crontabs/root"                      "600"
+
+# ==== [12] 删除临时目录 ====
+# 安全清理：部署结束后移除临时克隆仓库目录，避免遗留敏感内容。
+echo "4. 删除临时目录 $TMP_DIR"
+rm -rf "$TMP_DIR"
+
 # ==== [7] 检查 luci feed（po2lmo 工具所在位置） ====
 # 若 feeds.conf.default 未声明 luci 源，则自动追加，以确保后续能安装到 luci-base。
 if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
