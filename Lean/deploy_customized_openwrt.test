@@ -399,13 +399,6 @@ else
   echo "⏭️ 跳过私钥注入。"
 fi
 
-# ==== [13] defconfig 前/后冲突清理与配置固化 ====
-# remove_conflict.sh：你仓库里的“二次开关/兜底剔除”脚本，用于在 defconfig 前后都再跑一次，
-# 防止在 defconfig 过程中某些默认项被重新点亮。
-./remove_conflict.sh
-make defconfig
-./remove_conflict.sh   # 再跑一次，确保最终 .config 保持期望状态
-
 # ==== [11] 部署配置文件 ====
 # 进入具体拷贝阶段：先部署仓库根（.config、feeds.conf.default、zzz-default-settings、remove_conflict.sh），
 # 再部署 overlay（Lean/files 下的相对路径）。缺失任何文件均视为“跳过成功”。
@@ -441,6 +434,13 @@ deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
 # 其它网络加速、计划任务等（依据仓库是否提供而定）
 deploy_file "etc/config/turboacc"                    "644"
 deploy_file "etc/crontabs/root"                      "600"
+
+# ==== [13] defconfig 前/后冲突清理与配置固化 ====
+# remove_conflict.sh：你仓库里的“二次开关/兜底剔除”脚本，用于在 defconfig 前后都再跑一次，
+# 防止在 defconfig 过程中某些默认项被重新点亮。
+./remove_conflict.sh
+make defconfig
+./remove_conflict.sh   # 再跑一次，确保最终 .config 保持期望状态
 
 # ==== [12] 删除临时目录 ====
 # 安全清理：部署结束后移除临时克隆仓库目录，避免遗留敏感内容。
