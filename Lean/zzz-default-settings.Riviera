@@ -35,7 +35,7 @@ uci commit fstab
 # =============================================================================
 # 4. 清理 LuCI 状态页面
 # =============================================================================
-# rm -f /usr/lib/lua/luci/view/admin_status/index/{mwan,upnp,ddns,minidlna}.htm
+rm -f /usr/lib/lua/luci/view/admin_status/index/{mwan,upnp,ddns,minidlna}.htm
 
 # =============================================================================
 # 5. 重命名 “Services” 菜单为 “NAS”
