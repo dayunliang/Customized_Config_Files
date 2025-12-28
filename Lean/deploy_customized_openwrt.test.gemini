@@ -1,17 +1,17 @@
 #!/bin/bash
 # ===========================================================================
-# Lean OpenWrt 定制文件一键部署脚本【逻辑修正版】
+# Lean OpenWrt 定制文件一键部署脚本【顺序修正版】
 # ===========================================================================
 set -e
 
-# --- 基础配置 ---
-REPO_URL="https://github.com/your-username/your-repo.git" # 你的定制仓库地址
+# --- 基础配置（请根据实际情况修改） ---
+REPO_URL="https://github.com/your-username/your-repo.git"
 TMP_DIR="/tmp/openwrt_custom_files"
+COMPILE_NAME="OpenWrt"
 BACKUP_LIST=()
 declare -A DEPLOY_STATS=( [hit]=0 [skip]=0 )
 
 # --- 辅助函数 ---
-# 备份并部署文件到根目录
 deploy_root() {
     local src_name=$1; local dest_path=$2; local mode=$3
     local src_path="$TMP_DIR/$src_name"
@@ -30,7 +30,6 @@ deploy_root() {
     fi
 }
 
-# 部署 files/ 目录下的文件
 deploy_file() {
     local sub_path=$1; local mode=$2
     local src_path="$TMP_DIR/files/$sub_path"
@@ -54,9 +53,9 @@ deploy_summary() {
     echo -e "\n📊 部署统计：命中 ${DEPLOY_STATS[hit]} 个文件，跳过 ${DEPLOY_STATS[skip]} 个文件。"
 }
 
-# ==== [1-4] 环境准备 ====
+# ==== [1-4] 基础准备 ====
 if [ ! -f "feeds.conf.default" ]; then
-    echo "🔍 未检测到 OpenWrt 源码，正在克隆 Lean 仓库..."
+    echo "🔍 未检测到 OpenWrt 源码，正在克隆..."
     git clone https://github.com/coolsnowwolf/lede .
 fi
 
@@ -64,68 +63,81 @@ echo "📂 克隆定制配置仓库..."
 rm -rf "$TMP_DIR"
 git clone "$REPO_URL" "$TMP_DIR"
 
-# ==== [10.2] WireGuard 私钥注入 (必须在复制文件前执行) ====
-# 在临时目录中先行替换占位符，这样随后部署的就是含真实密钥的文件
+# ==== [10.2] WireGuard 私钥注入 (原位置调整：必须在复制文件前修改临时文件) ====
 read -p "🔐 是否注入 WireGuard 私钥？(y/N): " do_wg
 if [[ "$do_wg" =~ ^[Yy]$ ]]; then
-    read -p "请输入私钥 (Private Key): " WG_PRIVKEY
-    if [ -n "$WG_PRIVKEY" ]; then
-        echo "注入私钥到临时目录..."
-        # 扫描临时目录中的所有文件进行替换
-        grep -rl "__WG_PRIVKEY__" "$TMP_DIR" | xargs -r sed -i "s|__WG_PRIVKEY__|${WG_PRIVKEY}|g"
-        
-        # 兜底逻辑：如果 files/etc/config/network 没被替换，生成 uci-defaults
-        WG_UCI_DEFAULTS_PATH="$TMP_DIR/files/etc/uci-defaults/99-wg-privkey"
-        if ! grep -rl "$WG_PRIVKEY" "$TMP_DIR" > /dev/null; then
-            echo "⚠️ 未在模板中发现占位符，生成 uci-defaults 脚本..."
-            mkdir -p "$(dirname "$WG_UCI_DEFAULTS_PATH")"
-            cat <<EOF > "$WG_UCI_DEFAULTS_PATH"
+  read -p "请输入私钥 (Private Key): " WG_PRIVKEY
+  if [ -n "$WG_PRIVKEY" ]; then
+    echo "正在注入私钥到临时目录中的模板..."
+    grep -rl "__WG_PRIVKEY__" "$TMP_DIR" | xargs -r sed -i "s|__WG_PRIVKEY__|${WG_PRIVKEY}|g"
+    
+    WG_UCI_DEFAULTS_PATH="$TMP_DIR/files/etc/uci-defaults/99-wg-privkey"
+    if ! grep -rl "$WG_PRIVKEY" "$TMP_DIR" > /dev/null; then
+      echo "⚠️ 未在模板中发现占位符，生成 uci-defaults 脚本..."
+      mkdir -p "$(dirname "$WG_UCI_DEFAULTS_PATH")"
+      cat <<EOF_UCI > "$WG_UCI_DEFAULTS_PATH"
 #!/bin/sh
 uci set network.wg0.private_key='${WG_PRIVKEY}'
 uci commit network
 exit 0
-EOF
-            chmod 755 "$WG_UCI_DEFAULTS_PATH"
-        fi
+EOF_UCI
+      chmod 755 "$WG_UCI_DEFAULTS_PATH"
     fi
+  fi
 fi
 
-# ==== [11.1] 优先部署 feeds.conf.default ====
+# ==== [11.1] 部署 feeds.conf.default ====
 echo "🚀 部署 feeds 源配置..."
 deploy_root "feeds.conf.default" "./feeds.conf.default" "644"
 
-# ==== [8] & [9] 更新 Feeds 并安装包定义 ====
-# 必须先安装 feeds，后续的 .config 才能被识别，不会被 make defconfig 删掉
+# ==== [8] & [9] 全量更新安装 feeds (原位置调整：必须在部署 .config 前) ====
 echo "🛠️ 正在执行 feeds update/install..."
+if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
+    echo "src-git luci https://github.com/coolsnowwolf/luci" >> feeds.conf.default
+fi
 ./scripts/feeds clean
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
-# 编译 po2lmo 工具（通常后续编译需要）
 echo "🛠️ 编译 po2lmo 工具..."
-make package/feeds/luci/luci-base/host/compile V=s || echo "⚠️ po2lmo 编译跳过或失败"
+make package/feeds/luci/luci-base/host/compile V=s || true
 
-# 添加主题
 echo "🌈 添加 luci-theme-neobird..."
 mkdir -p package/lean
 rm -rf package/lean/luci-theme-neobird
 git clone https://github.com/thinktip/luci-theme-neobird.git package/lean/luci-theme-neobird
 
-# ==== [11.2] 部署 .config 与 Overlay 文件 ====
-echo "📂 部署定制配置文件..."
+# ==== [11.2] 部署 .config 与你的所有 files (保留你原有的全部文件列表) ====
+echo "📂 部署定制配置文件及 Overlay..."
 deploy_root "config" "./.config" "644"
 deploy_root "zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings" "755"
 deploy_root "remove_conflict.sh" "./remove_conflict.sh" "755"
 
-# 部署 overlay 文件 (files/)
-# 注意：此处的列表应根据你仓库实际有的文件调整，或写一个 loop 自动遍历
-if [ -d "$TMP_DIR/files" ]; then
-    cp -r "$TMP_DIR/files/." "./files/"
-    echo "✅ 已同步 files/ 目录所有内容"
-fi
+# --- 此处保留你原有的所有文件清单 ---
+deploy_file "usr/bin/back-route-checkenv.sh" "755"
+deploy_file "usr/bin/back-route-complete.sh" "755"
+deploy_file "usr/bin/back-route-cron.sh" "755"
+deploy_file "etc/config/network" "644"
+deploy_file "etc/config/wireless" "644"
+deploy_file "etc/config/dhcp" "644"
+deploy_file "etc/config/firewall" "644"
+deploy_file "etc/config/passwall" "644"
+deploy_file "etc/config/smartdns" "644"
+deploy_file "etc/config/aria2" "644"
+deploy_file "etc/config/mwan3" "644"
+deploy_file "etc/config/upnpd" "644"
+deploy_file "etc/config/samba4" "644"
+deploy_file "etc/config/ttyd" "644"
+deploy_file "etc/config/fstab" "644"
+deploy_file "etc/config/aliddns" "644"
+deploy_file "etc/config/ddns" "644"
+deploy_file "etc/config/wol" "644"
+deploy_file "etc/config/cpufreq" "644"
+deploy_file "etc/config/turboacc" "644"
+deploy_file "etc/crontabs/root" "600"
 
-# ==== [13] 配置固化 (Defconfig) ====
-echo "⚙️ 正在执行配置固化 (make defconfig)..."
+# ==== [13] 配置固化 (make defconfig) ====
+echo "⚙️ 正在执行配置固化..."
 if [ -f "./remove_conflict.sh" ]; then
     ./remove_conflict.sh
 fi
@@ -134,34 +146,33 @@ if [ -f "./remove_conflict.sh" ]; then
     ./remove_conflict.sh
 fi
 
-# ==== [10.1] 源码预下载 (必须在 defconfig 之后) ====
+# ==== [10.1] 源码预下载 (原位置调整：必须在配置固化后) ====
 read -p "🧐 是否执行源码预下载？(y/N): " is_first
 if [[ "$is_first" =~ ^[Yy]$ ]]; then
-    echo "📥 开始下载源码包..."
+    echo "📥 开始预下载源码包..."
     while true; do
         make download -j8 V=s
-        # 校验下载是否完整（删除小于1KB的文件）
         broken=$(find dl -size -1024c)
         if [ -z "$broken" ]; then
-            echo "✅ 所有源码下载完成"
+            echo "✅ 下载完成"
             break
         else
-            echo "⚠️ 发现损坏文件，清理并重试..."
+            echo "⚠️ 清理损坏文件并重试..."
             find dl -size -1024c -exec rm -f {} \;
         fi
     done
 fi
 
-# ==== [12] 清理临时目录 ====
-echo "🧹 清理临时文件..."
+# ==== [12] 删除临时目录 ====
+echo "🧹 清理临时目录..."
 rm -rf "$TMP_DIR"
 
-# ==== [14] 总结与展示 ====
+# ==== [14] 总结与显示 ====
 deploy_summary
 
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
-    echo "🗂️ 本次备份的旧文件清单："
+    echo "🗂️ 备份文件清单："
     for f in "${BACKUP_LIST[@]}"; do echo "  $f"; done
 fi
 
-echo -e "\n✨ 部署完成！现在可以运行 'make -j\$(nproc) V=s' 开始编译了。"
+echo "✨ 部署成功！"
