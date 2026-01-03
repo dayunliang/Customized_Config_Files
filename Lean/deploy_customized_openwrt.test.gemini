@@ -269,13 +269,13 @@ fi
 ./scripts/feeds update luci
 ./scripts/feeds install luci-base
 
-# ==== [9] 编译 po2lmo 工具 ====
+# ==== [8] 编译 po2lmo 工具 ====
 # 一些 default-settings/luci 翻译场景需要 po2lmo；
 # 通过 "luci-base/host/compile" 构建 host 侧工具，避免缺工具导致的编译报错。
 echo "🛠️ 编译 po2lmo 工具..."
 make package/feeds/luci/luci-base/host/compile V=s
 
-# ==== [10.2] WireGuard 私钥注入（复制前在模板中替换占位符） ====
+# ==== [9] WireGuard 私钥注入（复制前在模板中替换占位符） ====
 # 约定：在模板文件里使用占位符 __WG_PRIVKEY__；
 # 本段逻辑会：
 #  1) 交互读取私钥（做长度/字符集粗校验）
@@ -366,7 +366,7 @@ fi
 
 deploy_root "feeds.conf.default"     "./feeds.conf.default"                                       "644"
 
-# ==== [8] 全量更新安装 feeds ====
+# ==== [10] 全量更新安装 feeds ====
 # 清理旧索引 -> 全量 update -> 全量 install。
 # 之后单独 clone 主题到 package/lean 目录，保证树结构简洁。
 echo "🛠️ 正在执行 feeds update/install..."
@@ -423,7 +423,7 @@ deploy_file "etc/crontabs/root"                      "600"
 make defconfig
 #./remove_conflict.sh   # 再跑一次，确保最终 .config 保持期望状态
 
-# ==== [10.1] 首次构建可选下载源码包 ====
+# ==== [14] 首次构建可选下载源码包 ====
 # 交互式确认：若是首次构建，则执行 make download 并对 dl/ 下的小文件（<1024B）进行清理重下，
 # 直到无损坏文件为止，从而最大程度避免后续编译阶段的缺包问题。
 read -p "🧐 是否首次构建？需要预下载源码包？(y/N): " is_first
@@ -444,7 +444,7 @@ else
     echo "✅ 跳过预下载，可直接 make -j$(nproc) V=s"
 fi
 
-# ==== [12] 删除临时目录 ====
+# ==== [15] 删除临时目录 ====
 # 安全清理：部署结束后移除临时克隆仓库目录，避免遗留敏感内容。
 echo "4. 删除临时目录 $TMP_DIR"
 rm -rf "$TMP_DIR"
@@ -454,7 +454,7 @@ rm -rf "$TMP_DIR"
 # 部署统计汇总（命中/跳过）
 deploy_summary
 
-# ==== [14] 显示备份列表 ====
+# ==== [16] 显示备份列表 ====
 # 若本次覆盖了任何已存在文件，会在这里罗列其 *.bak.时间戳 副本，便于回滚。
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
     echo "🗂️ 本次备份的文件："
@@ -463,7 +463,7 @@ else
     echo "🗂️ 本次没有文件被覆盖，因此没有备份"
 fi
 
-# ==== [15] 执行摘要 ====
+# ==== [17] 执行摘要 ====
 # 快速总览：帮助回忆刚刚发生的步骤，便于日志检索与二次执行。
 echo "📋 执行步骤总结："
 echo "-------------------------------------------------------"
@@ -475,7 +475,7 @@ echo "✅ （可选）下载源码包并校验"
 echo "✅ WireGuard 私钥占位符注入/兜底 uci-defaults"
 echo "-------------------------------------------------------"
 
-# ==== [16] 完成提示 ====
+# ==== [18] 完成提示 ====
 # 给出下一步编译建议（使用全部可用 CPU 核心加速编译）。
 echo "🚀 配置部署完成！"
 echo "👉 当前源码目录: $(pwd)"
@@ -484,3 +484,4 @@ echo "💡 可执行：make -j$(nproc) V=s"
 # 版本注记：
 # 2025-12-04   初稿：加入 WireGuard 私钥注入/兜底，完善部署与统计输出
 # 2025-12-06   注释版：逐行/逐段超详尽注释与注意事项、风险提示与使用建议
+# 2026-01-03   Gemini 修改版
