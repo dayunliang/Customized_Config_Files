@@ -1,0 +1,18 @@
+services:
+  subconverter:
+    image: tindy2013/subconverter:latest
+    container_name: subconverter
+    restart: always
+    ports:
+      - "25500:25500"
+
+  subweb:
+    image: stilleshan/subweb:latest
+    container_name: subweb
+    restart: always
+    ports:
+      - "18080:80"
+    environment:
+      SITE_NAME: "subweb"
+      API_URL: "http://192.168.12.3:25500"
+      SHORT_URL: "http://192.168.12.3:25500"
