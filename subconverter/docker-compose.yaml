@@ -9,6 +9,8 @@ services:
   subweb:
     image: stilleshan/subweb:latest
     container_name: subweb
+    volumes:
+      - ./subweb/app/public/conf:/app/public/conf
     restart: always
     ports:
       - "18080:80"
