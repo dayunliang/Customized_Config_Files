@@ -69,6 +69,6 @@ window.config = {
     {
       value: 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/ACL4SSR_Online_Full_AJ_Home.ini',
       text: 'ACL4SSR Online Full AJ Home',
-    }
+    },
   ],
 };
