@@ -9,8 +9,6 @@ services:
   subweb:
     image: stilleshan/subweb:latest
     container_name: subweb
-    volumes:
-      - ./subweb/app/public/conf:/app/public/conf
     restart: always
     ports:
       - "18080:80"
@@ -18,3 +16,6 @@ services:
       SITE_NAME: "subweb"
       API_URL: "http://192.168.12.3:25500"
       SHORT_URL: "http://192.168.12.3:25500"
+    volumes:
+      # 只挂载单个文件，避免覆盖整个目录导致“原文件看不见”
+      - ./subweb/app/public/conf/config.js:/app/public/conf/config.js:ro
