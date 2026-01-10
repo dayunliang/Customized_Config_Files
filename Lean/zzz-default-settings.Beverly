@@ -237,6 +237,15 @@ done
 
 uci commit firewall
 
+# 12.6 允许 WireGuard 握手（WAN → 本机）
+uci -q delete firewall.allow_wg_handshake
+uci set firewall.allow_wg_handshake='rule'
+uci set firewall.allow_wg_handshake.name='Allow-WireGuard-Handshake'
+uci set firewall.allow_wg_handshake.src='wan'
+uci set firewall.allow_wg_handshake.proto='udp'
+uci set firewall.allow_wg_handshake.dest_port='51820'
+uci set firewall.allow_wg_handshake.target='ACCEPT'
+
 # =============================================================================
 # 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口（访问权限由防火墙控制）
 # =============================================================================
