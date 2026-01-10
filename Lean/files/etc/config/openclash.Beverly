@@ -431,27 +431,6 @@ config config_subscribe
 config rule_providers
 	option enabled '1'
 	option config 'all'
-	option name 'Unban_Added'
-	option type 'http'
-	option format 'yaml'
-	option behavior 'classical'
-	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/Unban_Added.yaml'
-	option interval '60'
-	option position '0'
-	option group '🎯 全球直连'
-	option other_parameters '# Example:
-# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
-# 示例：
-# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
-# inline Example:
-#    payload:
-#      - '\''.blogger.com'\''
-#      - '\''*.*.microsoft.com'\''
-#      - '\''books.itunes.apple.com'\'''
-
-config rule_providers
-	option enabled '1'
-	option config 'all'
 	option name 'Launcher'
 	option type 'http'
 	option format 'yaml'
@@ -596,6 +575,27 @@ config rule_providers
 #      - '\''*.*.microsoft.com'\''
 #      - '\''books.itunes.apple.com'\'''
 
+config rule_providers
+	option enabled '1'
+	option config 'all'
+	option name 'Unban_Added'
+	option type 'http'
+	option format 'yaml'
+	option behavior 'classical'
+	option url 'https://raw.githubusercontent.com/dayunliang/OpenClash/main/Unban_Added.yaml'
+	option interval '60'
+	option position '0'
+	option group '🎯 全球直连'
+	option other_parameters '# Example:
+# Only support YAML, four spaces need to be reserved at the beginning of each line to maintain formatting alignment
+# 示例：
+# 仅支持 YAML, 每行行首需要多保留四个空格以使脚本处理后能够与上方配置保持格式对齐
+# inline Example:
+#    payload:
+#      - '\''.blogger.com'\''
+#      - '\''*.*.microsoft.com'\''
+#      - '\''books.itunes.apple.com'\'''
+
 config rule_provider_config
 	option enabled '1'
 	option interval '86400'
@@ -611,25 +611,6 @@ config rule_provider_config
 	list rule_name 'AI Suite'
 	option group '🤖 ChatGPT'
 	option position '1'
-
-config servers
-	option config 'all'
-	option type 'trojan'
-	option name 'ALI-HK'
-	option server 'ali-hk.b-gfw.cfd'
-	option password '12012'
-	option udp 'true'
-	option skip_cert_verify 'true'
-	option sni 'ali-hk.b-gfw.cfd'
-	option tfo 'false'
-	option ip_version 'ipv4-prefer'
-	option port '12012'
-	option obfs_trojan 'grpc'
-	list alpn 'h2'
-	option manual '1'
-	list groups '🚀 节点选择'
-	list groups '🚂 手动切换'
-	option enabled '1'
 
 config rule_provider_config
 	option enabled '1'
@@ -727,3 +708,22 @@ config rule_provider_config
         list rule_name 'TikTok'
         option position '0'
         option group '🚂 手动切换'
+
+config servers
+	option config 'all'
+	option type 'trojan'
+	option name 'ALI-HK'
+	option server 'ali-hk.b-gfw.cfd'
+	option password '12012'
+	option udp 'true'
+	option skip_cert_verify 'true'
+	option sni 'ali-hk.b-gfw.cfd'
+	option tfo 'false'
+	option ip_version 'ipv4-prefer'
+	option port '12012'
+	option obfs_trojan 'grpc'
+	list alpn 'h2'
+	option manual '1'
+	list groups '🚀 节点选择'
+	list groups '🚂 手动切换'
+	option enabled '1'
