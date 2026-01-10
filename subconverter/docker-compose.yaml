@@ -18,4 +18,4 @@ services:
       SHORT_URL: "http://192.168.12.3:25500"
     volumes:
       # 只挂载单个文件，避免覆盖整个目录导致“原文件看不见”
-      - ./subweb/app/public/conf/config.js:/app/public/conf/config.js:ro
+      - ./subweb/conf/config.js:/usr/share/nginx/html/conf/config.js:ro
