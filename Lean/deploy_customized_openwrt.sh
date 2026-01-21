@@ -408,6 +408,7 @@ deploy_file "etc/openclash/custom/openclash_custom_rules.list" "644"
 deploy_file "usr/share/openclash/res/rule_providers.list"      "644"
 deploy_file "etc/openclash/dns_enable_false.sh"      "755"
 deploy_file "usr/share/openclash/yml_proxys_set.sh"  "755"
+deploy_file "usr/share/openclash/openclash.sh"  "755"
 
 # WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
 deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
