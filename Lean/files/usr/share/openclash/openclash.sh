@@ -614,5 +614,13 @@ config_foreach sub_info_get "config_subscribe" "$1"
 uci -q delete openclash.config.config_update_path
 uci commit openclash
 
+# ------------------------------------------------------------
+# Import customized servers AFTER subscription update (keep last)
+# ------------------------------------------------------------
+if [ -x /usr/share/openclash/import_customized_server.sh ]; then
+  /usr/share/openclash/import_customized_server.sh >/dev/null 2>&1
+  uci -q commit openclash
+fi
+
 dec_job_counter_and_restart "$restart"
 del_lock
