@@ -348,7 +348,7 @@ uci -q batch << 'EOF'
   add network wireguard_wg0
   set network.@wireguard_wg0[-1].description='Beverly'
   set network.@wireguard_wg0[-1].public_key='HR8WnvOBHDjjO0drG+W2XbhStkVOFfLL6gmUjfycWH8='
-  set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.sbs'
+  set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.cfd'
   set network.@wireguard_wg0[-1].endpoint_port='51820'
   set network.@wireguard_wg0[-1].persistent_keepalive='25'
   set network.@wireguard_wg0[-1].route_allowed_ips='1'
