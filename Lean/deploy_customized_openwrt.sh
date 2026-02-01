@@ -393,31 +393,36 @@ deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                     
 
 # 11.2 overlay（Lean/files/ 下）
 # 回程路由脚本（环境检测/一次性修复/定时巡检）
-deploy_file "usr/bin/back-route-checkenv.sh"         "755"
-deploy_file "usr/bin/back-route-complete.sh"         "755"
-deploy_file "usr/bin/back-route-cron.sh"             "755"
+deploy_file "usr/bin/back-route-checkenv.sh"                          "755"
+deploy_file "usr/bin/back-route-complete.sh"                          "755"
+deploy_file "usr/bin/back-route-cron.sh"                              "755"
 
 # IPSec（如需启用，按需取消注释）
-# deploy_file "etc/ipsec.conf"                          "644"
-# deploy_file "etc/ipsec.secrets"                       "600"
-# deploy_file "etc/config/luci-app-ipsec-server"        "644"
+# deploy_file "etc/ipsec.conf"                                        "644"
+# deploy_file "etc/ipsec.secrets"                                     "600"
+# deploy_file "etc/config/luci-app-ipsec-server"                      "644"
 
 # OpenClash 配置与脚本（规则/自定义脚本/启停辅助）
-deploy_file "etc/config/openclash"                   "644"
-deploy_file "etc/openclash/custom/openclash_custom_rules.list" "644"
-deploy_file "usr/share/openclash/res/rule_providers.list"      "644"
-deploy_file "etc/openclash/dns_enable_false.sh"      "755"
-deploy_file "usr/share/openclash/yml_proxys_set.sh"  "755"
-deploy_file "usr/share/openclash/openclash.sh"  "755"
-deploy_file "usr/share/openclash/import_customized_server.sh"  "755"
-deploy_file "usr/share/openclash/customized_server"      "644"
+deploy_file "etc/config/openclash"                                    "644"
+deploy_file "etc/openclash/custom/openclash_custom_rules.list"        "644"
+deploy_file "usr/share/openclash/res/rule_providers.list"             "644"
+deploy_file "etc/openclash/dns_enable_false.sh"                       "755"
+deploy_file "usr/share/openclash/yml_proxys_set.sh"                   "755"
+deploy_file "usr/share/openclash/openclash.sh"                        "755"
+deploy_file "usr/share/openclash/import_customized_server.sh"         "755"
+deploy_file "usr/share/openclash/customized_server"                   "644"
 
 # WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
-deploy_file "usr/bin/WireGuard_Refresh.sh"           "755"
+deploy_file "usr/bin/WireGuard_Refresh.sh"                            "755"
+
+# Avahi Daemon
+deploy_file "etc/dbus-1/system.d/avahi-dbus.conf"                     “644”
+deploy_file "etc/avahi/avahi-daemon.conf"                             “644”
+
 
 # 其它网络加速、计划任务等（依据仓库是否提供而定）
-deploy_file "etc/config/turboacc"                    "644"
-deploy_file "etc/crontabs/root"                      "600"
+deploy_file "etc/config/turboacc"                                     "644"
+deploy_file "etc/crontabs/root"                                       "600"
 
 # ==== [13] defconfig 前/后冲突清理与配置固化 ====
 # remove_conflict.sh：你仓库里的“二次开关/兜底剔除”脚本，用于在 defconfig 前后都再跑一次，
