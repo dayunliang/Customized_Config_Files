@@ -121,6 +121,27 @@ uci set network.wan.dns='192.168.12.10 192.168.12.11'
 uci set network.wan.broadcast='192.168.12.255'
 uci set network.wan.ip6assign='0'
 
+# VLAN 50
+uci set network.wan.ifname='eth1.50'
+uci set network.wan.proto='static'
+uci set network.wan.ipaddr='192.168.50.144'
+uci set network.wan.netmask='255.255.255.0'
+uci set network.wan.broadcast='192.168.50.255'
+
+# VLAN 80
+uci set network.wan.ifname='eth1.80'
+uci set network.wan.proto='static'
+uci set network.wan.ipaddr='192.168.80.144'
+uci set network.wan.netmask='255.255.255.0'
+uci set network.wan.broadcast='192.168.80.255'
+
+# VLAN 90
+uci set network.wan.ifname='eth1.90'
+uci set network.wan.proto='static'
+uci set network.wan.ipaddr='192.168.90.144'
+uci set network.wan.netmask='255.255.255.0'
+uci set network.wan.broadcast='192.168.90.255'
+
 # 删除 wan6 及其 DHCP
 uci delete network.wan6 2>/dev/null
 uci delete dhcp.wan6    2>/dev/null
