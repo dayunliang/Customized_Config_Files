@@ -90,19 +90,27 @@ echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 # =============================================================================
 #  - LAN: 192.168.122.144/24，不发 DHCP（由上游设备负责）
 #  - WAN: 192.168.12.144/24，GW 192.168.12.253，DNS 192.168.12.10/11
+#  - VLAN50/80/90: 为 Avahi 反射器准备的三段网段（仅配置静态地址，不配置默认网关，避免多默认路由）
 
-# 移除旧式桥接字段
+# -----------------------------------------------------------------------------
+# 11.1 兼容 DSA / 传统架构：使用 device 字段；同时清理旧式桥接字段
+# -----------------------------------------------------------------------------
 uci delete network.lan.ifname 2>/dev/null || true
 uci delete network.lan.type   2>/dev/null || true
+uci delete network.lan.device 2>/dev/null || true
 
-# LAN（保留 ifname 以便 LuCI 物理页显示；12段会兜底 device）
-uci set network.lan.ifname='eth0'
+uci delete network.wan.ifname 2>/dev/null || true
+uci delete network.wan.type   2>/dev/null || true
+uci delete network.wan.device 2>/dev/null || true
+
+# -----------------------------------------------------------------------------
+# 11.2 LAN（不发 DHCPv4/RA/DHCPv6）
+# -----------------------------------------------------------------------------
 uci set network.lan.proto='static'
+uci set network.lan.device='eth0'
 uci set network.lan.ipaddr='192.168.122.144'
 uci set network.lan.netmask='255.255.255.0'
-uci set network.lan.ip6assign='0'
 
-# DHCP: LAN 不发 DHCPv4/RA/DHCPv6
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
 uci set dhcp.lan.ignore='1'
@@ -110,24 +118,75 @@ uci set dhcp.lan.dhcpv6='disabled'
 uci set dhcp.lan.ra='disabled'
 uci set dhcp.lan.ra_management='0'
 
-# WAN
-uci delete network.wan.ifname 2>/dev/null || true
-uci set network.wan.ifname='eth1'
+# -----------------------------------------------------------------------------
+# 11.3 WAN（仅 WAN 配默认路由/网关，避免多默认路由造成“路由漂移”）
+# -----------------------------------------------------------------------------
 uci set network.wan.proto='static'
+uci set network.wan.device='eth1'
 uci set network.wan.ipaddr='192.168.12.144'
 uci set network.wan.netmask='255.255.255.0'
 uci set network.wan.gateway='192.168.12.253'
 uci set network.wan.dns='192.168.12.10 192.168.12.11'
-uci set network.wan.broadcast='192.168.12.255'
-uci set network.wan.ip6assign='0'
 
-# 删除 wan6 及其 DHCP
+# -----------------------------------------------------------------------------
+# 11.4 创建 VLAN 子接口设备（eth1.50 / eth1.80 / eth1.90）
+#      说明：仅写 interface device='eth1.50' 在某些环境下不会自动创建 VLAN link，
+#            这里显式创建 802.1q device，确保开机就有 eth1.X 设备。
+# -----------------------------------------------------------------------------
+ensure_vlan_dev() {
+  _dev="$1"   # 例如 eth1.50
+  _vid="$2"   # 例如 50
+
+  # 如果已存在同名 device，则仅更新关键字段
+  _sec=""
+  for s in $(uci -q show network | grep "=device" | cut -d= -f1); do
+    [ "$(uci -q get ${s}.name 2>/dev/null)" = "${_dev}" ] && _sec="$s" && break
+  done
+
+  if [ -z "$_sec" ]; then
+    uci add network device >/dev/null
+    _sec="network.@device[-1]"
+  fi
+
+  uci set ${_sec}.name="${_dev}"
+  uci set ${_sec}.type="8021q"
+  uci set ${_sec}.ifname="eth1"
+  uci set ${_sec}.vid="${_vid}"
+}
+
+ensure_vlan_dev "eth1.50" "50"
+ensure_vlan_dev "eth1.80" "80"
+ensure_vlan_dev "eth1.90" "90"
+
+# -----------------------------------------------------------------------------
+# 11.5 VLAN50 / VLAN80 / VLAN90（仅静态地址，不配置网关/DNS）
+# -----------------------------------------------------------------------------
+uci -q delete network.VLAN50 2>/dev/null || true
+uci set network.VLAN50='interface'
+uci set network.VLAN50.proto='static'
+uci set network.VLAN50.device='eth1.50'
+uci set network.VLAN50.ipaddr='192.168.50.144'
+uci set network.VLAN50.netmask='255.255.255.0'
+
+uci -q delete network.VLAN80 2>/dev/null || true
+uci set network.VLAN80='interface'
+uci set network.VLAN80.proto='static'
+uci set network.VLAN80.device='eth1.80'
+uci set network.VLAN80.ipaddr='192.168.80.144'
+uci set network.VLAN80.netmask='255.255.255.0'
+
+uci -q delete network.VLAN90 2>/dev/null || true
+uci set network.VLAN90='interface'
+uci set network.VLAN90.proto='static'
+uci set network.VLAN90.device='eth1.90'
+uci set network.VLAN90.ipaddr='192.168.90.144'
+uci set network.VLAN90.netmask='255.255.255.0'
+
+# -----------------------------------------------------------------------------
+# 11.6 删除 wan6 及其 DHCP，并彻底关闭 IPv6（odhcpd + sysctl）
+# -----------------------------------------------------------------------------
 uci delete network.wan6 2>/dev/null
 uci delete dhcp.wan6    2>/dev/null
-
-# 让 LuCI 显示“IPv6 已禁用”
-uci delete network.lan.ip6assign 2>/dev/null
-uci delete network.wan.ip6assign 2>/dev/null
 
 uci commit network
 uci commit dhcp
@@ -138,11 +197,34 @@ net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 EOF
-# （注意：上面已经包含完整内容，不再重复追加“裸” sysctl 行）
 
 sysctl -p >/dev/null 2>&1
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
+
+# -----------------------------------------------------------------------------
+# 11.7 防火墙：把 VLAN50/80/90 归入 lan zone（否则可能被防火墙当成“未归属接口”而丢弃）
+# -----------------------------------------------------------------------------
+add_zone_net() {
+  _zone="$1"
+  _net="$2"
+  _zsec=""
+
+  for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+    [ "$(uci -q get ${s}.name 2>/dev/null)" = "${_zone}" ] && _zsec="$s" && break
+  done
+  [ -z "$_zsec" ] && return 0
+
+  _cur="$(uci -q get ${_zsec}.network 2>/dev/null || echo '')"
+  echo "$_cur" | grep -qw "${_net}" || uci add_list ${_zsec}.network="${_net}"
+}
+
+add_zone_net "lan" "VLAN50"
+add_zone_net "lan" "VLAN80"
+add_zone_net "lan" "VLAN90"
+uci commit firewall
+
+
 
 # =============================================================================
 # 12. 防火墙 wg0 相关设置（叠加默认 lan/wan）
@@ -285,13 +367,28 @@ EOF
 uci commit network
 
 # =============================================================================
-# 15. 统一在脚本末尾生效（避免中途重启造成时序问题）
+# 15. Avahi（mDNS）+ D-Bus：启用服务（配置文件已通过 files/ 预置）
+# =============================================================================
+# 说明：
+#  - 你已在预制镜像中放入：
+#      /etc/dbus-1/system.d/avahi-dbus.conf
+#      /etc/avahi/avahi-daemon.conf
+#  - 因此这里不再生成配置文件，只负责 enable + restart（顺序：dbus -> avahi）
+
+[ -x /etc/init.d/dbus ] && /etc/init.d/dbus enable
+[ -x /etc/init.d/avahi-daemon ] && /etc/init.d/avahi-daemon enable
+
+[ -x /etc/init.d/dbus ] && /etc/init.d/dbus restart
+[ -x /etc/init.d/avahi-daemon ] && /etc/init.d/avahi-daemon restart
+
+# =============================================================================
+# 16. 统一在脚本末尾生效（避免中途重启造成时序问题）
 # =============================================================================
 #/etc/init.d/network reload
 #/etc/init.d/firewall reload
 
 # =============================================================================
-# 16. 脚本执行完毕后删除自身
+# 17. 脚本执行完毕后删除自身
 # =============================================================================
 rm -f /etc/uci-defaults/zzz-default-settings
 exit 0
