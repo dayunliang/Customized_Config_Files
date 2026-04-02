@@ -413,7 +413,7 @@ deploy_file "usr/share/openclash/import_customized_server.sh"         "755"
 deploy_file "usr/share/openclash/customized_server"                   "644"
 
 # WireGuard 网络接口刷新脚本（某站点可能没有，缺失视为成功）
-deploy_file "usr/bin/WireGuard_Refresh.sh"                            "755"
+deploy_file "usr/bin/wireGuard_refresh.sh"                            "755"
 
 # Avahi Daemon
 deploy_file "etc/dbus-1/system.d/avahi-dbus.conf"                     “644”
