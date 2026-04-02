@@ -1,32 +1,169 @@
 #!/bin/sh
 
-# 要检查的 WireGuard 接口和对端 DDNS
+# ============================================================
+# WireGuard DDNS + 连通性检测脚本（增强版）
+#
+# 功能：
+#   满足任一条件 → 重启 wg0
+#
+#   条件 1：DDNS 解析 IP 发生变化
+#   条件 2：本次脚本执行中，连续 3 次 ping 目标失败
+#
+# 适用场景：
+#   - DDNS endpoint 不自动更新
+#   - WG 隧道卡死 / handshake 停止
+#   - 跨站点（Beverly ↔ Riviera）网络自愈
+#
+# 建议运行方式：
+#   每分钟通过 cron 执行一次
+# ============================================================
+
+
+# =========================
+# 基本配置区域（可按需修改）
+# =========================
+
+# WireGuard 接口名称
 WG_IF="wg0"
+
+# 对端 DDNS 域名
 PEER_DDNS="beverly.b-gfw.sbs"
 
-# 1. 解析 DDNS 当前 IP
-NEW_IP=$(nslookup "$PEER_DDNS" 2>/dev/null | awk '/Address [0-9]/{print $3; exit}')
+# 用于检测隧道是否通的目标 IP（必须长期在线且允许 ping）
+PING_TARGET="192.168.12.254"
 
-# 如果解析失败就算了，不动 WG，避免误操作
-[ -z "$NEW_IP" ] && exit 0
+# 每次 ping 的超时时间（秒）
+PING_TIMEOUT="2"
 
-# 2. 读取当前 WG 正在使用的 endpoint IP
-CURRENT_IP=$(wg show "$WG_IF" 2>/dev/null | awk '/endpoint:/{print $2}' | cut -d: -f1)
+# 连续失败次数阈值（本次执行内）
+PING_FAIL_THRESHOLD="3"
 
-# 如果当前没有 endpoint（还没连上），也视为需要尝试刷新
-if [ -z "$CURRENT_IP" ]; then
-    logger -t wg-ddns "No current endpoint, restarting $WG_IF (DDNS=$PEER_DDNS -> $NEW_IP)"
+# 日志标签（用于 logread 过滤）
+LOG_TAG="wg-ddns"
+
+
+# =========================
+# 函数：记录日志并重启 WG
+# =========================
+restart_wg() {
+    REASON="$1"
+
+    # 写入系统日志（logread 可查看）
+    logger -t "$LOG_TAG" "$REASON, restarting $WG_IF"
+
+    # 重启 WireGuard 接口
     ifdown "$WG_IF" 2>/dev/null
     ifup "$WG_IF"
+
+    # 结束脚本执行（避免继续往下跑）
     exit 0
+}
+
+
+# =========================
+# 步骤 1：解析 DDNS 当前 IP
+# =========================
+# 兼容 BusyBox / OpenWrt nslookup 输出格式：
+# Address 1: x.x.x.x
+# Address: x.x.x.x
+# =========================
+NEW_IP=$(nslookup "$PEER_DDNS" 2>/dev/null | awk '
+/^Address [0-9]*: / { print $3; exit }
+/^Address: / { print $2; exit }
+')
+
+# 标记：DDNS 是否发生变化
+DDNS_CHANGED=0
+
+
+# =========================
+# 步骤 2：对比当前 WG endpoint
+# =========================
+if [ -n "$NEW_IP" ]; then
+
+    # 从 wg show 中提取当前实际连接的 endpoint IP
+    # 示例：endpoint: 1.2.3.4:51820 → 提取 1.2.3.4
+    CURRENT_IP=$(wg show "$WG_IF" 2>/dev/null | awk '/endpoint:/{print $2}' | cut -d: -f1)
+
+    # 如果当前没有 endpoint（说明未连接或异常）
+    if [ -z "$CURRENT_IP" ]; then
+        restart_wg "No current endpoint (DDNS=$PEER_DDNS -> $NEW_IP)"
+    fi
+
+    # 判断 DDNS IP 是否发生变化
+    if [ "$NEW_IP" != "$CURRENT_IP" ]; then
+        DDNS_CHANGED=1
+    fi
+
+else
+    # DDNS 解析失败，不参与 DDNS 判断，但仍继续 ping 检测
+    logger -t "$LOG_TAG" "DDNS resolve failed for $PEER_DDNS, skip DDNS compare"
 fi
 
-# 3. 对比 IP，如果不一样就重启 WG 接口
-if [ "$NEW_IP" != "$CURRENT_IP" ]; then
-    logger -t wg-ddns "Endpoint changed: $CURRENT_IP -> $NEW_IP, restarting $WG_IF"
-    ifdown "$WG_IF" 2>/dev/null
-    ifup "$WG_IF"
+
+# =========================
+# 步骤 3：连续 ping 检测（本次执行内）
+# =========================
+# 逻辑：
+#   - 连续 ping 3 次
+#   - 只要有一次成功 → 判定为正常
+#   - 只有 3 次全部失败 → 判定为异常
+# =========================
+
+PING_FAIL_COUNT=0
+I=1
+
+while [ "$I" -le "$PING_FAIL_THRESHOLD" ]; do
+
+    # 每次只发送 1 个 ICMP 包
+    if ping -c 1 -W "$PING_TIMEOUT" "$PING_TARGET" >/dev/null 2>&1; then
+
+        # 只要成功一次，就认为本轮检测通过
+        PING_FAIL_COUNT=0
+        break
+
+    else
+        # 本次 ping 失败，计数 +1
+        PING_FAIL_COUNT=$((PING_FAIL_COUNT + 1))
+
+        # 写日志（可用于排查网络抖动）
+        logger -t "$LOG_TAG" "Ping $PING_TARGET failed ($PING_FAIL_COUNT/$PING_FAIL_THRESHOLD) in current run"
+    fi
+
+    I=$((I + 1))
+done
+
+
+# =========================
+# 步骤 4：判断是否需要重启 WG
+# =========================
+# 满足任一条件即重启：
+#
+# 条件 A：DDNS IP 变化
+# 条件 B：本次执行中连续 ping 失败 3 次
+# =========================
+
+# 情况 1：DDNS 变化 + ping 失败
+if [ "$DDNS_CHANGED" -eq 1 ] && [ "$PING_FAIL_COUNT" -ge "$PING_FAIL_THRESHOLD" ]; then
+    restart_wg "Endpoint changed: $CURRENT_IP -> $NEW_IP, and ping $PING_TARGET failed $PING_FAIL_COUNT times in current run"
 fi
 
-# 一样就什么都不做，安静退出
+# 情况 2：仅 DDNS 变化
+if [ "$DDNS_CHANGED" -eq 1 ]; then
+    restart_wg "Endpoint changed: $CURRENT_IP -> $NEW_IP"
+fi
+
+# 情况 3：仅 ping 连续失败
+if [ "$PING_FAIL_COUNT" -ge "$PING_FAIL_THRESHOLD" ]; then
+    restart_wg "Ping $PING_TARGET failed $PING_FAIL_COUNT times continuously in current run"
+fi
+
+
+# =========================
+# 步骤 5：正常退出
+# =========================
+# 如果执行到这里，说明：
+#   - DDNS 没变
+#   - ping 正常
+# =========================
 exit 0
