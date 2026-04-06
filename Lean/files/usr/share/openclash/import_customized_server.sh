@@ -1,17 +1,20 @@
 #!/bin/sh
 # ------------------------------------------------------------
-# import_customized_server.sh (v11: authoritative sync)
+# import_customized_server.sh
 # ------------------------------------------------------------
-# 你的新逻辑（最终实现）：
-# 1) openclash 中 server 若与 customized_server 同名 => 直接用 customized_server 覆盖
-#    （实现方式：删除 openclash 中该 name 的所有同名段，再从 customized_server 重建 1 条）
-# 2) 若 openclash 中 manual='1' 的 server 在 customized_server 中没有同名 => 删除该段
-# 3) 复制（补齐）customized_server 中所有 server 到 openclash（缺的新增；同名已在步骤1覆盖）
+# 功能说明：
+# 1. 每次执行时，先尝试从远程下载最新的 customized_server
+# 2. 如果下载成功且 UCI 格式校验通过，则覆盖本地 customized_server
+# 3. 如果下载失败 / 下载为空 / 格式非法，则保留本地旧文件继续执行
+# 4. 然后以 customized_server 作为“权威源”，同步 openclash 的 servers：
+#    - openclash 中若有与 customized_server 同名的节点：删除所有同名段，再重建 1 条
+#    - openclash 中 manual='1' 且 customized_server 中不存在同名的节点：删除
+#    - customized_server 中有但 openclash 中没有的节点：补齐新增
 #
-# 结果：
-# - customized_server 中出现的 name：openclash 最终只保留 1 条，且内容与 customized_server 一致
+# 最终效果：
+# - customized_server 中出现的 name：openclash 中最终只保留 1 条，且内容与 customized_server 一致
 # - openclash 中非 manual=1 的订阅节点：只要 name 不与 customized_server 冲突，保留不动
-# - openclash 中 manual=1 的“垃圾手工节点”：若不在 customized_server 中，全部删除
+# - openclash 中 manual=1 的多余手工节点：若不在 customized_server 中，全部删除
 # ------------------------------------------------------------
 
 LOG="/tmp/openclash_customized_import.log"
@@ -20,10 +23,16 @@ log() { echo "$(NOW) [customized_server] $*" >> "$LOG"; }
 
 DIR="/usr/share/openclash"
 SRC="$DIR/customized_server"
+REMOTE_URL="https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/Lean/files/usr/share/openclash/customized_server"
+
+TMP_DL="/tmp/customized_server.download.$$"
+TMP_UCI_DIR="/tmp/customized_server_uci.$$"
 MAP="/tmp/customized_server_map.$$"
+DONE="/tmp/overwrite_done.$$"
 
 cleanup_tmp() {
-  rm -f "$MAP" 2>/dev/null
+  rm -f "$MAP" "$TMP_DL" "$DONE" 2>/dev/null
+  rm -rf "$TMP_UCI_DIR" 2>/dev/null
 }
 trap cleanup_tmp EXIT
 
@@ -35,7 +44,10 @@ strip_one_quote_pair() {
   v="$1"
   v="$(printf "%s" "$v" | tr -d '\r')"
   case "$v" in
-    \'*\') v="${v#\'}"; v="${v%\'}" ;;
+    \'*\')
+      v="${v#\'}"
+      v="${v%\'}"
+      ;;
   esac
   v="$(trim_ws "$v")"
   printf "%s" "$v"
@@ -45,6 +57,34 @@ uci_list_items() {
   raw="$1"
   raw="$(printf "%s" "$raw" | tr -d '\r')"
   printf "%s" "$raw" | grep -o "'[^']*'" 2>/dev/null | sed "s/^'//;s/'$//"
+}
+
+download_customized_server() {
+  mkdir -p "$DIR" 2>/dev/null
+
+  if command -v curl >/dev/null 2>&1; then
+    curl -L --connect-timeout 10 --max-time 60 -fsS "$REMOTE_URL" -o "$TMP_DL" || return 1
+    return 0
+  fi
+
+  if command -v wget >/dev/null 2>&1; then
+    wget -O "$TMP_DL" "$REMOTE_URL" >/dev/null 2>&1 || return 1
+    return 0
+  fi
+
+  return 2
+}
+
+validate_downloaded_customized_server() {
+  [ -s "$TMP_DL" ] || return 1
+
+  rm -rf "$TMP_UCI_DIR" 2>/dev/null
+  mkdir -p "$TMP_UCI_DIR" 2>/dev/null || return 1
+
+  cp -f "$TMP_DL" "$TMP_UCI_DIR/customized_server" 2>/dev/null || return 1
+
+  uci -c "$TMP_UCI_DIR" show customized_server >/dev/null 2>&1 || return 1
+  return 0
 }
 
 # 列出 openclash 的所有 servers 段 section id（cfgxxxx）
@@ -80,7 +120,10 @@ create_openclash_from_custom() {
   _name="$2"
 
   NEW="$(uci -q add openclash servers)"
-  [ -n "$NEW" ] || { log "ERROR: failed to add openclash servers for name=$_name"; return 1; }
+  [ -n "$NEW" ] || {
+    log "ERROR: failed to add openclash servers for name=$_name"
+    return 1
+  }
 
   # name 固定写入
   uci -q set openclash."$NEW".name="$_name"
@@ -95,10 +138,11 @@ create_openclash_from_custom() {
     if [ "$RAW" = "servers" ]; then
       continue
     fi
+
     # name 已写
     [ "$KEY" = "name" ] && continue
 
-    # groups/alpn 强制 list（兼容多个值）
+    # groups/alpn 强制按 list 处理
     if [ "$KEY" = "groups" ] || [ "$KEY" = "alpn" ]; then
       uci -q delete openclash."$NEW"."$KEY" 2>/dev/null
       if printf "%s" "$RAW" | grep -q "'"; then
@@ -135,7 +179,6 @@ force_overwrite_name_from_custom() {
   _name="$1"
   _csec="$2"
 
-  # 删掉 openclash 所有同名段（订阅/手工一并清）
   _found=0
   for _sec in $(find_openclash_secs_by_name "$_name"); do
     _found=1
@@ -143,7 +186,6 @@ force_overwrite_name_from_custom() {
     uci -q delete openclash."$_sec" 2>/dev/null
   done
 
-  # 重建一条（无论之前是否存在）
   create_openclash_from_custom "$_csec" "$_name"
 
   if [ "$_found" -eq 0 ]; then
@@ -153,13 +195,42 @@ force_overwrite_name_from_custom() {
 
 # -------------------- main --------------------
 
-log "using customized_server: $SRC"
-[ -f "$SRC" ] || { log "customized_server not found, skip"; exit 0; }
+log "sync start"
+log "remote customized_server url: $REMOTE_URL"
+log "local customized_server path: $SRC"
 
-uci -c "$DIR" show customized_server >/dev/null 2>&1 || {
-  log "ERROR: uci cannot parse $SRC"
+download_customized_server
+DL_RET="$?"
+
+if [ "$DL_RET" -eq 0 ]; then
+  if validate_downloaded_customized_server; then
+    if cp -f "$TMP_DL" "$SRC" 2>/dev/null; then
+      log "download success, validated, and replaced local customized_server"
+    else
+      log "WARN: download and validation succeeded, but failed to replace local file, keep old one"
+    fi
+  else
+    log "WARN: downloaded customized_server is empty or invalid UCI format, keep local file"
+  fi
+elif [ "$DL_RET" -eq 1 ]; then
+  log "WARN: failed to download customized_server, keep local file"
+elif [ "$DL_RET" -eq 2 ]; then
+  log "WARN: neither curl nor wget found, keep local file"
+else
+  log "WARN: unknown download result code=$DL_RET, keep local file"
+fi
+
+[ -f "$SRC" ] || {
+  log "ERROR: local customized_server not found"
   exit 1
 }
+
+uci -c "$DIR" show customized_server >/dev/null 2>&1 || {
+  log "ERROR: local customized_server is invalid UCI format"
+  exit 1
+}
+
+log "using customized_server: $SRC"
 
 # 生成 customized_server name->section 映射（全量，不筛 manual）
 : > "$MAP"
@@ -184,12 +255,11 @@ MAP_COUNT="$(wc -l < "$MAP" 2>/dev/null | tr -d ' ')"
 log "customized_server mapped servers count: ${MAP_COUNT:-0}"
 
 # ------------------------------------------------------------
-# Step 1) openclash 中只要 name 在 customized_server 存在 => 直接覆盖（强制以 customized 为准）
+# Step 1) openclash 中只要 name 在 customized_server 存在 => 直接覆盖
 # 做法：遍历 openclash 的所有 servers，遇到同名就“整组删+重建”
-# 为避免重复重建同一个 name，用一个临时集合做去重执行
+# 为避免重复重建同一个 name，用 DONE 临时文件做去重
 # ------------------------------------------------------------
-_DONE="/tmp/overwrite_done.$$"
-: > "$_DONE"
+: > "$DONE"
 
 for OSEC in $(all_openclash_server_secs); do
   ONAME="$(uci -q get openclash."$OSEC".name 2>/dev/null)"
@@ -199,20 +269,19 @@ for OSEC in $(all_openclash_server_secs); do
   CSEC="$(find_custom_sec_by_name "$ONAME")"
   [ -n "$CSEC" ] || continue
 
-  # 同一个 name 只执行一次覆盖
-  if grep -Fxq "$ONAME" "$_DONE" 2>/dev/null; then
+  if grep -Fxq "$ONAME" "$DONE" 2>/dev/null; then
     continue
   fi
-  printf "%s\n" "$ONAME" >> "$_DONE"
 
+  printf "%s\n" "$ONAME" >> "$DONE"
   log "step1: found same name in openclash & customized_server => force overwrite name=$ONAME"
   force_overwrite_name_from_custom "$ONAME" "$CSEC"
 done
 
-rm -f "$_DONE" 2>/dev/null
+rm -f "$DONE" 2>/dev/null
 
 # ------------------------------------------------------------
-# Step 2 & 3) 清理 openclash 中 manual=1 但 customized_server 不存在同名的段：删除
+# Step 2) 清理 openclash 中 manual=1 但 customized_server 不存在同名的段：删除
 # ------------------------------------------------------------
 for MSEC in $(manual1_openclash_server_secs); do
   MNAME="$(uci -q get openclash."$MSEC".name 2>/dev/null)"
@@ -221,7 +290,7 @@ for MSEC in $(manual1_openclash_server_secs); do
 
   CSEC="$(find_custom_sec_by_name "$MNAME")"
   if [ -z "$CSEC" ]; then
-    log "step2/3: delete openclash.$MSEC (manual=1) name=$MNAME (not in customized_server)"
+    log "step2: delete openclash.$MSEC (manual=1) name=$MNAME (not in customized_server)"
     uci -q delete openclash."$MSEC" 2>/dev/null
   fi
 done
@@ -234,7 +303,6 @@ awk -F '\t' '{print $1 "\t" $2}' "$MAP" 2>/dev/null | while IFS="$(printf '\t')"
   [ -n "$N" ] || continue
   [ -n "$CSEC" ] || continue
 
-  # 如果 openclash 里不存在该 name，则新增
   if [ -z "$(find_openclash_secs_by_name "$N" | head -n 1)" ]; then
     log "step3: add missing name=$N from customized_server.$CSEC"
     create_openclash_from_custom "$CSEC" "$N"
