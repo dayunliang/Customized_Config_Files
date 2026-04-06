@@ -20,8 +20,8 @@ config servers
 config servers
         option config 'all'
         option type 'trojan'
-        option name 'ALI-SG'
-        option server 'ali-sg.b-gfw.cfd'
+        option name 'ALI-JP'
+        option server 'ali-jp.b-gfw.cfd'
         option password '12012'
         option udp 'true'
         option skip_cert_verify 'true'
