@@ -20,7 +20,7 @@ config servers
 config servers
         option config 'all'
         option type 'trojan'
-        option name 'ALI-JP'
+        option name 'ALI-SG'
         option server 'ali-jp.b-gfw.cfd'
         option password '12012'
         option udp 'true'
