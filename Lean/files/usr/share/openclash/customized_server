@@ -20,7 +20,7 @@ config servers
 config servers
         option config 'all'
         option type 'trojan'
-        option name 'ALI-SG'
+        option name 'ALI-JP'
         option server 'ali-jp.b-gfw.cfd'
         option password '12012'
         option udp 'true'
@@ -34,4 +34,5 @@ config servers
         option manual '1'
         list groups '🚀 节点选择'
         list groups '🚂 手动切换'
+        list groups '🤖 ChatGPT'
         option enabled '1'
