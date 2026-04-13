@@ -27,7 +27,7 @@
 WG_IF="wg0"
 
 # 对端 DDNS 域名
-PEER_DDNS="beverly.b-gfw.sbs"
+PEER_DDNS="beverly.b-gfw.cfd"
 
 # 用于检测隧道是否通的目标 IP（必须长期在线且允许 ping）
 PING_TARGET="192.168.12.254"
