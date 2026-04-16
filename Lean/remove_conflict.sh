@@ -8,8 +8,8 @@ echo "=== [remove_conflict.sh] 清理无用 / 有冲突的包 ==="
 
 # 1. Passwall / Bypass / Fchomo
 rm -rf feeds/small/luci-app-bypass
-rm -rf feeds/small/luci-app-passwall
-rm -rf feeds/small/luci-app-passwall2
+# rm -rf feeds/small/luci-app-passwall
+# rm -rf feeds/small/luci-app-passwall2
 rm -rf feeds/small/luci-app-fchomo
 
 # 2. Baresip + Apps
@@ -21,7 +21,7 @@ rm -rf feeds/telephony/baresip-apps
 rm -rf package/feeds/istore/luci-app-LingTiGameAcc
 
 # 4. luci-app-ssr-plus（及其 i18n）
-rm -rf feeds/small/luci-app-ssr-plus
+# rm -rf feeds/small/luci-app-ssr-plus
 
 # 5. 对 .config 做兜底：强制关闭 ssr-plus
 if [ -f .config ]; then
