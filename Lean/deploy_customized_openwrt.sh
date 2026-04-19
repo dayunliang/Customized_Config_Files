@@ -416,8 +416,8 @@ deploy_file "usr/share/openclash/customized_server"                   "644"
 deploy_file "usr/bin/wireguard_refresh.sh"                            "755"
 
 # Avahi Daemon
-deploy_file "etc/dbus-1/system.d/avahi-dbus.conf"                     “644”
-deploy_file "etc/avahi/avahi-daemon.conf"                             “644”
+deploy_file "etc/dbus-1/system.d/avahi-dbus.conf"                     "644"
+deploy_file "etc/avahi/avahi-daemon.conf"                             "644"
 
 
 # 其它网络加速、计划任务等（依据仓库是否提供而定）
