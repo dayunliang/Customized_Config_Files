@@ -325,7 +325,7 @@ uci set firewall.Allow_WG_Handshake='rule'
 uci set firewall.Allow_WG_Handshake.name='Allow-WireGuard-Handshake'
 uci set firewall.Allow_WG_Handshake.src='wan'
 uci set firewall.Allow_WG_Handshake.proto='udp'
-uci set firewall.Allow_WG_Handshake.dest_port='51820'
+uci set firewall.Allow_WG_Handshake.dest_port='58058'
 uci set firewall.Allow_WG_Handshake.target='ACCEPT'
 
 # =============================================================================
