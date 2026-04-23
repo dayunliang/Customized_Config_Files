@@ -338,7 +338,7 @@ uci -q batch << 'EOF'
   set network.wg0='interface'
   set network.wg0.proto='wireguard'
   set network.wg0.private_key='__WG_PRIVKEY__'
-  set network.wg0.listen_port='51820'
+  set network.wg0.listen_port='58058'
   list network.wg0.addresses='10.0.0.2/24'
 
   # 清理旧 peer（如果存在）
