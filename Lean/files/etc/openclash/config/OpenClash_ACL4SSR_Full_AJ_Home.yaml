@@ -145,6 +145,8 @@ proxy-groups:
   - 🇺🇲 美国节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
+  - ALI-HK
+  - ALI-JP
   - DIRECT
 
 - name: 🚂 手动切换
