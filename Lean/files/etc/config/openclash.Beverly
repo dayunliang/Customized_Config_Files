@@ -364,7 +364,7 @@ config authentication
 	option password 'BIRTCAtl'
 
 config config_subscribe
-	option enabled '1'
+	option enabled '0'
 	option name 'CreamData'
 	option address 'https://sub.nysubs.xyz/Config/SSAeadConfig?u=d9eb3dec-d8a7-40c4-84ae-3fe47320cf00&sip002=1'
 	option sub_ua 'clash.meta'
@@ -413,7 +413,7 @@ config config_subscribe
 	option enabled '0'
 
 	config config_subscribe
-	option enabled '1'
+	option enabled '0'
 	option name 'Nexitally'
 	option address 'https://cdn.metaglide.org/?L2Rvd25sb2FkQ29uZmlnL0NsYXNoLmFzcHg/dD10cm9qYW4mZXE9d2luZG93cyZ1cms9YzNhMzE2ZjUtNWQ2YS00ZjFiLTg1ZDUtMWEyNTljYzk1NWNjJm1tPTk1NDY1Jmt0bW09STZyUWFyNUV1YTBKJTJiMzVyWGdUb1NnJTNkJTNkJmZlMTQ0ODM4NzFlMzQ2MGQ4'
 	option sub_ua 'clash.meta'
