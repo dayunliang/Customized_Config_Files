@@ -2191,4 +2191,4 @@ uci -q commit openclash
 
 /etc/openclash/dns_enable_false.sh
 
-/usr/share/openclash/import_customized_server.sh >> /tmp/oc_custom.log 2>&1
+#/usr/share/openclash/import_customized_server.sh >> /tmp/oc_custom.log 2>&1
