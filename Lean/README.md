@@ -23,7 +23,7 @@
 ```
 Customized_Config_Files/
 └── Lean/
-    ├── config                         # 主构建配置，将被复制为 .config
+    ├── config                        # 主构建配置，将被复制为 .config
     ├── feeds.conf.default            # 软件源定义
     ├── zzz-default-settings          # 默认设置脚本
     └── files/
