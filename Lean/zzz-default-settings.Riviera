@@ -336,6 +336,8 @@ uci -q batch << 'EOF'
   # wg0 主接口
   set network.wg0='interface'
   set network.wg0.proto='wireguard'
+  # 禁止 wg0 开机自动启动，首次启动后保持关闭状态
+  set network.wg0.auto='0'
   set network.wg0.private_key='__WG_PRIVKEY__'
   set network.wg0.listen_port='58058'
   list network.wg0.addresses='10.0.0.2/24'
@@ -359,6 +361,9 @@ uci -q batch << 'EOF'
 EOF
 
 uci commit network
+
+# 再次确保 wg0 首次启动后处于关闭状态
+ifdown wg0 2>/dev/null || true
 
 # =============================================================================
 # 15. 启用 PassWall2 开机自启
