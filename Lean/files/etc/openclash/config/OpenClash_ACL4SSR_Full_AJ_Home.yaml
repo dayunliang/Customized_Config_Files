@@ -12,7 +12,7 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-    proxy: 直连
+    proxy: DIRECT
     filter: "^(?!.*(流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅)).*"
 
 ################################################################################################################
@@ -43,9 +43,6 @@ proxies:
   skip-cert-verify: true
   ip-version: ipv4-prefer
   tfo: false
-
-- name: 直连
-  type: direct
 
 # 全局配置
 
@@ -148,16 +145,18 @@ proxy-groups:
   - ALI-HK
   - ALI-JP
   - DIRECT
-
+  
 - name: 🚂 手动切换
   type: select
   include-all: true
+
 - name: ♻️ 自动选择
   type: url-test
   include-all: true
+  exclude-filter: '^(DIRECT|REJECT|流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅).*'
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 - name: 👹 Launcher
   type: select
@@ -171,7 +170,6 @@ proxy-groups:
   - 🇯🇵 日本节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
-  - DIRECT
 
 - name: 📹 油管视频
   type: select
@@ -185,7 +183,6 @@ proxy-groups:
   - 🇺🇲 美国节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
-  - DIRECT
 
 - name: 🎥 奈飞视频
   type: select
@@ -199,7 +196,6 @@ proxy-groups:
   - 🇺🇲 美国节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
-  - DIRECT
 
 - name: 🤖 ChatGPT
   type: url-test
@@ -210,8 +206,8 @@ proxy-groups:
   - 🇰🇷 韩国节点
   - 🇹🇼 台湾节点
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 - name: 📲 电报消息
   type: select
@@ -225,7 +221,6 @@ proxy-groups:
   - 🇺🇲 美国节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
-  - DIRECT
 
 - name: 🐭 Disney Plus
   type: select
@@ -251,14 +246,14 @@ proxy-groups:
   - 🇹🇼 台湾节点
   - 🚀 节点选择
   - 🚂 手动切换
-  - DIRECT
+  - 🎯 全球直连
 
 - name: 📺 哔哩哔哩
   type: select
   proxies:
-  - 🎯 全球直连
   - 🇹🇼 台湾节点
   - 🇭🇰 香港节点
+  - 🎯 全球直连
 
 - name: 🌍 国外媒体
   type: select
@@ -272,22 +267,22 @@ proxy-groups:
   - 🇺🇲 美国节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
-  - DIRECT
+  - 🎯 全球直连
 
 - name: 🌏 国内媒体
   type: select
   proxies:
-  - DIRECT
   - 🇭🇰 香港节点
   - 🇹🇼 台湾节点
   - 🇸🇬 狮城节点
   - 🇯🇵 日本节点
   - 🚂 手动切换
+  - 🎯 全球直连
 
 - name: Ⓜ️ 微软云盘
   type: select
   proxies:
-  - DIRECT
+  - 🎯 全球直连
   - 🚀 节点选择
   - 🇺🇲 美国节点
   - 🇭🇰 香港节点
@@ -308,12 +303,12 @@ proxy-groups:
   - 🇯🇵 日本节点
   - 🇰🇷 韩国节点
   - 🚂 手动切换
-  - DIRECT
+  - 🎯 全球直连
 
 - name: 🍎 苹果服务
   type: select
   proxies:
-  - DIRECT
+  - 🎯 全球直连
   - 🚀 节点选择
   - 🇺🇲 美国节点
   - 🇭🇰 香港节点
@@ -326,7 +321,7 @@ proxy-groups:
 - name: 📢 谷歌FCM
   type: select
   proxies:
-  - DIRECT
+  - 🎯 全球直连
   - 🚀 节点选择
   - 🇺🇲 美国节点
   - 🇭🇰 香港节点
@@ -339,7 +334,7 @@ proxy-groups:
 - name: 🎶 网易音乐
   type: select
   proxies:
-  - DIRECT
+  - 🎯 全球直连
   - 🚀 节点选择
   - ♻️ 自动选择
   include-all: true
@@ -349,19 +344,19 @@ proxy-groups:
   type: select
   proxies:
   - 🇯🇵 日本节点
-  - ♻️ 自动选择
   - 🇭🇰 香港节点
   - 🇹🇼 台湾节点
   - 🇸🇬 狮城节点
   - 🇺🇲 美国节点
   - 🇰🇷 韩国节点
+  - ♻️ 自动选择
   - 🚂 手动切换
 
 - name: 🧀 起司外卖
   type: select
   proxies:
   - 🚂 手动切换
-  - DIRECT
+  - 🎯 全球直连
   include-all: true
   filter: (IPLC|QAT)
 
@@ -370,7 +365,7 @@ proxy-groups:
   proxies:
   - 🚀 节点选择
   - 🚂 手动切换
-  - DIRECT
+  - 🎯 全球直连
   - REJECT
 
 - name: 🎃 我的世界
@@ -378,12 +373,12 @@ proxy-groups:
   proxies:
   - 🚀 节点选择
   - 🚂 手动切换
-  - DIRECT
+  - 🎯 全球直连
 
 - name: 🎮 游戏平台
   type: select
   proxies:
-  - DIRECT
+  - 🎯 全球直连
   - 🚀 节点选择
   - 🇺🇲 美国节点
   - 🇭🇰 香港节点
@@ -403,7 +398,7 @@ proxy-groups:
 - name: 🐟 漏网之鱼
   type: select
   proxies:
-  - DIRECT
+  - 🎯 全球直连
   - 🚀 节点选择
   - ♻️ 自动选择
   - 🇭🇰 香港节点
@@ -419,48 +414,48 @@ proxy-groups:
   include-all: true
   filter: (港|HK|Hong Kong|HKG)
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 - name: 🇯🇵 日本节点
   type: url-test
   include-all: true
   filter: (日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|JPN)
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 - name: 🇺🇲 美国节点
   type: url-test
   include-all: true
   filter: (美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|USA)
   url: http://www.qualcomm.cn/generate_204
-  interval: 300
-  tolerance: 150
+  interval: 30
+  tolerance: 5
 
 - name: 🇹🇼 台湾节点
   type: url-test
   include-all: true
   filter: (台|新北|彰化|TW|Taiwan|TWN)
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 - name: 🇸🇬 狮城节点
   type: url-test
   include-all: true
   filter: (新加坡|坡|狮城|SG|Singapore|SGP)
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 - name: 🇰🇷 韩国节点
   type: url-test
   include-all: true
   filter: (KR|Korea|KOR|首尔|韩|韓)
   url: http://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
+  interval: 30
+  tolerance: 5
 
 #################################################################################################################
 
@@ -473,220 +468,220 @@ rule-providers:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Launcher.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Launcher.yaml
     interval: 86400
 
   ChatGPT:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/ChatGPT.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/ChatGPT.yaml
     interval: 86400
 
   ESPN:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/ESPN.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/ESPN.yaml
     interval: 86400
 
   HDAV:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/HDAV.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/HDAV.yaml
     interval: 86400
 
   Minecraft:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Minecraft.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Minecraft.yaml
     interval: 86400
 
   Mining_Pool:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Mining_Pool.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Mining_Pool.yaml
     interval: 86400
 
   GFWlist_Added:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/GFWlist_Added.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/GFWlist_Added.yaml
     interval: 60
 
   Unban_Added:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Unban_Added.yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Unban_Added.yaml
     interval: 60
 
-  acl_localareanetwork:
+  LAN:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list
 
-  acl_unban:
+  Unban:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list
 
-  acl_googlefcm:
+  Google FCM:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/GoogleFCM.list
 
-  acl_googlecn:
+  Google CN:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/GoogleCN.list
 
-  acl_steamcn:
+  Steam CN:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/SteamCN.list
 
-  acl_onedrive:
+  One Drive:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/OneDrive.list
 
-  acl_microsoft:
+  Microsoft:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Microsoft.list
 
-  acl_apple:
+  Apple:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Apple.list
 
-  acl_telegram:
+  Telegram:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Telegram.list
 
-  acl_neteasemusic:
+  Netease Music:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/NetEaseMusic.list
 
-  acl_epic:
+  Epic:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Epic.list
 
-  acl_sony:
+  Sony PSN:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Sony.list
 
-  acl_steam:
+  Steam International:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Steam.list
 
-  acl_youtube:
+  Youtube:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/YouTube.list
 
-  acl_netflix:
+  Netflix:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Netflix.list
 
-  acl_bahamut:
+  Bahamut:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bahamut.list
 
-  acl_bilibilihmt:
+  Bilibili HMT:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/BilibiliHMT.list
 
-  acl_bilibili:
+  Bilibili:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bilibili.list
 
-  acl_chinamedia:
+  China Media:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaMedia.list
 
-  acl_proxygfwlist:
+  Proxy GFW:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list
 
-  acl_chinaip:
+  China IP:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaIp.list
 
-  acl_chinadomain:
+  China Domain:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list
 
-  acl_chinacompanyip:
+  China Company IP:
     type: http
     interval: 86400
     behavior: classical
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaCompanyIp.list
 
-  acl_download:
+  Download:
     type: http
     interval: 86400
     behavior: classical
@@ -708,29 +703,29 @@ rules:
 - RULE-SET,GFWlist_Added,🚀 节点选择
 - RULE-SET,Unban_Added,🎯 全球直连
 
-- RULE-SET,acl_localareanetwork,🎯 全球直连
-- RULE-SET,acl_unban,🎯 全球直连
-- RULE-SET,acl_googlefcm,📢 谷歌FCM
-- RULE-SET,acl_googlecn,🎯 全球直连
-- RULE-SET,acl_steamcn,🎯 全球直连
-- RULE-SET,acl_onedrive,Ⓜ️ 微软云盘
-- RULE-SET,acl_microsoft,Ⓜ️ 微软服务
-- RULE-SET,acl_apple,🍎 苹果服务
-- RULE-SET,acl_telegram,📲 电报消息
-- RULE-SET,acl_neteasemusic,🎶 网易音乐
-- RULE-SET,acl_epic,🎮 游戏平台
-- RULE-SET,acl_sony,🎮 游戏平台
-- RULE-SET,acl_steam,🎮 游戏平台
-- RULE-SET,acl_youtube,📹 油管视频
-- RULE-SET,acl_netflix,🎥 奈飞视频
-- RULE-SET,acl_bahamut,📺 巴哈姆特
-- RULE-SET,acl_bilibilihmt,📺 哔哩哔哩
-- RULE-SET,acl_bilibili,📺 哔哩哔哩
-- RULE-SET,acl_chinamedia,🌏 国内媒体
-- RULE-SET,acl_proxygfwlist,🚀 节点选择
-- RULE-SET,acl_chinaip,🎯 全球直连
-- RULE-SET,acl_chinadomain,🎯 全球直连
-- RULE-SET,acl_chinacompanyip,🎯 全球直连
-- RULE-SET,acl_download,🎯 全球直连
+- RULE-SET,LAN,🎯 全球直连
+- RULE-SET,Unban,🎯 全球直连
+- RULE-SET,Google FCM,📢 谷歌FCM
+- RULE-SET,Google CN,🎯 全球直连
+- RULE-SET,Steam CN,🎯 全球直连
+- RULE-SET,One Drive,Ⓜ️ 微软云盘
+- RULE-SET,Microsoft,Ⓜ️ 微软服务
+- RULE-SET,Apple,🍎 苹果服务
+- RULE-SET,Telegram,📲 电报消息
+- RULE-SET,Netease Music,🎶 网易音乐
+- RULE-SET,Epic,🎮 游戏平台
+- RULE-SET,Sony PSN,🎮 游戏平台
+- RULE-SET,Steam International,🎮 游戏平台
+- RULE-SET,Youtube,📹 油管视频
+- RULE-SET,Netflix,🎥 奈飞视频
+- RULE-SET,Bahamut,📺 巴哈姆特
+- RULE-SET,Bilibili HMT,📺 哔哩哔哩
+- RULE-SET,Bilibili,📺 哔哩哔哩
+- RULE-SET,China Media,🌏 国内媒体
+- RULE-SET,Proxy GFW,🚀 节点选择
+- RULE-SET,China IP,🎯 全球直连
+- RULE-SET,China Domain,🎯 全球直连
+- RULE-SET,China Company IP,🎯 全球直连
+- RULE-SET,Download,🎯 全球直连
 - GEOIP,CN,🎯 全球直连,no-resolve
 - MATCH,🐟 漏网之鱼
