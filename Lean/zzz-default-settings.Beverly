@@ -394,7 +394,7 @@ uci commit network
 # 16. 启用 PassWall2 开机自启
 # =============================================================================
 if [ -x /etc/init.d/passwall2 ]; then
-    /etc/init.d/passwall2 enable
+    /etc/init.d/passwall2 start
 fi
 
 # =============================================================================
