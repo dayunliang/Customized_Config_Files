@@ -155,7 +155,7 @@ proxy-groups:
   include-all: true
   exclude-filter: '^(DIRECT|REJECT|流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅).*'
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 - name: 👹 Launcher
@@ -206,7 +206,7 @@ proxy-groups:
   - 🇰🇷 韩国节点
   - 🇹🇼 台湾节点
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 - name: 📲 电报消息
@@ -414,7 +414,7 @@ proxy-groups:
   include-all: true
   filter: (港|HK|Hong Kong|HKG)
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 - name: 🇯🇵 日本节点
@@ -422,7 +422,7 @@ proxy-groups:
   include-all: true
   filter: (日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|JPN)
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 - name: 🇺🇲 美国节点
@@ -430,7 +430,7 @@ proxy-groups:
   include-all: true
   filter: (美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|USA)
   url: http://www.qualcomm.cn/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 - name: 🇹🇼 台湾节点
@@ -438,7 +438,7 @@ proxy-groups:
   include-all: true
   filter: (台|新北|彰化|TW|Taiwan|TWN)
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 150
   tolerance: 5
 
 - name: 🇸🇬 狮城节点
@@ -446,7 +446,7 @@ proxy-groups:
   include-all: true
   filter: (新加坡|坡|狮城|SG|Singapore|SGP)
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 - name: 🇰🇷 韩国节点
@@ -454,7 +454,7 @@ proxy-groups:
   include-all: true
   filter: (KR|Korea|KOR|首尔|韩|韓)
   url: http://www.gstatic.com/generate_204
-  interval: 30
+  interval: 120
   tolerance: 5
 
 #################################################################################################################
@@ -511,14 +511,14 @@ rule-providers:
     behavior: classical
     format: yaml
     url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/GFWlist_Added.yaml
-    interval: 60
+    interval: 86400
 
   Unban_Added:
     type: http
     behavior: classical
     format: yaml
     url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Unban_Added.yaml
-    interval: 60
+    interval: 86400
 
   LAN:
     type: http
