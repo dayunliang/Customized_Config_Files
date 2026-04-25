@@ -112,14 +112,14 @@ dns:
   fake-ip-filter-mode: blacklist
   fake-ip-filter: []
   default-nameserver:
-    - 192.168.12.10
+    - 127.0.0.1
     #- https://223.5.5.5/dns-query
   proxy-server-nameserver:
-    - 192.168.12.10
+    - 127.0.0.1
 #    - https://dns.alidns.com/dns-query
 #    - https://doh.pub/dns-query
   nameserver:
-    - 192.168.12.10
+    - 127.0.0.1
 #    - https://dns.alidns.com/dns-query
 #    - https://doh.pub/dns-query
 
@@ -625,6 +625,13 @@ rule-providers:
     format: text
     url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Netflix.list
 
+  Encrypted DNS:
+    type: http
+    interval: 86400
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Encrypted_DNS.yaml
+
   Bahamut:
     type: http
     interval: 86400
@@ -718,6 +725,7 @@ rules:
 - RULE-SET,Steam International,🎮 游戏平台
 - RULE-SET,Youtube,📹 油管视频
 - RULE-SET,Netflix,🎥 奈飞视频
+- RULE-SET,Encrypted DNS,🚀 节点选择
 - RULE-SET,Bahamut,📺 巴哈姆特
 - RULE-SET,Bilibili HMT,📺 哔哩哔哩
 - RULE-SET,Bilibili,📺 哔哩哔哩
