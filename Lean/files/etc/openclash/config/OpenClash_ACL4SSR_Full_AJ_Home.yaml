@@ -468,6 +468,63 @@ proxy-groups:
 ## type：可选http/file/inline  behavior：可选domain/ipcidr/classical format：可选yaml/text/mrs
 
 rule-providers:
+
+  Launcher:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Launcher.yaml
+    interval: 86400
+
+  ChatGPT:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/ChatGPT.yaml
+    interval: 86400
+
+  ESPN:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/ESPN.yaml
+    interval: 86400
+
+  HDAV:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/HDAV.yaml
+    interval: 86400
+
+  Minecraft:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Minecraft.yaml
+    interval: 86400
+
+  Mining_Pool:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Mining_Pool.yaml
+    interval: 86400
+
+  GFWlist_Added:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/GFWlist_Added.yaml
+    interval: 60
+
+  Unban_Added:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/dayunliang/OpenClash/main/Unban_Added.yaml
+    interval: 60
+
   acl_localareanetwork:
     type: http
     interval: 86400
@@ -641,6 +698,16 @@ rule-providers:
 # 规则匹配
 
 rules:
+
+- RULE-SET,Launcher,👹 Launcher
+- RULE-SET,ChatGPT,🤖 ChatGPT
+- RULE-SET,ESPN,🏌 ESPN
+- RULE-SET,HDAV,㊙️ HDAV
+- RULE-SET,Minecraft,🎃 我的世界
+- RULE-SET,Mining_Pool,⚒ 矿池服务
+- RULE-SET,GFWlist_Added,🚀 节点选择
+- RULE-SET,Unban_Added,🎯 全球直连
+
 - RULE-SET,acl_localareanetwork,🎯 全球直连
 - RULE-SET,acl_unban,🎯 全球直连
 - RULE-SET,acl_googlefcm,📢 谷歌FCM
