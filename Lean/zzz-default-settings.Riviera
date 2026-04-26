@@ -346,10 +346,11 @@ uci -q batch << 'EOF'
   set network.wg0='interface'
   set network.wg0.proto='wireguard'
   # 禁止 wg0 开机自动启动，首次启动后保持关闭状态
-  set network.wg0.auto='0'
+  # set network.wg0.auto='0'
   set network.wg0.private_key='__WG_PRIVKEY__'
   set network.wg0.listen_port='58058'
-  list network.wg0.addresses='10.0.0.2/24'
+  # list network.wg0.addresses='10.0.0.2/24'
+  add_list network.wg0.addresses='10.0.0.2/24'
 
   # 清理旧 peer（如果存在）
   delete network.@wireguard_wg0[0]
@@ -371,9 +372,6 @@ EOF
 
 uci commit network
 
-# 再次确保 wg0 首次启动后处于关闭状态
-ifdown wg0 2>/dev/null || true
-
 # =============================================================================
 # 15. 启用 PassWall2 开机自启
 # =============================================================================
@@ -385,7 +383,14 @@ fi
 # =============================================================================
 # 16. 脚本执行完毕后删除自身，避免再次执行
 # =============================================================================
+
+# 再次确保 wg0 首次启动后处于关闭状态
+uci set network.wg0.auto='0'
+uci commit network
+ifdown wg0 2>/dev/null || true
+
 rm -f /etc/uci-defaults/zzz-default-settings
+
 exit 0
 
-# 20260425
+# 20260426
