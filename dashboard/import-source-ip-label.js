@@ -1,30 +1,7 @@
 (function () {
-  const zashboardKey = "clientSourceIPTags";
-  const metacubeKey = "clientSourceIPTags";
-
-  function detectCurrentDashboard() {
-    const href = location.href.toLowerCase();
-    const path = location.pathname.toLowerCase();
-
-    if (href.includes("zashboard") || path.includes("zashboard")) {
-      return "zashboard";
-    }
-
-    if (href.includes("metacubexd") || path.includes("metacubexd")) {
-      return "metacubexd";
-    }
-
-    const answer = prompt(
-      "无法自动识别当前 Dashboard 类型，请输入：zashboard 或 metacubexd",
-      "zashboard"
-    );
-
-    if (answer === "zashboard" || answer === "metacubexd") {
-      return answer;
-    }
-
-    return "unknown";
-  }
+  const zashListKey = "config/source-ip-label-list";
+  const zashMapKey = "config/source-ip-label-map";
+  const metaKey = "clientSourceIPTags";
 
   function safeJsonParse(value, fallback) {
     try {
@@ -43,30 +20,46 @@
     }
   }
 
-  function zashboardMapToNormalMap(zashboardMap) {
-    const map = {};
-
-    if (!zashboardMap || typeof zashboardMap !== "object" || Array.isArray(zashboardMap)) {
-      return map;
+  function makeId() {
+    if (crypto.randomUUID) {
+      return crypto.randomUUID();
     }
 
-    for (const [sourceIP, tagName] of Object.entries(zashboardMap)) {
-      if (sourceIP && tagName) {
-        map[sourceIP] = tagName;
-      }
-    }
-
-    return map;
+    return String(Date.now()) + "-" + Math.random().toString(16).slice(2);
   }
 
-  function metacubeTagsToNormalMap(metacubeTags) {
-    const map = {};
+  function detectZashboardVersion() {
+    const zashListValue = localStorage.getItem(zashListKey);
+    const zashMapValue = localStorage.getItem(zashMapKey);
 
-    if (!Array.isArray(metacubeTags)) {
-      return map;
+    if (zashListValue !== null) {
+      return "new";
     }
 
-    for (const item of metacubeTags) {
+    if (zashMapValue !== null) {
+      return "old";
+    }
+
+    const answer = prompt(
+      "无法自动判断 Zashboard 版本。\n新版请输入 new，旧版请输入 old。",
+      "new"
+    );
+
+    if (answer === "new" || answer === "old") {
+      return answer;
+    }
+
+    return "unknown";
+  }
+
+  function normalizeFromMeta(tags) {
+    const map = {};
+
+    if (!Array.isArray(tags)) {
+      return [];
+    }
+
+    for (const item of tags) {
       if (!item || typeof item !== "object") {
         continue;
       }
@@ -79,97 +72,184 @@
       }
     }
 
-    return map;
-  }
-
-  function normalMapToMetacubeTags(map) {
     return Object.entries(map).map(function ([sourceIP, tagName]) {
       return {
-        tagName: tagName,
-        sourceIP: sourceIP
+        sourceIP: sourceIP,
+        tagName: tagName
       };
     });
   }
 
-  function mergeMap(baseMap, overrideMap) {
-    const result = {};
+  function normalizeFromZashList(list) {
+    const map = {};
 
-    for (const [sourceIP, tagName] of Object.entries(baseMap)) {
-      result[sourceIP] = tagName;
+    if (!Array.isArray(list)) {
+      return [];
     }
 
-    for (const [sourceIP, tagName] of Object.entries(overrideMap)) {
-      result[sourceIP] = tagName;
-    }
+    for (const item of list) {
+      if (!item || typeof item !== "object") {
+        continue;
+      }
 
-    return result;
-  }
+      const sourceIP = item.key;
+      const tagName = item.label;
 
-  function getBackupSourceApp(backup) {
-    if (!backup || typeof backup !== "object") {
-      return "unknown";
-    }
-
-    if (backup.app === "zashboard") {
-      return "zashboard";
-    }
-
-    if (backup.app === "metacubexd") {
-      return "metacubexd";
-    }
-
-    return "unknown";
-  }
-
-  function buildMapFromBackup(backup, targetDashboard) {
-    if (!backup.data || typeof backup.data !== "object") {
-      throw new Error("备份文件格式错误：缺少 data 字段");
-    }
-
-    const backupSourceApp = getBackupSourceApp(backup);
-
-    const zashboardRaw = backup.data[zashboardKey];
-    const metacubeRaw = backup.data[metacubeKey];
-
-    const zashboardMap = zashboardRaw
-      ? zashboardMapToNormalMap(safeJsonParse(zashboardRaw, {}))
-      : {};
-
-    const metacubeMap = metacubeRaw
-      ? metacubeTagsToNormalMap(safeJsonParse(metacubeRaw, []))
-      : {};
-
-    let finalMap = {};
-
-    if (backupSourceApp === "zashboard") {
-      finalMap = mergeMap(metacubeMap, zashboardMap);
-      console.log("备份来源：Zashboard，优先使用 config/source-ip-label-map");
-    } else if (backupSourceApp === "metacubexd") {
-      finalMap = mergeMap(zashboardMap, metacubeMap);
-      console.log("备份来源：MetaCubeXD，优先使用 clientSourceIPTags");
-    } else {
-      console.warn("备份来源未知，将根据导入目标决定优先级");
-
-      if (targetDashboard === "zashboard") {
-        finalMap = mergeMap(metacubeMap, zashboardMap);
-        console.log("目标为 Zashboard，来源未知，优先使用 Zashboard 字段");
-      } else if (targetDashboard === "metacubexd") {
-        finalMap = mergeMap(zashboardMap, metacubeMap);
-        console.log("目标为 MetaCubeXD，来源未知，优先使用 MetaCubeXD 字段");
+      if (sourceIP && tagName) {
+        map[sourceIP] = tagName;
       }
     }
 
-    if (Object.keys(finalMap).length === 0) {
+    return Object.entries(map).map(function ([sourceIP, tagName]) {
+      return {
+        sourceIP: sourceIP,
+        tagName: tagName
+      };
+    });
+  }
+
+  function normalizeFromZashMap(map) {
+    if (!map || typeof map !== "object" || Array.isArray(map)) {
+      return [];
+    }
+
+    return Object.entries(map)
+      .filter(function ([sourceIP, tagName]) {
+        return sourceIP && tagName;
+      })
+      .map(function ([sourceIP, tagName]) {
+        return {
+          sourceIP: sourceIP,
+          tagName: tagName
+        };
+      });
+  }
+
+  function normalizeFromNormalizedData(data) {
+    const map = {};
+
+    if (!Array.isArray(data)) {
+      return [];
+    }
+
+    for (const item of data) {
+      if (!item || typeof item !== "object") {
+        continue;
+      }
+
+      const sourceIP = item.sourceIP || item.key;
+      const tagName = item.tagName || item.label;
+
+      if (sourceIP && tagName) {
+        map[sourceIP] = tagName;
+      }
+    }
+
+    return Object.entries(map).map(function ([sourceIP, tagName]) {
+      return {
+        sourceIP: sourceIP,
+        tagName: tagName
+      };
+    });
+  }
+
+  function mergeTags(baseTags, overrideTags) {
+    const map = {};
+
+    for (const item of baseTags) {
+      if (item && item.sourceIP && item.tagName) {
+        map[item.sourceIP] = item.tagName;
+      }
+    }
+
+    for (const item of overrideTags) {
+      if (item && item.sourceIP && item.tagName) {
+        map[item.sourceIP] = item.tagName;
+      }
+    }
+
+    return Object.entries(map).map(function ([sourceIP, tagName]) {
+      return {
+        sourceIP: sourceIP,
+        tagName: tagName
+      };
+    });
+  }
+
+  function tagsToZashList(tags) {
+    return tags.map(function (item) {
+      return {
+        key: item.sourceIP,
+        label: item.tagName,
+        id: makeId()
+      };
+    });
+  }
+
+  function tagsToZashMap(tags) {
+    const map = {};
+
+    for (const item of tags) {
+      if (item.sourceIP && item.tagName) {
+        map[item.sourceIP] = item.tagName;
+      }
+    }
+
+    return map;
+  }
+
+  function getTagsFromBackup(backup) {
+    if (!backup || typeof backup !== "object") {
+      throw new Error("备份文件格式错误");
+    }
+
+    let finalTags = [];
+
+    if (Array.isArray(backup.normalizedData)) {
+      finalTags = mergeTags(
+        finalTags,
+        normalizeFromNormalizedData(backup.normalizedData)
+      );
+    }
+
+    if (backup.data && typeof backup.data === "object") {
+      const metaRaw = backup.data[metaKey];
+      const zashListRaw = backup.data[zashListKey];
+      const zashMapRaw = backup.data[zashMapKey];
+
+      const metaTags = normalizeFromMeta(safeJsonParse(metaRaw, []));
+      const zashListTags = normalizeFromZashList(safeJsonParse(zashListRaw, []));
+      const zashMapTags = normalizeFromZashMap(safeJsonParse(zashMapRaw, {}));
+
+      if (backup.app === "metacubexd") {
+        finalTags = mergeTags(finalTags, zashMapTags);
+        finalTags = mergeTags(finalTags, zashListTags);
+        finalTags = mergeTags(finalTags, metaTags);
+        console.log("备份来源为 MetaCubeXD，优先使用 clientSourceIPTags");
+      } else if (backup.app === "zashboard") {
+        finalTags = mergeTags(finalTags, metaTags);
+        finalTags = mergeTags(finalTags, zashMapTags);
+        finalTags = mergeTags(finalTags, zashListTags);
+        console.log("备份来源为 Zashboard，优先使用 Zashboard 字段");
+      } else {
+        finalTags = mergeTags(finalTags, zashMapTags);
+        finalTags = mergeTags(finalTags, metaTags);
+        finalTags = mergeTags(finalTags, zashListTags);
+        console.log("备份来源未知，合并所有字段");
+      }
+    }
+
+    if (finalTags.length === 0) {
       throw new Error("备份文件中没有找到可用的源 IP 标签数据");
     }
 
-    return finalMap;
+    return finalTags;
   }
 
-  const targetDashboard = detectCurrentDashboard();
+  const zashVersion = detectZashboardVersion();
 
-  if (targetDashboard === "unknown") {
-    alert("已取消：无法识别目标 Dashboard 类型");
+  if (zashVersion === "unknown") {
+    alert("已取消：无法判断 Zashboard 版本");
     return;
   }
 
@@ -190,31 +270,35 @@
     reader.onload = function () {
       try {
         const backup = JSON.parse(reader.result);
-        const finalMap = buildMapFromBackup(backup, targetDashboard);
+        const tags = getTagsFromBackup(backup);
 
-        console.log("最终源 IP 标签 Map：", finalMap);
+        if (zashVersion === "new") {
+          const zashList = tagsToZashList(tags);
+          localStorage.setItem(zashListKey, JSON.stringify(zashList));
 
-        if (targetDashboard === "zashboard") {
-          localStorage.setItem(zashboardKey, JSON.stringify(finalMap));
+          localStorage.removeItem(metaKey);
 
-          console.log("已写入 Zashboard：", zashboardKey, finalMap);
-          alert("已导入到 Zashboard，页面即将刷新");
-          location.reload();
-          return;
+          console.log("已按新版 Zashboard 格式写入：", zashListKey, zashList);
         }
 
-        if (targetDashboard === "metacubexd") {
-          const metacubeTags = normalMapToMetacubeTags(finalMap);
+        if (zashVersion === "old") {
+          const zashMap = tagsToZashMap(tags);
+          localStorage.setItem(zashMapKey, JSON.stringify(zashMap));
 
-          localStorage.setItem(metacubeKey, JSON.stringify(metacubeTags));
+          localStorage.removeItem(metaKey);
 
-          console.log("已写入 MetaCubeXD：", metacubeKey, metacubeTags);
-          alert("已导入到 MetaCubeXD，页面即将刷新");
-          location.reload();
-          return;
+          console.log("已按旧版 Zashboard 格式写入：", zashMapKey, zashMap);
         }
 
-        throw new Error("未知目标 Dashboard 类型");
+        alert(
+          "已导入到 Zashboard " +
+            (zashVersion === "new" ? "新版" : "旧版") +
+            "，共 " +
+            tags.length +
+            " 条记录。页面即将刷新。"
+        );
+
+        location.reload();
       } catch (e) {
         console.error("导入失败：", e);
         alert("导入失败：" + e.message);
