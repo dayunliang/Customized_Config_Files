@@ -1,5 +1,5 @@
 (function () {
-  const zashboardKey = "config/source-ip-label-map";
+  const zashboardKey = "clientSourceIPTags";
   const metacubeKey = "clientSourceIPTags";
 
   function detectCurrentDashboard() {
