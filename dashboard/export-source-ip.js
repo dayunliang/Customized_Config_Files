@@ -56,6 +56,20 @@
     );
   }
 
+  function getSitePrefixByHost(hostname) {
+    const host = String(hostname || "").trim();
+
+    if (host.startsWith("192.168.12.")) {
+      return "Beverly-";
+    }
+
+    if (host.startsWith("10.29.2.")) {
+      return "Riviera-";
+    }
+
+    return "";
+  }
+
   function safeJsonParse(value, fallback) {
     try {
       if (typeof value !== "string") {
@@ -419,9 +433,11 @@
   const blob = new Blob([text], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
+  const sitePrefix = getSitePrefixByHost(location.hostname);
+
   const a = document.createElement("a");
   a.href = url;
-  a.download = "dashboard-source-ip-label-backup-" + timestamp + ".json";
+  a.download = sitePrefix + "dashboard-source-ip-label-backup-" + timestamp + ".json";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -429,4 +445,6 @@
   URL.revokeObjectURL(url);
 
   console.log("源 IP 标签已导出为统一中间格式：", backup);
+  console.log("当前主机：", location.hostname);
+  console.log("导出文件名前缀：", sitePrefix || "无");
 })();
