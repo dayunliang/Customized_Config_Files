@@ -354,6 +354,7 @@ uci -q batch << 'EOF'
   set network.wg0.listen_port='58058'
   delete network.wg0.addresses
   add_list network.wg0.addresses='10.0.0.1/24'
+
   # 可选：显式 MTU（更稳）
   set network.wg0.mtu='1420'
 
