@@ -345,11 +345,8 @@ uci -q batch << 'EOF'
   # wg0 主接口
   set network.wg0='interface'
   set network.wg0.proto='wireguard'
-  # 禁止 wg0 开机自动启动，首次启动后保持关闭状态
-  # set network.wg0.auto='0'
   set network.wg0.private_key='__WG_PRIVKEY__'
   set network.wg0.listen_port='58058'
-  # list network.wg0.addresses='10.0.0.2/24'
   add_list network.wg0.addresses='10.0.0.2/24'
 
   # 清理旧 peer（如果存在）
@@ -384,9 +381,9 @@ fi
 # 16. 脚本执行完毕后删除自身，避免再次执行
 # =============================================================================
 
-# 再次确保 wg0 首次启动后处于关闭状态
-uci set network.wg0.auto='0'
-uci commit network
+# 确保 wg0 首次启动后处于关闭状态
+# uci set network.wg0.auto='0'
+# uci commit network
 ifdown wg0 2>/dev/null || true
 
 rm -f /etc/uci-defaults/zzz-default-settings
