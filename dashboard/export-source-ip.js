@@ -59,13 +59,25 @@
   function getSitePrefixByHost(hostname) {
     const host = String(hostname || "").trim();
 
-    if (host.startsWith("192.168.12.")) {
-      return "Beverly-";
-    }
+    // Beverly:
+  // 192.168.12.0/24
+  // 192.168.122.0/24
+  if (
+    host.startsWith("192.168.12.") ||
+    host.startsWith("192.168.122.")
+  ) {
+    return "Beverly-";
+  }
 
-    if (host.startsWith("10.29.2.")) {
-      return "Riviera-";
-    }
+  // Riviera:
+  // 10.29.2.0/24
+  // 10.29.122.0/24
+  if (
+    host.startsWith("10.29.2.") ||
+    host.startsWith("10.29.122.")
+  ) {
+    return "Riviera-";
+  }
 
     return "";
   }
