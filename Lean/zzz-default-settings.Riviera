@@ -302,7 +302,7 @@ done
   uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
   uci set firewall.@rule[-1].src='wan'
   # 10.29.2.0/24 + 10.10.20.2-5
-  uci set firewall.@rule[-1].src_ip='10.29.2.0/24 10.10.20.2 10.10.20.3 10.10.20.4 10.10.20.5'
+  uci set firewall.@rule[-1].src_ip='10.29.2.0/24 10.29.90.100 10.10.20.2 10.10.20.3 10.10.20.4 10.10.20.5'
   uci set firewall.@rule[-1].proto='all'
   uci set firewall.@rule[-1].target='ACCEPT'
   uci set firewall.@rule[-1].family='ipv4'
