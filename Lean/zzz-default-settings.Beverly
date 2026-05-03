@@ -302,7 +302,7 @@ for r in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
 done
 [ $ADMIN_EXISTS -eq 0 ] && {
   uci add firewall rule >/dev/null
-  uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
+  uci set firewall.@rule[-1].name='Allow-WAN-Admin'
   uci set firewall.@rule[-1].src='wan'
   uci set firewall.@rule[-1].src_ip='192.168.12.0/24 10.10.10.2 10.10.10.3 10.10.10.4 10.10.10.5'
   uci set firewall.@rule[-1].proto='all'
