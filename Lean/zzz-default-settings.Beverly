@@ -295,10 +295,10 @@ done
   uci set firewall.@redirect[-1].dest_port='53'
 }
 
-# 12.4 WAN 管理白名单（Beverly：192.168.12.0/24 + 10.10.10.2–5）
+# 12.4 WAN 管理白名单（Beverly：192.168.12.0/24 + Local VPN Client: 10.10.10.2–5）
 ADMIN_EXISTS=0
 for r in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
-  [ "$(uci -q get ${r}.name 2>/dev/null)" = "Allow-WAN-LAN-Admin" ] && ADMIN_EXISTS=1 && break
+  [ "$(uci -q get ${r}.name 2>/dev/null)" = "Allow-WAN-Admin" ] && ADMIN_EXISTS=1 && break
 done
 [ $ADMIN_EXISTS -eq 0 ] && {
   uci add firewall rule >/dev/null
