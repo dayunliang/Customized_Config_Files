@@ -2,134 +2,76 @@
 #
 # zzz-default-settings (Beverly)
 # 放置于：package/lean/default-settings/files/zzz-default-settings
-# 系统首次启动时自动执行，执行完毕后删除自身
 #
 
-# =============================================================================
 # 1. 设置 LuCI 界面语言与默认主题
-# =============================================================================
-
-# 设置 LuCI 界面语言为简体中文
 uci set luci.main.lang='zh_cn'
-
-# 设置 LuCI 默认主题
-# 注意：这里的 neobird 必须与你实际安装的主题目录一致：
-# /www/luci-static/neobird
 uci set luci.main.mediaurlbase='/luci-static/bootstrap'
-
-# 提交 LuCI 配置
 uci commit luci
 
-# =============================================================================
 # 2. 设置系统时区、主机名和 NTP 服务器
-# =============================================================================
 uci -q batch <<-EOF
-  set system.@system[0].timezone='CST-8'
-  set system.@system[0].zonename='Asia/Shanghai'
-  set system.@system[0].hostname='Beverly.2nd.Router'
-  delete system.ntp.server
-  add_list system.ntp.server='ntp1.aliyun.com'
-  add_list system.ntp.server='ntp.tencent.com'
-  add_list system.ntp.server='ntp.ntsc.ac.cn'
-  add_list system.ntp.server='time.ustc.edu.cn'
+	set system.@system[0].timezone='CST-8'
+	set system.@system[0].zonename='Asia/Shanghai'
+	set system.@system[0].hostname='Beverly.2nd.Router'
+	delete system.ntp.server
+	add_list system.ntp.server='ntp1.aliyun.com'
+	add_list system.ntp.server='ntp.tencent.com'
+	add_list system.ntp.server='ntp.ntsc.ac.cn'
+	add_list system.ntp.server='time.ustc.edu.cn'
 EOF
 uci commit system
 
-# =============================================================================
-# 3. 启用匿名挂载
-# =============================================================================
+# 3. 基础功能设置 (挂载、菜单重命名、源优化)
 uci set fstab.@global[0].anon_mount=1
 uci commit fstab
 
-# =============================================================================
-# 4. 清理 LuCI 状态页面
-# =============================================================================
 rm -f /usr/lib/lua/luci/view/admin_status/index/{mwan,upnp,ddns,minidlna}.htm
 
-# =============================================================================
-# 5. 重命名 “Services” 菜单为 “NAS”
-# =============================================================================
 for ctl in aria2 hd_idle samba samba4 minidlna transmission mjpg-streamer p910nd usb_printer xunlei; do
-  [ -f "/usr/lib/lua/luci/controller/${ctl}.lua" ] && \
-    sed -i 's/"services"/"nas"/g' /usr/lib/lua/luci/controller/${ctl}.lua
+	[ -f "/usr/lib/lua/luci/controller/${ctl}.lua" ] && sed -i 's/"services"/"nas"/g' /usr/lib/lua/luci/controller/${ctl}.lua
 done
 for view in overview_status minidlna_status; do
-  [ -f "/usr/lib/lua/luci/view/${view}.htm" ] && \
-    sed -i 's/services/nas/g' /usr/lib/lua/luci/view/${view}.htm
+	[ -f "/usr/lib/lua/luci/view/${view}.htm" ] && sed -i 's/services/nas/g' /usr/lib/lua/luci/view/${view}.htm
 done
 
-# =============================================================================
-# 6. 更换 OPKG 源为阿里云，注释第三方源
-# =============================================================================
 sed -i 's|https://downloads.openwrt.org|https://mirrors.aliyun.com/openwrt|g' /etc/opkg/distfeeds.conf
-sed -i '/smpackage/s/^/#/'       /etc/opkg/distfeeds.conf
-sed -i '/kenzo/s/^/#/'           /etc/opkg/distfeeds.conf
-sed -i '/small/s/^/#/'           /etc/opkg/distfeeds.conf
-sed -i '/openwrt_istore/s|^|#|'  /etc/opkg/distfeeds.conf
+sed -i '/smpackage/s/^/#/' /etc/opkg/distfeeds.conf
+sed -i '/kenzo/s/^/#/' /etc/opkg/distfeeds.conf
+sed -i '/small/s/^/#/' /etc/opkg/distfeeds.conf
+sed -i '/openwrt_istore/s|^|#|' /etc/opkg/distfeeds.conf
 sed -i '/check_signature/s/^/#/' /etc/opkg.conf
 
-# =============================================================================
-# 7. 重置 root 密码
-# =============================================================================
 sed -i 's#root::0:0:99999:7:::#root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0:0:99999:7:::#g' /etc/shadow
 
-# =============================================================================
-# 8. 优化 Dnsmasq 日志与 LuCI 缓存
-# =============================================================================
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
-rm -rf /tmp/luci-modulecache/ /tmp/luci-indexcache
-
-# =============================================================================
-# 9. 默认开启所有无线接口
-# =============================================================================
 sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 
-# =============================================================================
-# 10. 自定义固件版本信息
-# =============================================================================
-sed -i '/DISTRIB_REVISION/d'    /etc/openwrt_release
+sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
 echo "DISTRIB_REVISION='366.11.07'" >> /etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 
-# =============================================================================
-# 11. 网络与 DHCP 静态设置（IPv4） + 取消 LAN 桥接 + 彻底关闭 IPv6
-# =============================================================================
-#  - LAN: 192.168.122.144/24，不发 DHCP（由上游设备负责）
-#  - WAN: 192.168.12.144/24，GW 192.168.12.253，DNS 192.168.12.10/11
-#  - VLAN50/80/90: 为 Avahi 反射器准备的三段网段（仅配置静态地址，不配置默认网关，避免多默认路由）
+# 4. 网络与 VLAN 静态设置
+uci delete network.lan.ifname 2>/dev/null
+uci delete network.lan.type 2>/dev/null
+uci delete network.lan.device 2>/dev/null
+uci delete network.wan.ifname 2>/dev/null
+uci delete network.wan.type 2>/dev/null
+uci delete network.wan.device 2>/dev/null
 
-# -----------------------------------------------------------------------------
-# 11.1 兼容 DSA / 传统架构：使用 device 字段；同时清理旧式桥接字段
-# -----------------------------------------------------------------------------
-uci delete network.lan.ifname 2>/dev/null || true
-uci delete network.lan.type   2>/dev/null || true
-uci delete network.lan.device 2>/dev/null || true
-
-uci delete network.wan.ifname 2>/dev/null || true
-uci delete network.wan.type   2>/dev/null || true
-uci delete network.wan.device 2>/dev/null || true
-
-# -----------------------------------------------------------------------------
-# 11.2 LAN（不发 DHCPv4/RA/DHCPv6）
-# -----------------------------------------------------------------------------
 uci set network.lan.proto='static'
 uci set network.lan.device='eth0'
 uci set network.lan.ipaddr='192.168.122.144'
 uci set network.lan.netmask='255.255.255.0'
-
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
 uci set dhcp.lan.ignore='1'
 uci set dhcp.lan.dhcpv6='disabled'
 uci set dhcp.lan.ra='disabled'
-uci set dhcp.lan.ra_management='0'
 
-# -----------------------------------------------------------------------------
-# 11.3 WAN（仅 WAN 配默认路由/网关，避免多默认路由造成“路由漂移”）
-# -----------------------------------------------------------------------------
 uci set network.wan.proto='static'
 uci set network.wan.device='eth1'
 uci set network.wan.ipaddr='192.168.12.144'
@@ -137,199 +79,74 @@ uci set network.wan.netmask='255.255.255.0'
 uci set network.wan.gateway='192.168.12.253'
 uci set network.wan.dns='192.168.12.10 192.168.12.11'
 
-# -----------------------------------------------------------------------------
-# 11.4 创建 VLAN 子接口设备（eth1.50 / eth1.80 / eth1.90）
-#      说明：仅写 interface device='eth1.50' 在某些环境下不会自动创建 VLAN link，
-#            这里显式创建 802.1q device，确保开机就有 eth1.X 设备。
-# -----------------------------------------------------------------------------
 ensure_vlan_dev() {
-  _dev="$1"   # 例如 eth1.50
-  _vid="$2"   # 例如 50
-
-  # 如果已存在同名 device，则仅更新关键字段
-  _sec=""
-  for s in $(uci -q show network | grep "=device" | cut -d= -f1); do
-    [ "$(uci -q get ${s}.name 2>/dev/null)" = "${_dev}" ] && _sec="$s" && break
-  done
-
-  if [ -z "$_sec" ]; then
-    uci add network device >/dev/null
-    _sec="network.@device[-1]"
-  fi
-
-  uci set ${_sec}.name="${_dev}"
-  uci set ${_sec}.type="8021q"
-  uci set ${_sec}.ifname="eth1"
-  uci set ${_sec}.vid="${_vid}"
+	_dev="$1"; _vid="$2"; _sec=""
+	for s in $(uci -q show network | grep "=device" | cut -d= -f1); do
+		[ "$(uci -q get ${s}.name 2>/dev/null)" = "${_dev}" ] && _sec="$s" && break
+	done
+	if [ -z "$_sec" ]; then uci add network device >/dev/null; _sec="network.@device[-1]"; fi
+	uci set ${_sec}.name="${_dev}"; uci set ${_sec}.type="8021q"; uci set ${_sec}.ifname="eth1"; uci set ${_sec}.vid="${_vid}"
 }
 
 ensure_vlan_dev "eth1.50" "50"
 ensure_vlan_dev "eth1.80" "80"
 ensure_vlan_dev "eth1.90" "90"
 
-# -----------------------------------------------------------------------------
-# 11.5 VLAN50 / VLAN80 / VLAN90（仅静态地址，不配置网关/DNS）
-# -----------------------------------------------------------------------------
-uci -q delete network.VLAN50 2>/dev/null || true
-uci set network.VLAN50='interface'
-uci set network.VLAN50.proto='static'
-uci set network.VLAN50.device='eth1.50'
-uci set network.VLAN50.ipaddr='192.168.50.144'
-uci set network.VLAN50.netmask='255.255.255.0'
+for v in 50 80 90; do
+	uci set network.VLAN$v='interface'
+	uci set network.VLAN$v.proto='static'
+	uci set network.VLAN$v.device="eth1.$v"
+	uci set network.VLAN$v.ipaddr="192.168.$v.144"
+	uci set network.VLAN$v.netmask='255.255.255.0'
+done
 
-uci -q delete network.VLAN80 2>/dev/null || true
-uci set network.VLAN80='interface'
-uci set network.VLAN80.proto='static'
-uci set network.VLAN80.device='eth1.80'
-uci set network.VLAN80.ipaddr='192.168.80.144'
-uci set network.VLAN80.netmask='255.255.255.0'
-
-uci -q delete network.VLAN90 2>/dev/null || true
-uci set network.VLAN90='interface'
-uci set network.VLAN90.proto='static'
-uci set network.VLAN90.device='eth1.90'
-uci set network.VLAN90.ipaddr='192.168.90.144'
-uci set network.VLAN90.netmask='255.255.255.0'
-
-# -----------------------------------------------------------------------------
-# 11.6 删除 wan6 及其 DHCP，并彻底关闭 IPv6（odhcpd + sysctl）
-# -----------------------------------------------------------------------------
 uci delete network.wan6 2>/dev/null
-uci delete dhcp.wan6    2>/dev/null
-
-uci commit network
-uci commit dhcp
-
-# —— 内核层面彻底禁用 IPv6 + 停用 odhcpd 服务 ——
+uci delete dhcp.wan6 2>/dev/null
 grep -q 'disable_ipv6' /etc/sysctl.conf || cat << 'EOF' >> /etc/sysctl.conf
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 EOF
+/etc/init.d/odhcpd disable 2>/dev/null
 
-sysctl -p >/dev/null 2>&1
-/etc/init.d/odhcpd disable
-/etc/init.d/odhcpd stop
-
-# -----------------------------------------------------------------------------
-# 11.7 防火墙：把 VLAN50/80/90 归入 lan zone（否则可能被防火墙当成“未归属接口”而丢弃）
-# -----------------------------------------------------------------------------
-add_zone_net() {
-  _zone="$1"
-  _net="$2"
-  _zsec=""
-
-  for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
-    [ "$(uci -q get ${s}.name 2>/dev/null)" = "${_zone}" ] && _zsec="$s" && break
-  done
-  [ -z "$_zsec" ] && return 0
-
-  _cur="$(uci -q get ${_zsec}.network 2>/dev/null || echo '')"
-  echo "$_cur" | grep -qw "${_net}" || uci add_list ${_zsec}.network="${_net}"
-}
-
-add_zone_net "lan" "VLAN50"
-add_zone_net "lan" "VLAN80"
-add_zone_net "lan" "VLAN90"
-uci commit firewall
-
-
-
-# =============================================================================
-# 12. 防火墙 wg0 相关设置（叠加默认 lan/wan）
-# =============================================================================
-
-# 如果 network.lan/wan 未设 device，则兜底写入（兼容 DSA）
-LAN_DEV="$(uci -q get network.lan.device 2>/dev/null || echo '')"
-[ -z "$LAN_DEV" ] && uci set network.lan.device='eth0'
-WAN_DEV="$(uci -q get network.wan.device 2>/dev/null || echo '')"
-[ -z "$WAN_DEV" ] && uci set network.wan.device='eth1'
 uci commit network
+uci commit dhcp
 
-# 12.0 确保 wan zone 里包含 network 'wan'
-WANZONE=""
-for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
-  [ "$(uci -q get ${s}.name 2>/dev/null)" = "wan" ] && WANZONE="$s" && break
+# 5. 防火墙配置
+uci set firewall.@zone[0].input='REJECT'
+uci set firewall.@zone[0].forward='ACCEPT'
+
+for v in VLAN50 VLAN80 VLAN90; do
+	_zsec=""
+	for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+		[ "$(uci -q get ${s}.name 2>/dev/null)" = "lan" ] && _zsec="$s" && break
+	done
+	[ -n "$_zsec" ] && uci add_list ${_zsec}.network="$v"
 done
-if [ -n "$WANZONE" ]; then
-  CUR_NETS="$(uci -q get ${WANZONE}.network 2>/dev/null || echo '')"
-  echo "$CUR_NETS" | grep -qw 'wan' || uci add_list ${WANZONE}.network='wan'
-fi
 
-# 12.1 wg0 zone
-WGZONE=""
-for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
-  [ "$(uci -q get ${s}.name 2>/dev/null)" = "wg0" ] && WGZONE="$s" && break
-done
-if [ -z "$WGZONE" ]; then
-  uci add firewall zone >/dev/null
-  uci set firewall.@zone[-1].name='wg0'
-  uci set firewall.@zone[-1].input='ACCEPT'
-  uci set firewall.@zone[-1].output='ACCEPT'
-  uci set firewall.@zone[-1].forward='ACCEPT'
-  uci add_list firewall.@zone[-1].network='wg0'
-fi
+uci add firewall rule >/dev/null
+uci set firewall.@rule[-1].name='Allow-DNS-Input'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].dest_port='53'
+uci set firewall.@rule[-1].proto='tcp udp'
+uci set firewall.@rule[-1].target='ACCEPT'
 
-# 12.2 转发（去重添加）
-has_fwd(){ for f in $(uci -q show firewall | grep "=forwarding" | cut -d= -f1); do
-  [ "$(uci -q get ${f}.src)" = "$1" ] && [ "$(uci -q get ${f}.dest)" = "$2" ] && return 0; done; return 1; }
+uci add firewall rule >/dev/null
+uci set firewall.@rule[-1].name='Allow-mDNS-Input'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].dest_port='5353'
+uci set firewall.@rule[-1].proto='udp'
+uci set firewall.@rule[-1].target='ACCEPT'
 
-has_fwd lan wg0 || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='lan'; uci set firewall.@forwarding[-1].dest='wg0'; }
-has_fwd wg0 lan || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wg0'; uci set firewall.@forwarding[-1].dest='lan'; }
-has_fwd wg0 wan || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wg0'; uci set firewall.@forwarding[-1].dest='wan'; }
-has_fwd wan wg0 || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wan'; uci set firewall.@forwarding[-1].dest='wg0'; }
+uci add firewall rule >/dev/null
+uci set firewall.@rule[-1].name='Allow-Admin-From-WAN-Secure'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].src_ip='192.168.12.2 10.10.10.2 10.10.10.3 10.10.10.4 10.10.10.5'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].dest_port='22 80 443'
+uci set firewall.@rule[-1].target='ACCEPT'
 
-# 12.3 DNS 重定向（lan→53）
-DNS_EXISTS=0
-for r in $(uci -q show firewall | grep "=redirect" | cut -d= -f1); do
-  [ "$(uci -q get ${r}.name 2>/dev/null)" = "dns_redirect" ] && DNS_EXISTS=1 && break
-done
-[ $DNS_EXISTS -eq 0 ] && {
-  uci add firewall redirect >/dev/null
-  uci set firewall.@redirect[-1].name='dns_redirect'
-  uci set firewall.@redirect[-1].src='lan'
-  uci set firewall.@redirect[-1].src_dport='53'
-  uci set firewall.@redirect[-1].family='ipv4'
-  uci set firewall.@redirect[-1].proto='tcpudp'
-  uci set firewall.@redirect[-1].target='DNAT'
-  uci set firewall.@redirect[-1].dest_port='53'
-}
-
-# 12.4 WAN 管理白名单（Beverly：192.168.12.0/24 + Local VPN Client: 10.10.10.2–5）
-ADMIN_EXISTS=0
-for r in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
-  [ "$(uci -q get ${r}.name 2>/dev/null)" = "Allow-WAN-Admin" ] && ADMIN_EXISTS=1 && break
-done
-[ $ADMIN_EXISTS -eq 0 ] && {
-  uci add firewall rule >/dev/null
-  uci set firewall.@rule[-1].name='Allow-WAN-Admin'
-  uci set firewall.@rule[-1].src='wan'
-  uci set firewall.@rule[-1].src_ip='192.168.12.0/24 10.10.10.2 10.10.10.3 10.10.10.4 10.10.10.5'
-  uci set firewall.@rule[-1].proto='all'
-  uci set firewall.@rule[-1].target='ACCEPT'
-  uci set firewall.@rule[-1].family='ipv4'
-}
-
-# 12.5 WAN→WG0 精确放行（仅 10.10.10.2–5）
-VPNWG_EXISTS=0
-for r in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
-  [ "$(uci -q get ${r}.name 2>/dev/null)" = "Allow-VPN-to-wg0" ] && VPNWG_EXISTS=1 && break
-done
-[ $VPNWG_EXISTS -eq 0 ] && {
-  uci add firewall rule >/dev/null
-  uci set firewall.@rule[-1].name='Allow-VPN-to-wg0'
-  uci set firewall.@rule[-1].src='wan'
-  uci set firewall.@rule[-1].src_ip='10.10.10.2 10.10.10.3 10.10.10.4 10.10.10.5'
-  uci set firewall.@rule[-1].dest='wg0'
-  uci set firewall.@rule[-1].proto='all'
-  uci set firewall.@rule[-1].target='ACCEPT'
-  uci set firewall.@rule[-1].family='ipv4'
-}
-
-uci commit firewall
-
-# 12.6 允许 WireGuard 握手（WAN → 本机）
-uci -q delete firewall.allow_wg_handshake
+uci -q delete firewall.Allow_WG_Handshake
 uci set firewall.Allow_WG_Handshake='rule'
 uci set firewall.Allow_WG_Handshake.name='Allow-WireGuard-Handshake'
 uci set firewall.Allow_WG_Handshake.src='wan'
@@ -337,75 +154,53 @@ uci set firewall.Allow_WG_Handshake.proto='udp'
 uci set firewall.Allow_WG_Handshake.dest_port='58058'
 uci set firewall.Allow_WG_Handshake.target='ACCEPT'
 
-# =============================================================================
-# 13. 删除 Dropbear 的 Interface 设置，使其监听所有接口（访问权限由防火墙控制）
-# =============================================================================
-uci delete dropbear.@dropbear[0].Interface 2>/dev/null
-uci commit dropbear
+uci add firewall zone >/dev/null
+uci set firewall.@zone[-1].name='wg0'
+uci set firewall.@zone[-1].input='ACCEPT'
+uci set firewall.@zone[-1].output='ACCEPT'
+uci set firewall.@zone[-1].forward='ACCEPT'
+uci add_list firewall.@zone[-1].network='wg0'
 
-# =============================================================================
-# 14. WireGuard 默认配置与对端 peer（Riviera）——Beverly 侧
-# =============================================================================
-uci -q batch << 'EOF'
-  # wg0 主接口
-  set network.wg0='interface'
-  set network.wg0.proto='wireguard'
-  set network.wg0.private_key='__WG_PRIVKEY__'
-  set network.wg0.listen_port='58058'
-  delete network.wg0.addresses
-  add_list network.wg0.addresses='10.0.0.1/24'
+has_fwd(){ for f in $(uci -q show firewall | grep "=forwarding" | cut -d= -f1); do
+	[ "$(uci -q get ${f}.src)" = "$1" ] && [ "$(uci -q get ${f}.dest)" = "$2" ] && return 0; done; return 1; }
 
-  # 可选：显式 MTU（更稳）
-  set network.wg0.mtu='1420'
+has_fwd lan wg0 || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='lan'; uci set firewall.@forwarding[-1].dest='wg0'; }
+has_fwd wg0 lan || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wg0'; uci set firewall.@forwarding[-1].dest='lan'; }
+has_fwd wg0 wan || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wg0'; uci set firewall.@forwarding[-1].dest='wan'; }
+has_fwd wan wg0 || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wan'; uci set firewall.@forwarding[-1].dest='wg0'; }
 
-  # 清理第一个旧 peer（若存在）
-  delete network.@wireguard_wg0[0]
+uci commit firewall
 
-  # 添加 Riviera 作为 peer（Beverly 侧无需写 endpoint，方便对端漂移）
-  add network wireguard_wg0
-  set network.@wireguard_wg0[-1].description='Riviera'
-  set network.@wireguard_wg0[-1].public_key='4kY/LleOD1EsJ0tEqQ0SdgAa3BGeDYwv06QltDC9Kko='
-  set network.@wireguard_wg0[-1].persistent_keepalive='25'
-  set network.@wireguard_wg0[-1].route_allowed_ips='1'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.2/32'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.2.0/24'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.80.0/24'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.90.0/24'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.29.122.0/24'
-  add_list network.@wireguard_wg0[-1].allowed_ips='10.10.20.0/24'
+# 6. WireGuard 接口
+uci -q batch <<-EOF
+	set network.wg0='interface'
+	set network.wg0.proto='wireguard'
+	set network.wg0.private_key='__WG_PRIVKEY__'
+	set network.wg0.listen_port='58058'
+	add_list network.wg0.addresses='10.0.0.1/24'
+	set network.wg0.mtu='1420'
+	delete network.@wireguard_wg0[0]
+	add network wireguard_wg0
+	set network.@wireguard_wg0[-1].description='Riviera'
+	set network.@wireguard_wg0[-1].public_key='4kY/LleOD1EsJ0tEqQ0SdgAa3BGeDYwv06QltDC9Kko='
+	set network.@wireguard_wg0[-1].persistent_keepalive='25'
+	set network.@wireguard_wg0[-1].route_allowed_ips='1'
+	add_list network.@wireguard_wg0[-1].allowed_ips='10.0.0.2/32'
+	add_list network.@wireguard_wg0[-1].allowed_ips='10.29.2.0/24'
+	add_list network.@wireguard_wg0[-1].allowed_ips='10.29.80.0/24'
+	add_list network.@wireguard_wg0[-1].allowed_ips='10.29.90.0/24'
+	add_list network.@wireguard_wg0[-1].allowed_ips='10.29.122.0/24'
+	add_list network.@wireguard_wg0[-1].allowed_ips='10.10.20.0/24'
 EOF
 uci commit network
 
-# =============================================================================
-# 15. Avahi（mDNS）+ D-Bus：启用服务（配置文件已通过 files/ 预置）
-# =============================================================================
-# 说明：
-#  - 你已在预制镜像中放入：
-#      /etc/dbus-1/system.d/avahi-dbus.conf
-#      /etc/avahi/avahi-daemon.conf
-#  - 因此这里不再生成配置文件，只负责 enable + restart（顺序：dbus -> avahi）
+# 7. 服务开启
+uci delete dropbear.@dropbear[0].Interface 2>/dev/null
+uci commit dropbear
 
-[ -x /etc/init.d/dbus ] && /etc/init.d/dbus enable
-[ -x /etc/init.d/avahi-daemon ] && /etc/init.d/avahi-daemon enable
+[ -x /etc/init.d/dbus ] && /etc/init.d/dbus enable && /etc/init.d/dbus restart
+[ -x /etc/init.d/avahi-daemon ] && /etc/init.d/avahi-daemon enable && /etc/init.d/avahi-daemon restart
+[ -x /etc/init.d/passwall2 ] && /etc/init.d/passwall2 start
 
-[ -x /etc/init.d/dbus ] && /etc/init.d/dbus restart
-[ -x /etc/init.d/avahi-daemon ] && /etc/init.d/avahi-daemon restart
-
-# =============================================================================
-# 16. 启用 PassWall2 开机自启
-# =============================================================================
-if [ -x /etc/init.d/passwall2 ]; then
-    /etc/init.d/passwall2 start
-fi
-
-# =============================================================================
-# 17. 统一在脚本末尾生效（避免中途重启造成时序问题）
-# =============================================================================
-#/etc/init.d/network reload
-#/etc/init.d/firewall reload
-
-# =============================================================================
-# 18. 脚本执行完毕后删除自身
-# =============================================================================
 rm -f /etc/uci-defaults/zzz-default-settings
 exit 0
