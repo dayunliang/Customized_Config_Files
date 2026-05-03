@@ -209,6 +209,21 @@ proxy-groups:
   interval: 120
   tolerance: 5
 
+- name: 🤖 Gemini
+  type: url-test
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇸🇬 狮城节点
+  - 🇹🇼 台湾节点
+  - 🇯🇵 日本节点
+  - 🇺🇲 美国节点
+  - 🇰🇷 韩国节点
+  - ALI-HK
+  - ALI-JP
+  url: http://www.gstatic.com/generate_204
+  interval: 120
+  tolerance: 5
+
 - name: 📲 电报消息
   type: select
   proxies:
@@ -478,6 +493,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/ChatGPT.yaml
     interval: 86400
 
+  Gemini:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/SkywalkerJi/Clash-Rules/refs/heads/master/AI/Gemini.yaml
+    interval: 86400
+
   ESPN:
     type: http
     behavior: classical
@@ -703,6 +725,7 @@ rules:
 
 - RULE-SET,Launcher,👹 Launcher
 - RULE-SET,ChatGPT,🤖 ChatGPT
+- RULE-SET,Gemini,🤖 Gemini
 - RULE-SET,ESPN,🏌 ESPN
 - RULE-SET,HDAV,㊙️ HDAV
 - RULE-SET,Minecraft,🎃 我的世界
