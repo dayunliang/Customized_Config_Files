@@ -122,6 +122,9 @@ uci set network.lan.device='eth0'
 uci set network.lan.ipaddr='192.168.122.144'
 uci set network.lan.netmask='255.255.255.0'
 
+uci delete network.lan.ip6assign 2>/dev/null # 去除LAN IPv6
+uci delete network.globals.ula_prefix 2>/dev/null # 顺手扬了全局前缀，永绝后患
+
 # 11.3 禁用 LAN 的 DHCP 服务（作为旁路路由或特殊组网使用）
 uci set dhcp.lan=dhcp
 uci set dhcp.lan.interface='lan'
@@ -269,7 +272,7 @@ done
   uci set firewall.@redirect[-1].src='lan'
   uci set firewall.@redirect[-1].src_dport='53'
   uci set firewall.@redirect[-1].family='ipv4'
-  uci set firewall.@redirect[-1].proto='tcpudp'
+  uci set firewall.@redirect[-1].proto='tcp udp'
   uci set firewall.@redirect[-1].target='DNAT'
   uci set firewall.@redirect[-1].dest_port='53'
 }
