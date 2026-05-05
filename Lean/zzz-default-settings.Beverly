@@ -191,9 +191,7 @@ sysctl -p >/dev/null 2>&1
 /etc/init.d/odhcpd disable
 /etc/init.d/odhcpd stop
 
-# -----------------------------------------------------------------------------
 # 11.7 防火墙策略：将 VLAN 接口划入 LAN 区域
-# -----------------------------------------------------------------------------
 add_zone_net() {
   _zone="$1"
   _net="$2"
@@ -210,7 +208,7 @@ add_zone_net "lan" "VLAN50"
 add_zone_net "lan" "VLAN80"
 add_zone_net "lan" "VLAN90"
 
-# 【安全增强 1】将 LAN 区域的入站策略设为 REJECT (更严格的安全模型)
+# 11.8 安全增强 1: 将 LAN 区域的入站策略设为 REJECT (更严格的安全模型)
 for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
   [ "$(uci -q get ${s}.name 2>/dev/null)" = "lan" ] && uci set ${s}.input='REJECT' && break
 done
@@ -227,7 +225,7 @@ WAN_DEV="$(uci -q get network.wan.device 2>/dev/null || echo '')"
 [ -z "$WAN_DEV" ] && uci set network.wan.device='eth1'
 uci commit network
 
-# 12.0 补全防火墙 wan 区域的网络绑定
+# 12.1 补全防火墙 wan 区域的网络绑定
 WANZONE=""
 for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
   [ "$(uci -q get ${s}.name 2>/dev/null)" = "wan" ] && WANZONE="$s" && break
@@ -237,7 +235,7 @@ if [ -n "$WANZONE" ]; then
   echo "$CUR_NETS" | grep -qw 'wan' || uci add_list ${WANZONE}.network='wan'
 fi
 
-# 12.1 创建 WireGuard (wg0) 防火墙区域，默认设为全接受(ACCEPT)
+# 12.2 创建 WireGuard (wg0) 防火墙区域，默认设为全接受(ACCEPT)
 WGZONE=""
 for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
   [ "$(uci -q get ${s}.name 2>/dev/null)" = "wg0" ] && WGZONE="$s" && break
@@ -251,7 +249,7 @@ if [ -z "$WGZONE" ]; then
   uci add_list firewall.@zone[-1].network='wg0'
 fi
 
-# 12.2 转发规则：打通 LAN、WAN 与 wg0 之间的双向转发
+# 12.3 转发规则：打通 LAN、WAN 与 wg0 之间的双向转发
 has_fwd(){ for f in $(uci -q show firewall | grep "=forwarding" | cut -d= -f1); do
   [ "$(uci -q get ${f}.src)" = "$1" ] && [ "$(uci -q get ${f}.dest)" = "$2" ] && return 0; done; return 1; }
 
@@ -260,7 +258,7 @@ has_fwd wg0 lan || { uci add firewall forwarding >/dev/null; uci set firewall.@f
 has_fwd wg0 wan || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wg0'; uci set firewall.@forwarding[-1].dest='wan'; }
 has_fwd wan wg0 || { uci add firewall forwarding >/dev/null; uci set firewall.@forwarding[-1].src='wan'; uci set firewall.@forwarding[-1].dest='wg0'; }
 
-# 12.3 DNS 重定向：强制将所有 LAN 段的 53 端口流量重定向到本地端口（劫持 DNS）
+# 12.4 DNS 重定向：强制将所有 LAN 段的 53 端口流量重定向到本地端口（劫持 DNS）
 DNS_EXISTS=0
 for r in $(uci -q show firewall | grep "=redirect" | cut -d= -f1); do
   [ "$(uci -q get ${r}.name 2>/dev/null)" = "dns_redirect" ] && DNS_EXISTS=1 && break
@@ -276,9 +274,7 @@ done
   uci set firewall.@redirect[-1].dest_port='53'
 }
 
-# -----------------------------------------------------------------------------
-# 【安全增强 2】业务与管理白名单
-# -----------------------------------------------------------------------------
+# 12.5 安全增强 2: 业务与管理白名单
 # 允许回环地址访问：OpenClash/AdGuardHome 等插件内部通信必需
 uci add firewall rule >/dev/null
 uci set firewall.@rule[-1].name='Allow-Local-Loopback'
