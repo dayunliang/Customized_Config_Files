@@ -98,7 +98,7 @@ echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
 # 11. 网络与 DHCP 静态设置（针对 IPv4） + 保持 DSA 桥接 + 彻底关闭 IPv6
 # =============================================================================
 # 说明：
-#  - LAN: 10.29.122.144/24，不提供 DHCP（由 iKuai 提供），禁用 IPv6
+#  - LAN: 10.29.122.144/24 ; 不提供 DHCP(由 iKuai 提供) ; 禁用 IPv6 ; 不允许内网访问,提供网络安全性
 #  - WAN: 10.29.2.144/24，网关 10.29.2.1，DNS 10.29.2.10
 #  - 内核层面与 odhcpd 层面都禁用 IPv6
 
@@ -123,6 +123,13 @@ uci set dhcp.lan.ignore='1'
 uci set dhcp.lan.dhcpv6='disabled'
 uci set dhcp.lan.ra='disabled'
 uci set dhcp.lan.ra_management='0'
+
+# 安全增强 1: 将 LAN 区域的入站策略设为 REJECT (更严格的安全模型)
+for s in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
+  [ "$(uci -q get ${s}.name 2>/dev/null)" = "lan" ] && uci set ${s}.input='REJECT' && break
+done
+
+uci commit firewall
 
 # ===== WAN：eth1 + 静态 IPv4 =====
 uci set network.wan.device='eth1'
@@ -198,7 +205,7 @@ fi
 uci commit network
 
 
-# 12.0 确保 wan zone 里包含 network 'wan'
+# 12.1 确保 wan zone 里包含 network 'wan'
 WANZONE=""
 for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -212,7 +219,7 @@ if [ -n "$WANZONE" ]; then
   echo "$CUR_NETS" | grep -qw 'wan' || uci add_list ${WANZONE}.network='wan'
 fi
 
-# 12.1 确保 wg0 zone 存在
+# 12.2 确保 wg0 zone 存在
 WGZONE=""
 for sec in $(uci -q show firewall | grep "=zone" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -228,7 +235,7 @@ if [ -z "$WGZONE" ]; then
   uci add_list firewall.@zone[-1].network='wg0'
 fi
 
-# 12.2 确保存在 lan↔wg0 / wg0↔wan / wan↔wg0 转发
+# 12.3 确保存在 lan↔wg0 / wg0↔wan / wan↔wg0 转发
 HAS_LAN_WG0=0
 HAS_WG0_LAN=0
 HAS_WG0_WAN=0
@@ -272,7 +279,7 @@ done
   uci set firewall.@forwarding[-1].dest='wg0'
 }
 
-# 12.3 DNS 重定向：仅针对 lan，把 TCP/UDP 53 重定向到本机 53（仅 IPv4）
+# 12.4 DNS 重定向：仅针对 lan，把 TCP/UDP 53 重定向到本机 53（仅 IPv4）
 HAS_DNS_REDIRECT=0
 for sec in $(uci -q show firewall | grep "=redirect" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -290,7 +297,32 @@ done
   uci set firewall.@redirect[-1].dest_port='53'
 }
 
-# 12.4 WAN 管理白名单：允许 10.29.2.0/24 和 10.10.20.2–5 访问本机（22/80/443）
+# 12.5 安全增强 2: 业务与管理白名单
+# 允许回环地址访问：OpenClash/AdGuardHome 等插件内部通信必需
+uci add firewall rule >/dev/null
+uci set firewall.@rule[-1].name='Allow-Local-Loopback'
+uci set firewall.@rule[-1].src='*'
+uci set firewall.@rule[-1].dest_ip='127.0.0.1'
+uci set firewall.@rule[-1].target='ACCEPT'
+
+# 允许上游网关 iKuai 通信：确保本路由与主路由 10.29.122.1 通讯无阻
+uci add firewall rule >/dev/null
+uci set firewall.@rule[-1].name='Allow-iKuai-Input-All'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].src_ip='10.29.122.1'
+uci set firewall.@rule[-1].proto='all'
+uci set firewall.@rule[-1].target='ACCEPT'
+
+# 允许 mDNS (5353)：支持局域网设备名发现（如 Apple AirPlay/打印机）
+# Riviera 暂无 AirPlay/打印机 需求, 日后如有可激活
+# uci add firewall rule >/dev/null
+# uci set firewall.@rule[-1].name='Allow-mDNS-Input'
+# uci set firewall.@rule[-1].src='lan'
+# uci set firewall.@rule[-1].dest_port='5353'
+# uci set firewall.@rule[-1].proto='udp'
+# uci set firewall.@rule[-1].target='ACCEPT'
+
+# 12.6 WAN 管理白名单：允许 10.29.2.0/24 和 10.10.20.2–5 访问本机（22/80/443）
 HAS_WAN_ADMIN=0
 for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -302,13 +334,13 @@ done
   uci set firewall.@rule[-1].name='Allow-WAN-LAN-Admin'
   uci set firewall.@rule[-1].src='wan'
   # 10.29.2.0/24 + 10.10.20.2-5
-  uci set firewall.@rule[-1].src_ip='10.29.2.0/24 10.29.90.100 10.10.20.2 10.10.20.3 10.10.20.4 10.10.20.5'
+  uci set firewall.@rule[-1].src_ip='10.29.2.0/24 10.29.90.2 10.10.20.2 10.10.20.3 10.10.20.4 10.10.20.5'
   uci set firewall.@rule[-1].proto='all'
   uci set firewall.@rule[-1].target='ACCEPT'
   uci set firewall.@rule[-1].family='ipv4'
 }
 
-# 12.5 WAN→WG0 精确放行：仅允许 10.10.20.2–5 从 wan 进入 wg0（叠加在 zone 转发之上）
+# 12.7 WAN→WG0 精确放行：仅允许 10.10.20.2–5 从 wan 进入 wg0（叠加在 zone 转发之上）
 HAS_VPN_WG_RULE=0
 for sec in $(uci -q show firewall | grep "=rule" | cut -d= -f1); do
   name="$(uci -q get ${sec}.name 2>/dev/null)"
@@ -390,4 +422,4 @@ rm -f /etc/uci-defaults/zzz-default-settings
 
 exit 0
 
-# 20260426
+# 20260505
