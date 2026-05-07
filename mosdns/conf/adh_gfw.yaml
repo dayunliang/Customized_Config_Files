@@ -23,10 +23,12 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - https://dns.nextdns.io
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.google/dns-query
-    - https://dns.quad9.net/dns-query
+    - https://ali-hk.b-gfw.cfd:442/dns-query
+    - https://ali-sg.b-gfw.cfd:442/dns-query
+    - '#https://dns.nextdns.io'
+    - '#https://cloudflare-dns.com/dns-query'
+    - '#https://dns.google/dns-query'
+    - '#https://dns.quad9.net/dns-query'
   upstream_dns_file: ""
   bootstrap_dns:
     - 223.5.5.5
