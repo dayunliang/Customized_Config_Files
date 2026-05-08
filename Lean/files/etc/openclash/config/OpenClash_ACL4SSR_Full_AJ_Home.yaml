@@ -44,6 +44,62 @@ proxies:
   ip-version: ipv4-prefer
   tfo: false
 
+- name: Railway-US-West
+  type: vless
+  server: www.csgo.com
+  port: 443
+  uuid: 01b59c4f-d7f8-47d6-8d77-b9e928030417
+  udp: true
+  tls: true
+  sni: railway-us-west.b-gfw.cfd
+  network: ws
+  ws-opts:
+    path: "/vless"
+    headers:
+      Host: railway-us-west.b-gfw.cfd
+
+- name: Railway-SG
+  type: vless
+  server: www.visa.com.sg
+  port: 443
+  uuid: 65f79c77-4fba-4d95-82ee-5094125435a3
+  udp: true
+  tls: true
+  sni: railway-sg.b-gfw.cfd
+  network: ws
+  ws-opts:
+    path: "/vless"
+    headers:
+      Host: railway-sg.b-gfw.cfd
+
+- name: Railway-US-East
+  type: vless
+  server: www.visa.com
+  port: 443
+  uuid: 6c1e7a1a-2961-494e-b59f-a5b86921be6f
+  udp: true
+  tls: true
+  sni: railway-us-east.b-gfw.cfd
+  network: ws
+  ws-opts:
+    path: "/vless"
+    headers:
+      Host: railway-us-east.b-gfw.cfd
+
+- name: Railway-EU
+  type: vless
+  server: www.visa.com
+  port: 443
+  uuid: 7702a3a9-3c75-4ed5-8f24-133b2b24f389
+  udp: true
+  tls: true
+  sni: railway-eu.b-gfw.cfd
+  network: ws
+  ws-opts:
+    path: "/vless"
+    headers:
+      Host: railway-eu.b-gfw.cfd
+
 # 全局配置
 
 mixed-port: 7890
@@ -144,6 +200,10 @@ proxy-groups:
   - 🚂 手动切换
   - ALI-HK
   - ALI-SG
+  - Railway-US-West
+  - Railway-SG
+  - Railway-US-East
+  - Railway-EU
   - DIRECT
   
 - name: 🚂 手动切换
