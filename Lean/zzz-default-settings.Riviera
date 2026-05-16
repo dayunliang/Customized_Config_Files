@@ -387,7 +387,7 @@ uci -q batch << 'EOF'
   # 添加 Beverly 作为 peer
   add network wireguard_wg0
   set network.@wireguard_wg0[-1].description='Beverly'
-  set network.@wireguard_wg0[-1].public_key='HR8WnvOBHDjjO0drG+W2XbhStkVOFfLL6gmUjfycWH8='
+  set network.@wireguard_wg0[-1].public_key='p4BGDwvXEG6qWcCFduPUcU71Kvdtn3TI1BIg0wdmdgk='
   set network.@wireguard_wg0[-1].endpoint_host='beverly.b-gfw.cfd'
   set network.@wireguard_wg0[-1].endpoint_port='58058'
   set network.@wireguard_wg0[-1].persistent_keepalive='25'
