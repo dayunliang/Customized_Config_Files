@@ -395,43 +395,7 @@ deploy_file "etc/config/turboacc"                                     "644"
 deploy_file "etc/crontabs/root"                                       "600"
 
 # ===========================================================================
-# [12] WireGuard 私钥就地注入 (精准打击模式)
-# ===========================================================================
-echo
-echo "➡️ [Step 5] WireGuard 握手私钥配置..."
-read -p "是否为 ${COMPILE_NAME} 注入 WireGuard 私钥到目标文件？(y/N): " inject_wgkey
-if [[ "$inject_wgkey" =~ ^[Yy]$ ]]; then
-  while true; do
-    read -p "请输入 ${COMPILE_NAME} 的 WireGuard 私钥（典型44字符，末尾=）： " WG_PRIVKEY
-    echo
-    if [[ "$WG_PRIVKEY" =~ ^[A-Za-z0-9+/]{43}=$ ]]; then
-      break
-    else
-      echo "❗ 格式不符 Base64 标准，请重新粘贴。"
-    fi
-  done
-
-  # 此时文件已落盘在 OpenWrt 源码树中，不论之前是 .test 还是 .Beverly，直接对着目标动刀
-  TARGET_ZZZ="./package/lean/default-settings/files/zzz-default-settings"
-
-  if [ -f "$TARGET_ZZZ" ]; then
-    echo "  🔎 正在扫描目标文件 $TARGET_ZZZ 中的占位符..."
-    if grep -q '__WG_PRIVKEY__' "$TARGET_ZZZ"; then
-      echo "  ✏️ 锁定占位符！正在执行 sed 就地替换..."
-      sed -i "s|__WG_PRIVKEY__|${WG_PRIVKEY}|g" "$TARGET_ZZZ"
-      echo "  ✅ 完美！私钥注入成功！"
-    else
-      echo "  ⚠️ 注意：目标文件中并未发现 __WG_PRIVKEY__ 占位符，跳过注入。"
-    fi
-  else
-    echo "  ❌ 找不到目标文件 $TARGET_ZZZ，替换中止。"
-  fi
-else
-  echo "⏭️ 已手动跳过私钥注入。"
-fi
-
-# ===========================================================================
-# [13] 冲突清理与 .config 固化
+# [12] 冲突清理与 .config 固化
 # ===========================================================================
 echo
 echo "➡️ [Step 6] 依赖梳理与冲突项筛除..."
@@ -440,7 +404,7 @@ make defconfig
 clean_advancedplus_zsh_autostart # defconfig 后再次防遗漏清理
 
 # ===========================================================================
-# [14] 首次构建依赖预下载
+# [13] 首次构建依赖预下载
 # ===========================================================================
 echo
 echo "➡️ [Step 7] 构建预备选项..."
@@ -463,7 +427,7 @@ else
 fi
 
 # ===========================================================================
-# [15] 执行结果汇总与清理
+# [14] 执行结果汇总与清理
 # ===========================================================================
 # Note: $TMP_DIR 此时已被 trap 捕捉准备销毁，这里仅做屏显汇总
 deploy_summary
