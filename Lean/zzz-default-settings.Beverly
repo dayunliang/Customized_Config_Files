@@ -340,7 +340,7 @@ uci -q batch << 'EOF'
   delete network.@wireguard_wg0[0]
   add network wireguard_wg0
   set network.@wireguard_wg0[-1].description='Riviera'
-  set network.@wireguard_wg0[-1].public_key='4kY/LleOD1EsJ0tEqQ0SdgAa3BGeDYwv06QltDC9Kko='
+  set network.@wireguard_wg0[-1].public_key='uAFJyf0KZd5mXTbXTFUTSR+8OshA1xC74JGJ/Nm3yz8='
   set network.@wireguard_wg0[-1].persistent_keepalive='25'
   set network.@wireguard_wg0[-1].route_allowed_ips='1'
   # 路由允许通过 wg0 隧道访问的网段列表
