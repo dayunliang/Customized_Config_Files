@@ -361,22 +361,27 @@ deploy_root "config"                 "./.config"                                
 deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
 deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                               "755"
 
-# 11.2 部署 Overlay 文件系统 (路由/VPN/Clash)
+# 11.2 部署 Overlay 文件系统 (路由/Passwall2/Openclash)
+
+# 11.2.1 路由
 deploy_file "usr/bin/back-route-checkenv.sh"                          "755"
 deploy_file "usr/bin/back-route-complete.sh"                          "755"
 deploy_file "usr/bin/back-route-cron.sh"                              "755"
+
+# 11.2.2 Openclash & Passwall2
 deploy_file "etc/config/openclash"                                    "644"
 deploy_file "etc/openclash/custom/openclash_custom_rules.list"        "644"
 deploy_file "usr/share/openclash/res/rule_providers.list"             "644"
 deploy_file "etc/openclash/dns_enable_false.sh"                       "755"
 deploy_file "usr/share/openclash/yml_proxys_set.sh"                   "755"
+deploy_file "etc/config/passwall2"                                    "644"
 
-# 独立处理 ACL4SSR 配置文件目录创建与部署
+# 11.2.3 独立处理 Openclash 配置文件目录创建与部署
 mkdir -p ./files/etc/openclash/config
 cp ${TMP_DIR}/Lean/files/etc/openclash/config/* ./files/etc/openclash/config/
 chmod 644 ./files/etc/openclash/config/*
 
-deploy_file "etc/config/passwall2"                                    "644"
+# 11.2.4 Avahi & Cron 及其他
 deploy_file "usr/bin/wireguard_refresh.sh"                            "755"
 deploy_file "etc/dbus-1/system.d/avahi-dbus.conf"                     "644"
 deploy_file "etc/avahi/avahi-daemon.conf"                             "644"
