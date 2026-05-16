@@ -373,8 +373,8 @@ deploy_file "usr/share/openclash/yml_proxys_set.sh"                   "755"
 
 # 独立处理 ACL4SSR 配置文件目录创建与部署
 mkdir -p ./files/etc/openclash/config
-cp ${TMP_DIR}/Lean/files/etc/openclash/config/OpenClash_ACL4SSR_Full_AJ_Home.yaml ./files/etc/openclash/config/OpenClash_ACL4SSR_Full_AJ_Home.yaml
-chmod 644 ./files/etc/openclash/config/OpenClash_ACL4SSR_Full_AJ_Home.yaml
+cp ${TMP_DIR}/Lean/files/etc/openclash/config/* ./files/etc/openclash/config/
+chmod 644 ./files/etc/openclash/config/*
 
 deploy_file "etc/config/passwall2"                                    "644"
 deploy_file "usr/bin/wireguard_refresh.sh"                            "755"
