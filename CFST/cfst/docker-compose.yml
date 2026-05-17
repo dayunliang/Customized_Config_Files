@@ -20,7 +20,7 @@ services:
     stdin_open: true
     tty: true
     
-    restart: unless-stopped
+    restart: "no"
     
     # 完美匹配镜像内部的新工作目录
     working_dir: /cfst
