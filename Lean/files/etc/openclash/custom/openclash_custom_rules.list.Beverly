@@ -77,4 +77,4 @@ rules:
 
 ##在线IP段转CIDR地址：http://ip2cidr.com
 
-- SRC-IP-CIDR,192.168.12.70/32,ALI-SG VLESS
+- SRC-IP-CIDR,192.168.12.70/32,🚀 节点选择
