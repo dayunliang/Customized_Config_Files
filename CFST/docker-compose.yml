@@ -1,0 +1,38 @@
+services:
+  cloudflare-speedtest:
+    image: ghcr.io/dayunliang/cfst:latest
+    container_name: cfst
+    
+    # 所有的测速定制参数和输出路径，统一合并到这里
+    command: -n 200 -sl 1 -tl 200 -p 20 -o data/result.csv
+    
+    # 映射本地目录，完美对接容器内的 /cfst
+    volumes:
+      - ./data:/cfst/data
+      - ./config:/cfst/config
+    
+    networks:
+      cfst_net:
+        ipv4_address: 192.168.12.44
+
+    environment:
+      - TZ=Asia/Shanghai
+    stdin_open: true
+    tty: true
+    
+    restart: unless-stopped
+    
+    # 完美匹配镜像内部的新工作目录
+    working_dir: /cfst
+
+networks:
+  cfst_net:
+    driver: ipvlan
+    driver_opts:
+      parent: eth0
+      ipvlan_mode: l2
+    ipam:
+      config:
+        - subnet: 192.168.12.0/24
+          gateway: 192.168.12.254
+          ip_range: 192.168.12.44/32
