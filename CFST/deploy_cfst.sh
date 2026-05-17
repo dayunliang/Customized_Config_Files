@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# 1. 统一进入家目录下的工作文件夹，如果不存在则创建
+# 1. 进入家目录下的工作文件夹
 mkdir -p ~/cfst
 cd ~/cfst
 
@@ -8,12 +8,15 @@ cd ~/cfst
 mkdir -p ./data
 mkdir -p ./config
 
-# 3. 下载最新的配置文件
-# 核心修复：增加 -O 参数，确保每次都强制覆盖并更新为最新的 docker-compose.yml
+# 3. 强制下载覆盖最新的配置文件
 wget -O docker-compose.yml https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/CFST/cfst/docker-compose.yml
 
-# 4. 拉取线上最新的 cfst 镜像
+# 4. 拉取线上最新的镜像
 docker compose pull
 
-# 5. 启动容器开始跑测速
+# 5. 核心安全保障：瞬间停止并清理旧项目下的所有容器
+# --remove-orphans 会顺手把改名了的、废弃的旧容器连根拔起，瞬间释放 192.168.12.5 IP
+docker compose down --remove-orphans
+
+# 6. 干干净净地启动全新配置的容器
 docker compose up -d
