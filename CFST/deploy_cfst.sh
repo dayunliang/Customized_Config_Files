@@ -15,7 +15,7 @@ wget -O docker-compose.yml https://raw.githubusercontent.com/dayunliang/Customiz
 docker compose pull
 
 # 5. 核心安全保障：瞬间停止并清理旧项目下的所有容器
-# --remove-orphans 会顺手把改名了的、废弃的旧容器连根拔起，瞬间释放 192.168.12.5 IP
+# --remove-orphans 会顺手把改名了的、废弃的旧容器连根拔起，瞬间释放 IP
 docker compose down --remove-orphans
 
 # 6. 干干净净地启动全新配置的容器
