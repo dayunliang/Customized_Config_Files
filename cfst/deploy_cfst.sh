@@ -1,50 +1,51 @@
 #!/bin/sh
 
-# 1. 进入绝对路径工作目录
-cd /root/cfst
+# =====================================================================
+# ⚙️ 基础路径与环境配置（统一在这里修改，后面一劳永逸）
+# =====================================================================
+BASE_DIR="/root"
+REPO_DIR="$BASE_DIR/.config_repo"
+WORK_DIR="$BASE_DIR/cfst"
 
-# 2. 建立本地持久化目录
-mkdir -p ./data
-mkdir -p ./config
+# 1. 确保进入大本营
+cd "$BASE_DIR" || exit 1
 
-# 3. 强制下载覆盖最新的 compose 配置文件
-wget -O docker-compose.yml https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/CFST/cfst/docker-compose.yml
+# 2. 🚀 隐形初始化：如果隐藏仓库壳子不存在，则克隆到隐藏目录中
+if [ ! -d "$REPO_DIR" ]; then
+    git clone --filter=blob:none --sparse git@github.com:dayunliang/Customized_Config_Files.git "$REPO_DIR"
+    cd "$REPO_DIR" || exit 1
+    git sparse-checkout set cfst
+    # 🌟 自动建立映射软链接（-sf 确保即便残留快捷方式也能强行覆盖绑定）
+    ln -sf "$REPO_DIR/cfst" "$WORK_DIR"
+fi
 
-# 4. 拉取线上最新镜像并彻底清理可能残留的孤儿容器
+# 3. 🎯 完美切入你的目标工作目录
+cd "$WORK_DIR" || exit 1
+
+# 4. 同步云端最新的代码和配置（已全面对齐 main 主分支）
+git pull origin main
+
+# 5. 拉取最新的测速镜像并清理旧容器
 docker compose pull
 docker compose down --remove-orphans
 
-# 5. 启动容器进行测速（阻塞等待直至结束）
+# 6. 启动容器进行测速（阻塞死守着容器跑完并自动退出）
 docker compose up
 
-# 6. 将 csv 的第1列和第7列抓取出来，缝合成 IP:443#地区 格式并写入新文件
+# 7. 提取 IP:443#地区 格式并写入 txt
 awk -F',' 'NR>1 {gsub(/\r/,"",$7); print $1":443#"$7}' data/result.csv > data/result.txt
 
-# =====================================================================
-# 🚀 自动化 Git-API 推送流水线（利用 for 循环同时处理双文件）
-# =====================================================================
+# 8. Git 本地账户对齐（防止 cron 环境下因为没有全局 user 导致报错罢工）
+git config user.name "alpine-cron"
+git config user.email "cron@homelab.local"
 
-# 7. 基础公共变量配置（注：此处的 Token 记得换成你网页端新生成的密钥）
-GH_TOKEN="填写GH秘钥"
-GH_REPO="dayunliang/Customized_Config_Files"
-
-# 8. 开启循环，依次处理两个文件
+# 9. 循环添加文件到暂存区
 for FILE_NAME in "result.csv" "result.txt"; do
-
-    # 9. 动态组合当前文件的云端相对路径和本地绝对路径
-    REMOTE_PATH="CFST/cfst/data/$FILE_NAME"
-    LOCAL_FILE="/root/cfst/data/$FILE_NAME"
-
-    # 10. 探测云端该位置是否已有当前文件，并抓取其 SHA 身份证
-    CURRENT_SHA=$(curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/$GH_REPO/contents/$REMOTE_PATH" | jq -r '.sha')
-
-    # 11. 将本地当前文件内容打包为 Base64 编码并剔除换行
-    BASE64_TEXT=$(base64 $LOCAL_FILE | tr -d '\n')
-
-    # 12. 动态判定：如果是首次上传则不带 sha，如果是日常更新则必须携带 sha 身份证
-    if [ "$CURRENT_SHA" = "null" ] || [ -z "$CURRENT_SHA" ]; then JSON_DATA="{\"message\":\"Cron: auto init $FILE_NAME\",\"content\":\"$BASE64_TEXT\"}"; else JSON_DATA="{\"message\":\"Cron: auto update $FILE_NAME\",\"content\":\"$BASE64_TEXT\",\"sha\":\"$CURRENT_SHA\"}"; fi
-
-    # 13. 通过 API 将当前文件精准发射到 GitHub 对应的路径下
-    curl -s -X PUT -H "Authorization: token $GH_TOKEN" -H "Content-Type: application/json" -d "$JSON_DATA" "https://api.github.com/repos/$GH_REPO/contents/$REMOTE_PATH" > /dev/null
-
+    git add "data/$FILE_NAME"
 done
+
+# 10. 统一提交并盖上当前精确的时间戳大印
+git commit -m "Cron: auto update speedtest results [$(date '+%Y-%m-%d %H:%M:%S')]"
+
+# 11. 🚀 最后一脚油门，凭本地隐形 SSH KEY 顺着软链接直接盲推回云端 main 分支！
+git push origin main
