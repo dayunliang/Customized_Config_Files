@@ -4,7 +4,7 @@ services:
     container_name: cfst
     
     # 所有的测速定制参数和输出路径，统一合并到这里
-    command: -n 1000 -sl 1 -tl 200 -p 10 -o data/result.csv
+    command: -n 1000 -tl 200 -p 50 -allip -o data/result.csv
     
     # 映射本地目录，完美对接容器内的 /cfst
     volumes:
