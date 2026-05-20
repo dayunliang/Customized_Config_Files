@@ -53,14 +53,14 @@ done
 # 11. 统一提交
 git commit -m "Cron: auto update speedtest results [$(date '+%Y-%m-%d %H:%M:%S')]" || echo "No changes to commit"
 
-# 11.5 🧹 核心修复：强制清理工作区残留的“脏变动”
+# 12. 🧹 核心修复：强制清理工作区残留的“脏变动”
 # 既然测速结果已经安全提交，剩下未暂存的修改（如容器改动了 config）大概率是垃圾变动。
 # 这一步会丢弃这些未暂存的干扰，确保工作区绝对干净，彻底解决 "You have unstaged changes" 报错。
 git checkout -- .
 
-# 12. 🔄 拉取云端最新更改（变基合并）
+# 13. 🔄 拉取云端最新更改（变基合并）
 # 加上 --autostash 作为双保险；加上 -X theirs 确保冲突时以本地刚测出的最新数据为准
 git pull --rebase --autostash -X theirs origin main
 
-# 13. 🚀 推送回云端 main 分支
+# 14. 🚀 推送回云端 main 分支
 git push origin main
