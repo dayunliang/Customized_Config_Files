@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  cloudflare-speedtest:
+    image: ghcr.io/dayunliang/cfst:latest
+    container_name: cfst
+    
+    # 所有的测速定制参数和输出路径，统一合并到这里
+    command: -n 1000 -p 50 -allip -o data/result.csv
+    
+    # 映射本地目录，完美对接容器内的 /cfst
+    volumes:
+      - ./data:/cfst/data
+      - ./config:/cfst/config
+    
+    networks:
+      cfst_net:
+        ipv4_address: 192.168.12.44
+
+    environment:
+      - TZ=Asia/Shanghai
+    stdin_open: true
+    tty: true
+    
+    restart: "no"
+    
+    # 完美匹配镜像内部的新工作目录
+    working_dir: /cfst
+
+networks:
+  cfst_net:
+    driver: macvlan  # 关键修改：从 ipvlan 改为 macvlan
+    driver_opts:
+      parent: eth0   # 请确保这里的 eth0 是你宿主机的真实网卡名称
+    ipam:
+      config:
+        - subnet: 192.168.12.0/24
+          gateway: 192.168.12.254
+          # ip_range 限制了 Docker 自动分配 IP 的范围，防止与局域网其他设备冲突
+          ip_range: 192.168.12.44/32
