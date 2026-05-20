@@ -4,6 +4,9 @@ services:
   cloudflare-speedtest:
     image: ghcr.io/dayunliang/cfst:latest
     container_name: cfst
+
+    # ⬇️ 新增这一行，手动指定一个固定的 MAC 地址
+    mac_address: 02:42:c0:a8:88:88
     
     # 所有的测速定制参数和输出路径，统一合并到这里
     command: -n 1000 -tl 200 -sl 10 -p 10 -o data/result.csv
