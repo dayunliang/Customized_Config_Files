@@ -12,8 +12,7 @@ cd "$BASE_DIR" || exit 1
 
 # 2. 🚀 隐形初始化：如果隐藏仓库壳子不存在，则克隆它
 if [ ! -d "$REPO_DIR" ]; then
-    # 优化：改用 HTTPS 协议，并只克隆最后一层历史(depth 1)，极大减少下载量
-    git clone --depth 1 --sparse https://github.com/dayunliang/Customized_Config_Files.git "$REPO_DIR"
+    git clone --filter=blob:none --sparse git@github.com:dayunliang/Customized_Config_Files.git "$REPO_DIR"
     cd "$REPO_DIR" || exit 1
     git sparse-checkout set cfst
 fi
