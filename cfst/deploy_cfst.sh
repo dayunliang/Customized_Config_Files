@@ -49,5 +49,9 @@ done
 # 11. 统一提交
 git commit -m "Cron: auto update speedtest results [$(date '+%Y-%m-%d %H:%M:%S')]"
 
-# 12. 🚀 盲推回云端 main 分支
+# 12. 🔄 拉取云端最新更改（变基合并），解决 non-fast-forward 冲突
+# 这一步会把云端别人（或你在别处）改动的文件先拉下来，再把本地刚生成的测速结果接在最前面
+git pull --rebase origin main
+
+# 13. 🚀 推送回云端 main 分支
 git push origin main
