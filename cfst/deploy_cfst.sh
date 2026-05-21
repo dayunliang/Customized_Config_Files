@@ -7,7 +7,7 @@ BASE_DIR="/root"
 REPO_DIR="$BASE_DIR/.config_repo"
 WORK_DIR="$BASE_DIR/cfst"
 
-# 1. 确保进入大本营
+# 确保进入大本营
 cd "$BASE_DIR" || exit 1
 
 # =====================================================================
@@ -56,18 +56,23 @@ if [ ! -d "$REPO_DIR" ]; then
     git sparse-checkout set cfst
 fi
 
-# 3. 🌟 强制重置软链接大门
+# 2.1 🌟 强制重置软链接大门
 rm -f "$WORK_DIR"
 ln -s "$REPO_DIR/cfst" "$WORK_DIR"
 
-# 4. 🎯 精准切入你的工作目录
+# 2.2 🎯 精准切入你的工作目录
 cd "$WORK_DIR" || exit 1
 
-# 5. 同步云端最新的代码和配置
+# 2.3 同步云端最新的代码和配置
 echo "🔄 正在同步云端最新配置..."
 git pull origin main
 
-# 6. 拉取最新的测速镜像并清理旧容器
+# 2.4 🌟 顺手赋予定时任务脚本可执行权限，方便后续 cron 或手动调用
+if [ -f "cron-cfst.sh" ]; then
+    chmod +x cron-cfst.sh
+fi
+
+# 2.5 拉取最新的测速镜像并清理旧容器
 echo "🐳 正在更新 Docker 测速镜像..."
 docker compose pull
 docker compose down --remove-orphans
