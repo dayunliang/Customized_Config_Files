@@ -1,4 +1,4 @@
-
+#!/bin/sh
 
 # 1. 启动容器进行测速
 docker compose up
