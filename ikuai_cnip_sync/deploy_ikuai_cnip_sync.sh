@@ -71,7 +71,7 @@ while true; do
 done
 
 # 组装标准的 Cron 表达式（使用绝对路径预防环境变量问题）
-CRON_JOB="$CRON_MIN $CRON_HOUR * * * /bin/sh $WORK_DIR/$SCRIPT_NAME >> /var/log/ikuai_cnip_sync.log 2>&1"
+CRON_JOB="$CRON_MIN $CRON_HOUR * * * /bin/bash $WORK_DIR/$SCRIPT_NAME >> /var/log/ikuai_cnip_sync.log 2>&1"
 
 # 防重复防覆盖写入法：过滤旧记录，追加新记录
 (crontab -l 2>/dev/null | grep -v "$SCRIPT_NAME"; echo "$CRON_JOB") | crontab -
