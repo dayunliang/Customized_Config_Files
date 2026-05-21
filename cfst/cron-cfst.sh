@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# =====================================================================
+# 🎯 关键：进入工作目录（否则 cron 执行时会找不到 docker-compose.yml 和 git 仓库）
+# =====================================================================
+cd /root/cfst || exit 1
+
 # 1. 启动容器进行测速
 docker compose up
 
@@ -23,12 +28,9 @@ done
 git commit -m "Cron: auto update speedtest results [$(date '+%Y-%m-%d %H:%M:%S')]" || echo "No changes to commit"
 
 # 6. 🧹 核心修复：强制清理工作区残留的“脏变动”
-# 既然测速结果已经安全提交，剩下未暂存的修改（如容器改动了 config）大概率是垃圾变动。
-# 这一步会丢弃这些未暂存的干扰，确保工作区绝对干净，彻底解决 "You have unstaged changes" 报错。
 git checkout -- .
 
 # 7. 🔄 拉取云端最新更改（变基合并）
-# 加上 --autostash 作为双保险；加上 -X theirs 确保冲突时以本地刚测出的最新数据为准
 git pull --rebase --autostash -X theirs origin main
 
 # 8. 🚀 推送回云端 main 分支
