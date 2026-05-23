@@ -1,0 +1,493 @@
+#!/bin/sh
+
+# ============================================================
+# 脚本名称：
+#   wireguard_refresh.sh
+#
+# 脚本用途：
+#   用于在 Riviera 站点自动检测 WireGuard 隧道状态，
+#   当 Beverly 对端因 DDNS 解析变化、endpoint 失效、
+#   或 tunnel 异常导致通信中断时，自动尝试修复。
+#
+# 主要功能：
+#   1. 检查 WireGuard 隧道是否健康；
+#   2. 如果隧道异常，则通过多个 DNS 服务器解析 DDNS；
+#   3. 收集得到的候选公网 IP；
+#   4. 依次将候选 IP 设置为 WireGuard peer 的 endpoint；
+#   5. 通过 latest-handshake 是否刷新来判断修复是否成功；
+#   6. 如果所有候选 IP 都失败，则重启 WireGuard 接口作为兜底；
+#   7. 重启后再次尝试修复；
+#   8. 若仍失败，则记录日志并退出。
+#
+# 设计思路：
+#   相比“发现不通就直接重启 wg0”的简单方案，
+#   本脚本更加稳健，因为它会优先尝试修正 peer endpoint，
+#   只有在 endpoint 候选全部失败后，才进行接口重启。
+#
+# 适用场景：
+#   - 对端使用 DDNS，公网 IP 可能变化；
+#   - 不同 DNS 对 DDNS 的解析结果在短时间内不一致；
+#   - WireGuard 当前缓存的 endpoint 可能已经过期；
+#   - 需要自动恢复而不想每次人工干预。
+#
+# 运行环境：
+#   - OpenWrt / BusyBox / ash / 标准 sh 环境
+#   - 系统已安装并可使用：
+#       wg
+#       dig (来自 bind-tools 或 bind-dig)
+#       ping
+#       logger
+#       ifup
+#       ifdown
+#
+# 兼容性说明：
+#   - 本脚本按 IPv4 endpoint 设计；
+#   - 提取 endpoint IP 的逻辑不适用于 IPv6；
+#   - 适合在 OpenWrt 中通过 cron 定时调用。
+#
+# 保存建议：
+#   建议保存为：
+#       /usr/bin/wireguard_refresh.sh
+#
+# 建议赋予执行权限：
+#       chmod +x /usr/bin/wireguard_refresh.sh
+#
+# cron 示例：
+#   每 5 分钟执行一次：
+#       */5 * * * * /usr/bin/wireguard_refresh.sh
+#
+# ============================================================
+
+
+
+# ============================================================
+# 一、基础配置区
+# ============================================================
+
+# WireGuard 接口名称
+WG_IF="wg0"
+
+# 对端 DDNS 域名
+PEER_DDNS="beverly.b-gfw.cfd"
+
+# 对端 WireGuard 监听端口
+PEER_PORT="51820"
+
+# 对端 peer 公钥
+PEER_PUBLIC_KEY="HR8WnvOBHDjjO0drG+W2XbhStkVOFfLL6gmUjfycWH8="
+
+# 隧道内检测目标地址
+PING_TARGET="192.168.12.254"
+
+# 多次 ping 检测时的最大失败次数
+PING_FAIL_THRESHOLD="3"
+
+# 单次 ping 等待超时时间（秒）
+PING_TIMEOUT="2"
+
+# handshake 过期阈值（秒）
+HANDSHAKE_STALE_SEC="180"
+
+# 用于查询 DDNS 的 DNS 服务器列表
+DNS_SERVERS="1.1.1.1 223.5.5.5"
+
+# 设置某个 endpoint 候选后，等待多少秒再检查握手
+ENDPOINT_TRY_WAIT="8"
+
+# 重启接口前后等待时间（秒）
+RESTART_WAIT="3"
+
+# 日志标签
+LOG_TAG="wg-ddns"
+
+# 锁文件路径
+LOCK_FILE="/tmp/${WG_IF}_refresh.lock"
+
+# 候选 IP 临时文件
+TMP_CANDIDATES="/tmp/${WG_IF}_candidates.tmp"
+
+
+
+# ============================================================
+# 二、通用函数区
+# ============================================================
+
+# ------------------------------------------------------------
+# 函数名：log_msg
+# 作用：将一条文本写入系统日志。
+# ------------------------------------------------------------
+log_msg() {
+    logger -t "$LOG_TAG" "$1"
+}
+
+# ------------------------------------------------------------
+# 函数名：cleanup_and_exit
+# 作用：清理临时文件并退出。
+# ------------------------------------------------------------
+cleanup_and_exit() {
+    rm -f "$LOCK_FILE" "$TMP_CANDIDATES"
+    exit "$1"
+}
+
+# ------------------------------------------------------------
+# 函数名：now_ts
+# 作用：获取当前 UNIX 时间戳（秒）。
+# ------------------------------------------------------------
+now_ts() {
+    date +%s
+}
+
+# ------------------------------------------------------------
+# 函数名：
+#   resolve_ip_from_dns
+#
+# 作用：
+#   使用指定 DNS 服务器解析目标域名，并返回 IPv4 地址。
+#
+# 参数：
+#   $1 = 域名
+#   $2 = DNS 服务器 IP
+#
+# 返回：
+#   若成功，输出一个或多个 IPv4 地址（换行分隔）
+#   若失败，不输出内容
+#
+# 说明：
+#   改用 dig 工具。使用 +short 参数直接获取解析结果，
+#   并通过 grep 正则过滤掉可能存在的 CNAME 链，只保留纯粹的 IPv4 地址。
+# ------------------------------------------------------------
+resolve_ip_from_dns() {
+    DOMAIN="$1"
+    DNS="$2"
+
+    dig "@$DNS" "$DOMAIN" A +short 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+}
+
+# ------------------------------------------------------------
+# 函数名：get_current_endpoint
+# 作用：获取当前目标 peer 的 endpoint。
+# ------------------------------------------------------------
+get_current_endpoint() {
+    wg show "$WG_IF" endpoints 2>/dev/null | awk -v key="$PEER_PUBLIC_KEY" '
+    $1 == key { print $2; exit }
+    '
+}
+
+# ------------------------------------------------------------
+# 函数名：extract_ip_from_endpoint
+# 作用：从 endpoint 中提取 IP 部分 (仅限 IPv4)。
+# ------------------------------------------------------------
+extract_ip_from_endpoint() {
+    echo "$1" | awk -F: '{print $1}'
+}
+
+# ------------------------------------------------------------
+# 函数名：get_latest_handshake
+# 作用：获取目标 peer 的 latest-handshake 时间戳。
+# ------------------------------------------------------------
+get_latest_handshake() {
+    wg show "$WG_IF" latest-handshakes 2>/dev/null | awk -v key="$PEER_PUBLIC_KEY" '
+    $1 == key { print $2; exit }
+    '
+}
+
+# ------------------------------------------------------------
+# 函数名：get_handshake_age
+# 作用：计算 latest-handshake 距当前已经过去多少秒。
+# ------------------------------------------------------------
+get_handshake_age() {
+    HS="$(get_latest_handshake)"
+    NOW="$(now_ts)"
+
+    if [ -z "$HS" ] || [ "$HS" = "0" ] 2>/dev/null; then
+        echo "-1"
+        return
+    fi
+
+    echo $((NOW - HS))
+}
+
+# ------------------------------------------------------------
+# 函数名：check_ping_once
+# 作用：对隧道内目标地址执行一次单包 ping 检测。
+# ------------------------------------------------------------
+check_ping_once() {
+    ping -c 1 -W "$PING_TIMEOUT" "$PING_TARGET" >/dev/null 2>&1
+}
+
+# ------------------------------------------------------------
+# 函数名：check_ping_multi
+# 作用：对隧道内目标地址执行多次 ping 检测。
+# ------------------------------------------------------------
+check_ping_multi() {
+    COUNT=1
+
+    while [ "$COUNT" -le "$PING_FAIL_THRESHOLD" ];
+    do
+        if check_ping_once;
+        then
+            return 0
+        fi
+
+        log_msg "Ping $PING_TARGET failed ($COUNT/$PING_FAIL_THRESHOLD)"
+        COUNT=$((COUNT + 1))
+    done
+
+    return 1
+}
+
+# ------------------------------------------------------------
+# 函数名：is_tunnel_healthy
+# 作用：判断当前 WireGuard tunnel 是否健康。
+# ------------------------------------------------------------
+is_tunnel_healthy() {
+    HS_AGE="$(get_handshake_age)"
+
+    if check_ping_once;
+    then
+        return 0
+    fi
+
+    if [ "$HS_AGE" -ge 0 ] 2>/dev/null && [ "$HS_AGE" -lt "$HANDSHAKE_STALE_SEC" ];
+    do
+        return 0
+    fi
+
+    return 1
+}
+
+# ------------------------------------------------------------
+# 函数名：set_endpoint
+# 作用：将目标 peer 的 endpoint 强制设置为指定 IP:PORT。
+# ------------------------------------------------------------
+set_endpoint() {
+    NEW_IP="$1"
+
+    if [ -z "$NEW_IP" ];
+    then
+        return 1
+    fi
+
+    wg set "$WG_IF" peer "$PEER_PUBLIC_KEY" endpoint "${NEW_IP}:${PEER_PORT}" 2>/dev/null
+    return $?
+}
+
+# ------------------------------------------------------------
+# 函数名：try_endpoint_candidate
+# 作用：尝试应用候选 IP 并通过 handshake 观察是否修复成功。
+# ------------------------------------------------------------
+try_endpoint_candidate() {
+    CANDIDATE_IP="$1"
+
+    [ -z "$CANDIDATE_IP" ] && return 1
+
+    OLD_HS="$(get_latest_handshake)"
+    [ -z "$OLD_HS" ] && OLD_HS=0
+
+    if ! set_endpoint "$CANDIDATE_IP"; then
+        log_msg "Failed to set endpoint to ${CANDIDATE_IP}:${PEER_PORT}"
+        return 1
+    fi
+
+    log_msg "Trying endpoint ${CANDIDATE_IP}:${PEER_PORT}"
+
+    sleep "$ENDPOINT_TRY_WAIT"
+
+    NEW_HS="$(get_latest_handshake)"
+    [ -z "$NEW_HS" ] && NEW_HS=0
+
+    if [ "$NEW_HS" -gt "$OLD_HS" ] && [ "$NEW_HS" -gt 0 ];
+    then
+        log_msg "Handshake recovered with endpoint ${CANDIDATE_IP}:${PEER_PORT}"
+        return 0
+    fi
+
+    return 1
+}
+
+# ------------------------------------------------------------
+# 函数名：restart_wg
+# 作用：重启 WireGuard 接口（兜底恢复方案）。
+# ------------------------------------------------------------
+restart_wg() {
+    log_msg "Restarting $WG_IF"
+    ifdown "$WG_IF" 2>/dev/null
+    sleep "$RESTART_WAIT"
+    ifup "$WG_IF"
+    sleep "$RESTART_WAIT"
+}
+
+# ------------------------------------------------------------
+# 函数名：
+#   collect_candidates
+#
+# 作用：
+#   通过多个 DNS 服务器解析 DDNS，收集候选公网 IP。
+#
+# 说明：
+#   由于 dig 可能会针对一个域名一次性返回多个 A 记录（多 IP），
+#   这里采用 while read 逐行读取结果，确保所有有效 IP 都能被捕获并去重。
+# ------------------------------------------------------------
+collect_candidates() {
+    : > "$TMP_CANDIDATES"
+
+    for DNS in $DNS_SERVERS;
+    do
+        IPS="$(resolve_ip_from_dns "$PEER_DDNS" "$DNS")"
+
+        if [ -n "$IPS" ];
+        then
+            echo "$IPS" | while read -r IP;
+            do
+                [ -z "$IP" ] && continue
+                log_msg "Resolved $PEER_DDNS via $DNS -> $IP"
+                grep -qx "$IP" "$TMP_CANDIDATES" 2>/dev/null || echo "$IP" >> "$TMP_CANDIDATES"
+            done
+        else
+            log_msg "Resolve failed for $PEER_DDNS via $DNS"
+        fi
+    done
+}
+
+# ------------------------------------------------------------
+# 函数名：try_all_candidates
+# 作用：按顺序尝试所有候选 IP。
+# ------------------------------------------------------------
+try_all_candidates() {
+    if [ ! -s "$TMP_CANDIDATES" ]; then
+        return 1
+    fi
+
+    while IFS= read -r IP;
+    do
+        [ -z "$IP" ] && continue
+
+        if try_endpoint_candidate "$IP";
+        then
+            if check_ping_multi;
+            then
+                log_msg "Tunnel fully recovered with ${IP}:${PEER_PORT}"
+                return 0
+            fi
+
+            HS_AGE="$(get_handshake_age)"
+            if [ "$HS_AGE" -ge 0 ] 2>/dev/null && [ "$HS_AGE" -lt "$HANDSHAKE_STALE_SEC" ];
+            then
+                log_msg "Handshake is healthy with ${IP}:${PEER_PORT}, keep endpoint"
+                return 0
+            fi
+        fi
+    done < "$TMP_CANDIDATES"
+
+    return 1
+}
+
+
+
+# ============================================================
+# 三、防并发执行控制
+# ============================================================
+
+if [ -f "$LOCK_FILE" ];
+    then
+    OLD_PID="$(cat "$LOCK_FILE" 2>/dev/null)"
+
+    if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null;
+    then
+        exit 0
+    fi
+fi
+
+echo "$$" > "$LOCK_FILE"
+
+
+
+# ============================================================
+# 四、主流程
+# ============================================================
+
+# 读取当前状态
+CURRENT_ENDPOINT="$(get_current_endpoint)"
+CURRENT_IP="$(extract_ip_from_endpoint "$CURRENT_ENDPOINT")"
+CURRENT_HS="$(get_latest_handshake)"
+HS_AGE="$(get_handshake_age)"
+
+# 兜底，避免日志中出现空值不易阅读
+[ -z "$CURRENT_HS" ] && CURRENT_HS=0
+[ -z "$CURRENT_ENDPOINT" ] && CURRENT_ENDPOINT="unknown"
+[ -z "$CURRENT_IP" ] && CURRENT_IP="unknown"
+
+
+# ------------------------------------------------------------
+# 第一步：快速健康检查
+# ------------------------------------------------------------
+if is_tunnel_healthy;
+then
+    cleanup_and_exit 0
+fi
+
+
+# ------------------------------------------------------------
+# 第二步：记录当前不健康状态
+# ------------------------------------------------------------
+log_msg "Tunnel unhealthy: endpoint=$CURRENT_ENDPOINT latest_handshake=$CURRENT_HS handshake_age=$HS_AGE"
+
+
+# ------------------------------------------------------------
+# 第三步：第一次收集候选 endpoint IP
+# ------------------------------------------------------------
+collect_candidates
+
+
+# ------------------------------------------------------------
+# 第四步：将当前 endpoint IP 尽量加入候选列表前部
+# ------------------------------------------------------------
+if [ "$CURRENT_IP" != "unknown" ] && [ -n "$CURRENT_IP" ];
+then
+    grep -qx "$CURRENT_IP" "$TMP_CANDIDATES" 2>/dev/null ||
+    {
+        TMP_NEW="/tmp/${WG_IF}_candidates_new.tmp"
+        echo "$CURRENT_IP" > "$TMP_NEW"
+        cat "$TMP_CANDIDATES" >> "$TMP_NEW" 2>/dev/null
+        mv "$TMP_NEW" "$TMP_CANDIDATES"
+    }
+fi
+
+
+# ------------------------------------------------------------
+# 第五步：第一次尝试所有候选 endpoint
+# ------------------------------------------------------------
+if try_all_candidates;
+then
+    cleanup_and_exit 0
+fi
+
+
+# ------------------------------------------------------------
+# 第六步：所有候选失败，执行接口重启兜底
+# ------------------------------------------------------------
+log_msg "All endpoint candidates failed, restart interface as fallback"
+restart_wg
+
+
+# ------------------------------------------------------------
+# 第七步：重启后重新解析并再次尝试
+# ------------------------------------------------------------
+collect_candidates
+
+if try_all_candidates;
+then
+    cleanup_and_exit 0
+fi
+
+
+# ------------------------------------------------------------
+# 第八步：最终失败，记录结束状态
+# ------------------------------------------------------------
+CURRENT_ENDPOINT="$(get_current_endpoint)"
+CURRENT_HS="$(get_latest_handshake)"
+HS_AGE="$(get_handshake_age)"
+
+log_msg "Recovery failed after restart: endpoint=$CURRENT_ENDPOINT latest_handshake=$CURRENT_HS handshake_age=$HS_AGE"
+
+cleanup_and_exit 1
