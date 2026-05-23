@@ -11,7 +11,7 @@
 #
 # 主要功能：
 #   1. 检查 WireGuard 隧道是否健康；
-#   2. 如果隧道异常，则通过多个 DNS 服务器解析 DDNS；
+#   2. 如果隧道异常，则通过指定的 DoH 服务器解析 DDNS；
 #   3. 收集得到的候选公网 IP；
 #   4. 依次将候选 IP 设置为 WireGuard peer 的 endpoint；
 #   5. 通过 latest-handshake 是否刷新来判断修复是否成功；
@@ -19,22 +19,12 @@
 #   7. 重启后再次尝试修复；
 #   8. 若仍失败，则记录日志并退出。
 #
-# 设计思路：
-#   相比“发现不通就直接重启 wg0”的简单方案，
-#   本脚本更加稳健，因为它会优先尝试修正 peer endpoint，
-#   只有在 endpoint 候选全部失败后，才进行接口重启。
-#
-# 适用场景：
-#   - 对端使用 DDNS，公网 IP 可能变化；
-#   - 不同 DNS 对 DDNS 的解析结果在短时间内不一致；
-#   - WireGuard 当前缓存的 endpoint 可能已经过期；
-#   - 需要自动恢复而不想每次人工干预。
-#
 # 运行环境：
 #   - OpenWrt / BusyBox / ash / 标准 sh 环境
 #   - 系统已安装并可使用：
 #       wg
-#       dig (来自 bind-tools 或 bind-dig)
+#       curl (需支持 SSL/TLS)
+#       jsonfilter (OpenWrt 内置核心组件)
 #       ping
 #       logger
 #       ifup
@@ -42,20 +32,11 @@
 #
 # 兼容性说明：
 #   - 本脚本按 IPv4 endpoint 设计；
-#   - 提取 endpoint IP 的逻辑不适用于 IPv6；
 #   - 适合在 OpenWrt 中通过 cron 定时调用。
 #
 # 保存建议：
-#   建议保存为：
-#       /usr/bin/wireguard_refresh.sh
-#
-# 建议赋予执行权限：
-#       chmod +x /usr/bin/wireguard_refresh.sh
-#
-# cron 示例：
-#   每 5 分钟执行一次：
-#       */5 * * * * /usr/bin/wireguard_refresh.sh
-#
+#   建议保存为：/usr/bin/wireguard_refresh.sh
+#   赋予执行权限：chmod +x /usr/bin/wireguard_refresh.sh
 # ============================================================
 
 
@@ -88,8 +69,8 @@ PING_TIMEOUT="2"
 # handshake 过期阈值（秒）
 HANDSHAKE_STALE_SEC="180"
 
-# 用于查询 DDNS 的 DNS 服务器列表
-DNS_SERVERS="1.1.1.1 223.5.5.5"
+# 用于查询 DDNS 的 DoH 服务器终点 (已更新为新加坡节点。如有需要，可在后面加空格配置备用 DoH 进行兜底)
+DOH_ENDPOINTS="https://ali-sg.b-gfw.cfd:442/dns-query"
 
 # 设置某个 endpoint 候选后，等待多少秒再检查握手
 ENDPOINT_TRY_WAIT="8"
@@ -139,28 +120,32 @@ now_ts() {
 
 # ------------------------------------------------------------
 # 函数名：
-#   resolve_ip_from_dns
+#   resolve_ip_from_doh
 #
 # 作用：
-#   使用指定 DNS 服务器解析目标域名，并返回 IPv4 地址。
+#   使用指定 DoH 服务器终点解析目标域名，并返回 IPv4 地址。
 #
 # 参数：
 #   $1 = 域名
-#   $2 = DNS 服务器 IP
+#   $2 = DoH Endpoint URL
 #
 # 返回：
 #   若成功，输出一个或多个 IPv4 地址（换行分隔）
 #   若失败，不输出内容
-#
-# 说明：
-#   改用 dig 工具。使用 +short 参数直接获取解析结果，
-#   并通过 grep 正则过滤掉可能存在的 CNAME 链，只保留纯粹的 IPv4 地址。
 # ------------------------------------------------------------
-resolve_ip_from_dns() {
+resolve_ip_from_doh() {
     DOMAIN="$1"
-    DNS="$2"
+    DOH_URL="$2"
 
-    dig "@$DNS" "$DOMAIN" A +short 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+    # 使用 curl 请求 DoH 的 JSON API 接口
+    RESPONSE=$(curl -s -k -H "accept: application/dns-json" "${DOH_URL}?name=${DOMAIN}&type=A")
+    
+    if [ -n "$RESPONSE" ]; then
+        # 1. 利用 jsonfilter 提取 Answer 节点中的所有 data 字段
+        # 2. 通过 tr ' ' '\n' 将空格分隔的多条结果强制转换为换行分隔，确保一行一个
+        # 3. 通过 grep 正则严格筛选出合法的 IPv4 地址，精准剔除 CNAME 域名
+        echo "$RESPONSE" | jsonfilter -e '@.Answer[*].data' 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+    fi
 }
 
 # ------------------------------------------------------------
@@ -175,7 +160,7 @@ get_current_endpoint() {
 
 # ------------------------------------------------------------
 # 函数名：extract_ip_from_endpoint
-# 作用：从 endpoint 中提取 IP 部分 (仅限 IPv4)。
+# 作用：从 endpoint 中提取 IP部分 (仅限 IPv4)。
 # ------------------------------------------------------------
 extract_ip_from_endpoint() {
     echo "$1" | awk -F: '{print $1}'
@@ -322,29 +307,25 @@ restart_wg() {
 #   collect_candidates
 #
 # 作用：
-#   通过多个 DNS 服务器解析 DDNS，收集候选公网 IP。
-#
-# 说明：
-#   由于 dig 可能会针对一个域名一次性返回多个 A 记录（多 IP），
-#   这里采用 while read 逐行读取结果，确保所有有效 IP 都能被捕获并去重。
+#   通过 DoH 服务器解析 DDNS，收集候选公网 IP 并去重。
 # ------------------------------------------------------------
 collect_candidates() {
     : > "$TMP_CANDIDATES"
 
-    for DNS in $DNS_SERVERS;
+    for DOH in $DOH_ENDPOINTS;
     do
-        IPS="$(resolve_ip_from_dns "$PEER_DDNS" "$DNS")"
+        IPS="$(resolve_ip_from_doh "$PEER_DDNS" "$DOH")"
 
         if [ -n "$IPS" ];
         then
             echo "$IPS" | while read -r IP;
             do
                 [ -z "$IP" ] && continue
-                log_msg "Resolved $PEER_DDNS via $DNS -> $IP"
+                log_msg "Resolved $PEER_DDNS via DoH -> $IP"
                 grep -qx "$IP" "$TMP_CANDIDATES" 2>/dev/null || echo "$IP" >> "$TMP_CANDIDATES"
             done
         else
-            log_msg "Resolve failed for $PEER_DDNS via $DNS"
+            log_msg "DoH resolve failed for $PEER_DDNS via $DOH"
         fi
     done
 }
@@ -389,7 +370,7 @@ try_all_candidates() {
 # ============================================================
 
 if [ -f "$LOCK_FILE" ];
-    then
+then
     OLD_PID="$(cat "$LOCK_FILE" 2>/dev/null)"
 
     if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null;
