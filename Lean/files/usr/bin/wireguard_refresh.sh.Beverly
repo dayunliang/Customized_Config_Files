@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# ============================================================
+# 脚本名称：wireguard_refresh.sh
+# 脚本用途：在 Beverly 端高频监控 DDNS 变动，利用时差抢先重置接口
+# ============================================================
+
+# 你的 DDNS 域名
+PEER_DDNS="beverly.b-gfw.cfd"
+
+# WireGuard 接口名称
+WG_IF="wg0"
+
+# 记录上一次 IP 的缓存文件
+CACHE_FILE="/tmp/beverly_wg_last_ip.txt"
+
+# 日志标签
+LOG_TAG="wg-ddns"
+
+log_msg() {
+    logger -t "$LOG_TAG" "$1"
+}
+
+# 1. 轮询用户指定的两个超快海外大厂 DoH 节点
+CURRENT_IP=""
+for DOH in "dns.google" "cloudflare-dns.com"; do
+    IP=$(dig "@${DOH}" +https "${PEER_DDNS}" A +short 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+    if [ -n "$IP" ]; then
+        CURRENT_IP="$IP"
+        break
+    fi
+done
+
+# 如果两家大厂都由于多线网络波动暂时没解析出来，直接安全退出，不轻举妄动
+if [ -z "$CURRENT_IP" ]; then
+    exit 0
+fi
+
+# 2. 读取上一分钟记录的旧 IP
+if [ -f "$CACHE_FILE" ]; then
+    LAST_IP=$(cat "$CACHE_FILE")
+else
+    LAST_IP=""
+fi
+
+# 3. 如果缓存文件不存在（比如路由器刚重启），先进行初始化记录，不重启接口
+if [ -z "$LAST_IP" ]; then
+    echo "$CURRENT_IP" > "$CACHE_FILE"
+    log_msg "Initialized last IP cache to $CURRENT_IP"
+    exit 0
+fi
+
+# 4. 核心比对：发现前后一分钟 IP 不一致，果断执行抢先重置
+if [ "$CURRENT_IP" != "$LAST_IP" ]; then
+    log_msg "DDNS IP changed from $LAST_IP to $CURRENT_IP. Restarting $WG_IF to flush kernel socket cache..."
+    
+    # 彻底关闭并重新拉起，洗牌 Linux 内核反向路由套接字
+    ifdown "$WG_IF" 2>/dev/null
+    sleep 2
+    ifup "$WG_IF" 2>/dev/null
+    
+    # 将最新 IP 覆写回缓存文件，供下一分钟比对
+    echo "$CURRENT_IP" > "$CACHE_FILE"
+fi
