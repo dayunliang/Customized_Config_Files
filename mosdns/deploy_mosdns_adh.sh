@@ -21,7 +21,7 @@ info(){ printf "${B}i${N} %s\n" "$*"; }
 
 # ===== 小工具函数 =====
 wait_sock() { # 等待 docker.sock 最多 N 秒
-  N="${1:-20}"
+  local N="${1:-20}" # 【已修复】使用 local 关键字，避免污染全局变量 N
   for _ in $(seq 1 "$N"); do
     [ -S /var/run/docker.sock ] && return 0
     sleep 1
@@ -222,7 +222,7 @@ command -v nc >/dev/null 2>&1 && {
 echo "==== docker info (brief) ====" >> "$REPORT"
 docker_info_brief >> "$REPORT" 2>&1 || true
 
-ok "✅ 所有服务部署完成"
+echo "✅ 所有服务部署完成"
 echo "📌 查看 MosDNS 日志：  cd $MOSDNS_DIR && docker compose logs -f mosdns"
 echo "📌 查看 ADH_CN 日志：  cd $ADH_CN_DIR && docker compose logs -f"
 echo "📌 查看 ADH_GFW 日志： cd $ADH_GFW_DIR && docker compose logs -f"
