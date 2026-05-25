@@ -178,13 +178,22 @@ ok "Cron 规则已更新"
 # ===== [11/14] 规则与空白名单 =====
 echo "[11/14] 下载规则与空白名单..."
 mkdir -p "$MOSDNS_DIR/rules-dat" "$MOSDNS_DIR/config/rule"
-: > "$MOSDNS_DIR/rules-dat/geoip_private.txt"
-: > "$MOSDNS_DIR/rules-dat/hosts.txt"
+
+# 1. 从远程下载 geoip_private 和 hosts 文件
+for s in geoip_private.txt hosts.txt; do
+  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/$s" -o "$MOSDNS_DIR/rules-dat/$s"
+done
+
+# 2. 下载核心 yaml 配置文件
 for f in config_custom.yaml dns.yaml dat_exec.yaml; do
   curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$MOSDNS_DIR/config/$f"
 done
-: > "$MOSDNS_DIR/config/rule/whitelist.txt"
-: > "$MOSDNS_DIR/config/rule/greylist.txt"
+
+# 3. 从远程下载白名单和灰名单
+for r in whitelist.txt greylist.txt; do
+  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/config/rule/$r" -o "$MOSDNS_DIR/config/rule/$r"
+done
+
 ok "规则与白/灰名单已就绪"
 
 # ===== [12/14] 启动 MosDNS =====
