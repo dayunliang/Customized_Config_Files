@@ -42,7 +42,7 @@ docker_info_brief() {
 }
 
 # ===== [1/10] Docker/Containerd/Compose（只做最小校验与提示）=====
-echo "[4/14] 校验 Docker 与 Compose..."
+echo "[1/10] 校验 Docker 与 Compose..."
 if ! command -v docker >/dev/null 2>&1; then err "未检测到 docker，请先运行 docker_alpine.sh"; exit 1; fi
 if ! docker compose version >/dev/null 2>&1; then err "未检测到 docker compose v2，请在 docker_alpine.sh 中启用"; exit 1; fi
 ok "Docker 与 Compose 就绪"
@@ -50,12 +50,12 @@ info "Docker 信息（简要）："
 docker_info_brief || true
 
 # ===== [2/10] 重启守护进程并等待 sock（幂等保障）=====
-echo "[5/14] 重启 containerd / docker..."
+echo "[2/10] 重启 containerd / docker..."
 restart_daemons || { err "dockerd 未就绪"; exit 1; }
 ok "dockerd socket 就绪"
 
 # ===== [3/10] 清理环境（端口/容器/进程 + 目录）=====
-echo "[6/14] 清理旧容器并释放端口（53/54/55）..."
+echo "[3/10] 清理旧容器并释放端口（53/54/55）..."
 PORTS="53 5335"
 TMP_CONTAINER=$(mktemp); TMP_PROCESS=$(mktemp)
 
@@ -101,7 +101,7 @@ mkdir -p "$MOSDNS_DIR" "$ADH_DIR/conf" "$ADH_DIR/work"
 ok "环境清理完成"
 
 # ===== [4/10] 部署 ADH =====
-echo "[7/14] 部署 AdGuard Home..."
+echo "[4/10] 部署 AdGuard Home..."
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh.yaml \
   -o "$ADH_DIR/conf/AdGuardHome.yaml"
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh \
@@ -111,7 +111,7 @@ curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/
 ok "AdGuard Home 已启动"
 
 # ===== [5/10] MosDNS 资源 =====
-echo "[9/14] 下载 MosDNS compose 与 update.sh..."
+echo "[5/10] 下载 MosDNS compose 与 update.sh..."
 cd "$MOSDNS_DIR"
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns \
   -o ./docker-compose.yaml
@@ -122,14 +122,14 @@ chmod +x ./update.sh
 ok "MosDNS 资源已准备"
 
 # ===== [6/10] cron 自动更新 =====
-echo "[10/14] 设置 cron 自动更新..."
+echo "[6/10] 设置 cron 自动更新..."
 touch "$CRONTAB_FILE"
 sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
 echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
 ok "Cron 规则已更新"
 
 # ===== [7/10] 规则与空白名单 =====
-echo "[11/14] 下载规则与空白名单..."
+echo "[7/10] 下载规则与空白名单..."
 mkdir -p "$MOSDNS_DIR/rules-dat" "$MOSDNS_DIR/config/rule"
 
 # 1. 从远程下载 geoip_private 和 hosts 文件
@@ -150,13 +150,13 @@ done
 ok "规则与白/灰名单已就绪"
 
 # ===== [8/10] 启动 MosDNS =====
-echo "[12/14] 启动 MosDNS..."
+echo "[8/10] 启动 MosDNS..."
 cd "$MOSDNS_DIR"
 docker compose up -d --force-recreate
 ok "MosDNS 已启动"
 
 # ===== [9/10] 验证与端口探测 =====
-echo "[13/14] 验证服务与端口..."
+echo "[9/10] 验证服务与端口..."
 echo "—— docker ps ——"
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1,20p'
 
