@@ -142,8 +142,8 @@ for f in config_custom.yaml dns.yaml dat_exec.yaml; do
   curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$MOSDNS_DIR/config/$f"
 done
 
-# 3. 从远程下载白名单和灰名单
-for r in whitelist.txt greylist.txt; do
+# 3. 从远程下载白名单和灰名单 & 跳过缓存名单
+for r in whitelist.txt greylist.txt nocache.txt; do
   curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/config/rule/$r" -o "$MOSDNS_DIR/config/rule/$r"
 done
 
