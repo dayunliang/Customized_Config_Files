@@ -5,8 +5,9 @@
 # 亮点：幂等、安全、桥接与 cgroup 初始化、镜像加速、验证汇总
 #       内置 ensure_docker_runtime_ready：优先 io.containerd.runc.v2，失败兜底 crun
 # 整合更新：
-#   1. 确保在工具集中包含 curl 的安装（满足显式需求）
-#   2. 加入基于独立私有仓库 private_config.git 的磁盘监控脚本部署（配置 SSH KEY 与 Crontab）
+#   1. 确保工具集中包含 curl 的安装
+#   2. 临时拉取私有仓库 private_config.git 中的 disk_space_check.dingtalk 文件
+#   3. 【优化】直接 mv 文件到 /usr/bin/ 目录并清理掉临时生成的 git 目录，保持系统纯净
 # 日期：2026-05-26
 # ============================================================================
 
@@ -152,7 +153,7 @@ ensure_docker_runtime_ready() {
     docker_info_brief
     echo "报告：$REPORT"
   else
-    err "最终results：仍失败 ❌"
+    err "最终结果：仍失败 ❌"
     echo "请检查：/var/log/docker.log、/var/log/containerd.log、$REPORT"
     # 不让主脚本失败
   fi
@@ -179,7 +180,6 @@ apk update
 
 # ---------- 2. 安装组件 ----------
 info "安装 Docker / open-vm-tools / git / curl 及常用工具..."
-# 在此处显式包含 curl 的安装，确保基础工具链完整
 apk add --no-cache docker containerd runc openrc iptables ip6tables jq curl bash vim htop ca-certificates \
   git open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg
 
@@ -211,7 +211,6 @@ cat >/tmp/daemon.patch.json <<'JSON'
   "default-runtime": "io.containerd.runc.v2"
 }
 JSON
-# 注意：不写入 .runtimes.runc（避免 “runtime name 'runc' is reserved”）
 jq -s '.[0] * .[1]' /etc/docker/daemon.json /tmp/daemon.patch.json > /etc/docker/daemon.json.new
 mv /etc/docker/daemon.json.new /etc/docker/daemon.json
 rm -f /tmp/daemon.patch.json
@@ -269,11 +268,11 @@ else
   fi
 fi
 
-# ---------- 9. 部署磁盘监控脚本 (disk_space_check) ----------
-info "开始配置磁盘监控脚本部署环境 (使用独立私有仓库)..."
-REPO_PRIVATE_DIR="/root/.private_config_repo"  # 采用独立隐藏路径，绝不与 cfst 的仓库目录混淆冲突
-DISK_WORK_DIR="/root/disk_space_check"
-DISK_SUBDIR="disk_space_check"                 # 假设在 private_config 仓库内叫这个名字，如在根目录可设为 "."
+# ---------- 9. 部署磁盘监控脚本 (disk_space_check.dingtalk) ----------
+info "开始配置磁盘监控脚本部署环境 (从私有仓库临时提取)..."
+REPO_PRIVATE_TMP="/root/.private_config_repo_tmp"
+TARGET_BIN_PATH="/usr/bin/disk_space_check.dingtalk"
+FILE_NAME="disk_space_check.dingtalk"
 
 # 9.1 SSH KEY 检查与自动创建
 SSH_KEY_FOUND=0
@@ -298,7 +297,7 @@ fi
 # 9.2 交互式阻塞：提示用户绑定公钥
 echo "------------------------------------------------------------------"
 warn "📢 请复制以下公钥并添加至您的 GitHub 账户："
-warn "   ⚠️  请确保该公钥或您的 GitHub 账户拥有对 [private_config] 仓库的访问权限！"
+warn "   ⚠️  请确保该公钥拥有对私有仓库 [private_config] 的访问或部署(Deploy)权限！"
 echo "   👉 路径: Settings -> SSH and GPG keys -> New SSH key"
 echo "------------------------------------------------------------------"
 cat "$PUB_KEY_PATH"
@@ -306,43 +305,35 @@ echo "------------------------------------------------------------------"
 echo -n "⚠️  请确保已在 GitHub 完成权限绑定，按 [回车键] 继续后续部署..."
 read CONFIRM_SSH
 
-# 9.3 独立仓库建立与稀疏检出 (Sparse-checkout)
-if [ ! -d "$REPO_PRIVATE_DIR" ]; then
-    info "📦 正在初始化独立的私有配置仓库壳子..."
-    git clone --filter=blob:none --sparse git@github.com:dayunliang/private_config.git "$REPO_PRIVATE_DIR"
-    cd "$REPO_PRIVATE_DIR" || exit 1
-    git sparse-checkout set "$DISK_SUBDIR"
-else
-    info "📦 检测到私有仓库壳子已存在，准备进行同步..."
-    cd "$REPO_PRIVATE_DIR" || exit 1
-fi
-
-# 9.4 同步最新的云端代码并切回主目录
-info "🔄 正在从远程拉取最新私有配置..."
+# 9.3 临时建立稀疏克隆目录
+rm -rf "$REPO_PRIVATE_TMP"
+info "📦 正在临时拉取私有配置仓库..."
+git clone --filter=blob:none --sparse git@github.com:dayunliang/private_config.git "$REPO_PRIVATE_TMP"
+cd "$REPO_PRIVATE_TMP" || exit 1
+git sparse-checkout set "$FILE_NAME"
 git pull origin main || true
 cd /root
 
-# 9.5 建立软链接大门
-rm -f "$DISK_WORK_DIR"
-if [ -d "$REPO_PRIVATE_DIR/$DISK_SUBDIR" ]; then
-    ln -s "$REPO_PRIVATE_DIR/$DISK_SUBDIR" "$DISK_WORK_DIR"
-else
-    # 如果脚本直接放置在 private_config.git 仓库根目录，则直接软链根目录
-    ln -s "$REPO_PRIVATE_DIR" "$DISK_WORK_DIR"
-fi
-
-# 9.6 自动赋权内部脚本并写入 Crontab
-if [ -d "$DISK_WORK_DIR" ]; then
-    find "$DISK_WORK_DIR" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
-    ok "磁盘监控脚本目录软链接及赋权完成。"
+# 9.4 mv 移动目标文件并彻底清除临时仓库目录
+if [ -f "$REPO_PRIVATE_TMP/$FILE_NAME" ]; then
+    # 移除旧文件（如果存在），然后 mv 过去
+    rm -f "$TARGET_BIN_PATH"
+    mv "$REPO_PRIVATE_TMP/$FILE_NAME" "$TARGET_BIN_PATH"
+    chmod +x "$TARGET_BIN_PATH"
     
-    # 定时任务自动写入（默认每 6 小时检查一次磁盘空间并发送钉钉通知，防重复写入）
+    # 🌟 卸磨杀驴：直接删除生成的临时目录，不留痕迹
+    rm -rf "$REPO_PRIVATE_TMP"
+    ok "磁盘监控脚本已成功部署至 $TARGET_BIN_PATH，临时目录已清理干净。"
+    
+    # 9.5 配置 Crontab 定时任务
     info "⏰ 正在配置系统 Crontab 定时任务..."
-    CRON_JOB_DISK="0 */6 * * * /bin/sh $DISK_WORK_DIR/disk_space_check.sh >> /var/log/disk_space_check.log 2>&1"
-    (crontab -l 2>/dev/null | grep -v "disk_space_check.sh"; echo "$CRON_JOB_DISK") | crontab -
-    ok "定时任务已成功写入系统 Crontab（每6小时自动巡检）"
+    CRON_JOB_DISK="0 */6 * * * $TARGET_BIN_PATH >> /var/log/disk_space_check.log 2>&1"
+    (crontab -l 2>/dev/null | grep -v "$FILE_NAME"; echo "$CRON_JOB_DISK") | crontab -
+    ok "定时任务已成功指向系统路径（每6小时巡检一次）"
 else
-    err "未在代码仓库中匹配到相应的监控环境，请检查远程仓库路径！"
+    # 失败时也顺手清理掉垃圾文件
+    rm -rf "$REPO_PRIVATE_TMP"
+    err "❌ 部署失败：未在仓库中找到 $FILE_NAME 文件，请检查该私有仓库的内容！"
 fi
 
 # ---------- 10. 运行时自愈 + 自检 ----------
@@ -372,7 +363,7 @@ check "curl 工具可用" "curl --version"
 check "bridge-nf-call-iptables=1" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-iptables 2>/dev/null)\" = 1 ]"
 check "bridge-nf-call-ip6tables=1" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-ip6tables 2>/dev/null)\" = 1 ]"
 check "hello-world 可运行" "docker run --rm hello-world"
-check "磁盘监控环境就绪" "[ -d /root/disk_space_check ]"
+check "/usr/bin/ 监控脚本可执行" "[ -x $TARGET_BIN_PATH ]"
 
 if docker compose version >/dev/null 2>&1; then
   ok "Compose v2 可用"; echo "[PASS] Compose v2 available" >> "$REPORT_SUM"
