@@ -4,8 +4,12 @@
 # 功能：在 Alpine Linux 上一键部署 Docker、containerd、Compose、open-vm-tools、git及常用工具
 # 亮点：幂等、安全、桥接与 cgroup 初始化、镜像加速、验证汇总
 #       内置 ensure_docker_runtime_ready：优先 io.containerd.runc.v2，失败兜底 crun
-# 作者：https://github.com/dayunliang（由 AI 补充 open-vm-tools 与 git）
-# 日期：2026-05-19
+# 整合更新：
+#   1. 整合 APK 中科大镜像源条件性更新逻辑，保障幂等性
+#   2. 集中合并基础组件与网络组件包安装（新增 musl-locales, net-tools, nftables 等）
+#   3. 新增系统全局中文环境本地化及 Vim 默认 UTF-8 编码配置
+#   4. 包含私有仓库磁盘监控脚本的拉取与交互式 Crontab 定时任务配置
+# 日期：2026-05-26
 # ============================================================================
 
 set -e
@@ -17,7 +21,7 @@ warn() { printf "${YELLOW}▲${NC} %s\n" "$*"; }
 err()  { printf "${RED}✘${NC} %s\n" "$*"; }
 info() { printf "${BLUE}i${NC} %s\n" "$*"; }
 
-# ---------- runtime 自愈（整合自 fix.sh） ----------
+# ---------- runtime 自愈 ----------
 ensure_docker_runtime_ready() {
   # 不要让内部失败导致主脚本退出
   set +e
@@ -26,10 +30,12 @@ ensure_docker_runtime_ready() {
   touch "$REPORT"
 
   wait_sock() {
-    N="${1:-15}"; i=0
+    N="${1:-15}"
+    i=0
     while [ $i -lt $N ]; do
       [ -S /var/run/docker.sock ] && return 0
-      i=$((i+1)); sleep 1
+      i=$((i+1))
+      sleep 1
     done
     return 1
   }
@@ -77,8 +83,10 @@ ensure_docker_runtime_ready() {
     ok "dockerd socket就绪。"
   else
     err "dockerd socket 未出现。查看日志：$REPORT"
-    echo "==== docker.log ====" >> "$REPORT"; tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
-    echo "==== containerd.log ====" >> "$REPORT"; tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
+    echo "==== docker.log ====" >> "$REPORT"
+    tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
+    echo "==== containerd.log ====" >> "$REPORT"
+    tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
   fi
 
   info "当前 docker 关键信息："
@@ -132,8 +140,10 @@ ensure_docker_runtime_ready() {
       PASSED=2
     else
       err "hello-world 仍失败。导出日志到 $REPORT"
-      echo "==== docker.log ====" >> "$REPORT"; tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
-      echo "==== containerd.log ====" >> "$REPORT"; tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
+      echo "==== docker.log ====" >> "$REPORT"
+      tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
+      echo "==== containerd.log ====" >> "$REPORT"
+      tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
     fi
   fi
 
@@ -152,7 +162,6 @@ ensure_docker_runtime_ready() {
   else
     err "最终结果：仍失败 ❌"
     echo "请检查：/var/log/docker.log、/var/log/containerd.log、$REPORT"
-    # 不让主脚本失败
   fi
 
   # 恢复 set -e
@@ -166,28 +175,56 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # ---------- 1. APK 源 ----------
-info "设置 APK 镜像源为 USTC..."
-tee /etc/apk/repositories <<-'EOF'
+info "设置 APK 镜像源为中科大 (USTC)..."
+if ! grep -q ustc /etc/apk/repositories 2>/dev/null; then
+  tee /etc/apk/repositories <<-'EOF'
 https://mirrors.ustc.edu.cn/alpine/latest-stable/main
 https://mirrors.ustc.edu.cn/alpine/latest-stable/community
 EOF
-
-info "更新索引..."
-apk update
+  info "更新 APK 索引..."
+  apk update
+else
+  ok "APK 镜像源已是中科大，跳过换源。"
+fi
+ok "APK 源已就绪"
 
 # ---------- 2. 安装组件 ----------
-info "安装 Docker / open-vm-tools / git / 常用工具..."
-apk add --no-cache docker containerd runc openrc iptables ip6tables jq curl bash vim htop ca-certificates \
-  git open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg
+info "联合安装基础包、网络组件及 Docker 前置依赖..."
+# 合并了原有组件与 DNS 部署脚本所需的所有系统依赖，避免重复执行 apk add
+apk add --no-cache \
+  docker containerd runc openrc iptables ip6tables jq curl bash vim htop ca-certificates \
+  git open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg \
+  musl-locales musl-locales-lang less net-tools c-ares nftables \
+  >/dev/null 2>&1 || true
+ok "基础组件包安装完成"
 
-# ---------- 3. 开机自启 ----------
+# ---------- 3. 系统本地化与 Vim 配置 ----------
+info "配置全局中文环境与 Vim 默认编码..."
+cat >/etc/profile.d/locale.sh <<'EOF'
+export LANG=zh_CN.UTF-8
+export LC_CTYPE=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
+EOF
+chmod +x /etc/profile.d/locale.sh
+. /etc/profile.d/locale.sh
+
+mkdir -p /etc/vim
+cat >/etc/vim/vimrc <<'EOF'
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,default,latin1
+EOF
+ok "中文环境与 Vim 编码配置完成"
+
+# ---------- 4. 开机自启 ----------
 info "设置 containerd / docker / open-vm-tools 开机自启..."
 rc-update add containerd default || true
 rc-update add docker default || true
 rc-update add cgroups default || true
 rc-update add open-vm-tools boot || true
 
-# ---------- 4. Docker 配置（镜像加速 + default-runtime 占位） ----------
+# ---------- 5. Docker 配置 ----------
 info "配置 /etc/docker/daemon.json（镜像加速 + 默认 runtime 占位）..."
 mkdir -p /etc/docker
 [ -f /etc/docker/daemon.json ] || echo '{}' > /etc/docker/daemon.json
@@ -208,19 +245,18 @@ cat >/tmp/daemon.patch.json <<'JSON'
   "default-runtime": "io.containerd.runc.v2"
 }
 JSON
-# 注意：不写入 .runtimes.runc（避免 “runtime name 'runc' is reserved”）
 jq -s '.[0] * .[1]' /etc/docker/daemon.json /tmp/daemon.patch.json > /etc/docker/daemon.json.new
 mv /etc/docker/daemon.json.new /etc/docker/daemon.json
 rm -f /tmp/daemon.patch.json
 
-# ---------- 5. containerd 配置（仅设 default_runtime_name，避免额外 options 警告） ----------
+# ---------- 6. containerd 配置 ----------
 info "配置 /etc/containerd/config.toml（default_runtime_name=runc）..."
 if [ ! -s /etc/containerd/config.toml ]; then
   containerd config default >/etc/containerd/config.toml
 fi
 sed -i -E 's#(^\s*default_runtime_name\s*=\s*).*$#\1"runc"#' /etc/containerd/config.toml || true
 
-# ---------- 6. netfilter 桥 + cgroup2 ----------
+# ---------- 7. netfilter 桥 + cgroup2 ----------
 info "开启 bridge-nf 与 cgroup2..."
 modprobe br_netfilter 2>/dev/null || true
 modprobe overlay 2>/dev/null || true
@@ -234,7 +270,7 @@ sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >/dev/null 2>&1 || true
 mkdir -p /sys/fs/cgroup
 mount | grep -q "type cgroup2" || mount -t cgroup2 none /sys/fs/cgroup 2>/dev/null || true
 
-# ---------- 7. 干净重启 ----------
+# ---------- 8. 干净重启 ----------
 info "干净重启 open-vm-tools/containerd/docker..."
 rc-service open-vm-tools start || true
 rc-service docker stop || true
@@ -243,7 +279,7 @@ rm -rf /run/containerd/io.containerd.runtime.v2.task/moby/* 2>/dev/null || true
 rc-service containerd start
 rc-service docker start
 
-# ---------- 8. 安装 Compose ----------
+# ---------- 9. 安装 Compose ----------
 info "安装 Docker Compose..."
 if command -v docker-compose >/dev/null 2>&1; then
   ok "已存在 docker-compose（v1）。"
@@ -266,10 +302,110 @@ else
   fi
 fi
 
-# ---------- 9. 运行时自愈 + 自检 ----------
+# ---------- 10. 部署磁盘监控脚本 (disk_space_check.dingtalk) ----------
+info "开始配置磁盘监控脚本部署 environment (从私有仓库临时提取)..."
+REPO_PRIVATE_TMP="/root/.private_config_repo_tmp"
+TARGET_BIN_PATH="/usr/bin/disk_space_check.dingtalk"
+FILE_NAME="disk_space_check.dingtalk"
+
+# 10.1 SSH KEY 检查与自动创建
+SSH_KEY_FOUND=0
+PUB_KEY_PATH=""
+for KEY_TYPE in "id_ed25519.pub" "id_rsa.pub"; do
+    if [ -f "$HOME/.ssh/$KEY_TYPE" ]; then
+        SSH_KEY_FOUND=1
+        PUB_KEY_PATH="$HOME/.ssh/$KEY_TYPE"
+        break
+    fi
+done
+
+if [ "$SSH_KEY_FOUND" -eq 0 ]; then
+    warn "未检测到本地 SSH 密钥，正在为你自动生成 Ed25519 密钥对..."
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+    ssh-keygen -t ed25519 -C "cron@homelab.local" -N "" -f "$HOME/.ssh/id_ed25519"
+    PUB_KEY_PATH="$HOME/.ssh/id_ed25519.pub"
+    ok "密钥生成成功！"
+fi
+
+# 10.2 交互式阻塞：提示用户绑定公钥
+echo "------------------------------------------------------------------"
+warn "📢 请复制以下公钥并添加至您的 GitHub 账户："
+warn "   ⚠️  请确保该公钥拥有对私有仓库 [private_config] 的访问或部署(Deploy)权限！"
+echo "   👉 路径: Settings -> SSH and GPG keys -> New SSH key"
+echo "------------------------------------------------------------------"
+cat "$PUB_KEY_PATH"
+echo "------------------------------------------------------------------"
+echo -n "⚠️  请确保已在 GitHub 完成权限绑定，按 [回车键] 继续后续部署..."
+read CONFIRM_SSH
+
+# 10.3 临时建立稀疏克隆目录
+rm -rf "$REPO_PRIVATE_TMP"
+info "📦 正在临时拉取私有配置仓库..."
+git clone --filter=blob:none --no-checkout git@github.com:dayunliang/private_config.git "$REPO_PRIVATE_TMP"
+cd "$REPO_PRIVATE_TMP" || exit 1
+git sparse-checkout init --no-cone
+git sparse-checkout set "$FILE_NAME"
+git checkout main || true
+cd /root
+
+# 10.4 mv 移动目标文件并彻底清除临时仓库目录
+if [ -f "$REPO_PRIVATE_TMP/$FILE_NAME" ]; then
+    rm -f "$TARGET_BIN_PATH"
+    mv "$REPO_PRIVATE_TMP/$FILE_NAME" "$TARGET_BIN_PATH"
+    chmod +x "$TARGET_BIN_PATH"
+    
+    rm -rf "$REPO_PRIVATE_TMP"
+    ok "磁盘监控脚本已成功部署至 $TARGET_BIN_PATH，临时目录已清理干净。"
+    
+    # 10.5 【已加入交互时间逻辑】配置 Crontab 定时任务
+    info "⏰ 正在准备配置系统 Crontab 定时任务..."
+    echo "------------------------------------------------------------------"
+    echo "请选择磁盘监控脚本的运行频率计划："
+    echo "  1) 每小时 运行一次 (0 * * * *)"
+    echo "  2) 每 6小时 运行一次 (0 */6 * * *)  [默认选项]"
+    echo "  3) 每天凌晨 2:00 运行一次 (0 2 * * *)"
+    echo "  4) 自定义输入 Cron 表达式"
+    echo "------------------------------------------------------------------"
+    echo -n "请输入计划选项 [1-4] (直接回车保持默认): "
+    read CRON_CHOICE
+
+    case "$CRON_CHOICE" in
+        1)
+            CRON_TIME="0 * * * *"
+            ;;
+        3)
+            CRON_TIME="0 2 * * *"
+            ;;
+        4)
+            echo ""
+            echo -n "请输入标准的 5 位 Cron 表达式 (例如 '0 */3 * * *'): "
+            read CUSTOM_CRON
+            if [ -z "$CUSTOM_CRON" ]; then
+                warn "输入为空，自动选择默认计划：每 6 小时运行一次。"
+                CRON_TIME="0 */6 * * *"
+            else
+                CRON_TIME="$CUSTOM_CRON"
+            fi
+            ;;
+        *)
+            CRON_TIME="0 */6 * * *"
+            ;;
+    esac
+
+    CRON_JOB_DISK="$CRON_TIME $TARGET_BIN_PATH >> /var/log/disk_space_check.log 2>&1"
+    # 清理掉旧的同名任务，并追加新计划
+    (crontab -l 2>/dev/null | grep -v "$FILE_NAME"; echo "$CRON_JOB_DISK") | crontab -
+    ok "系统 Crontab 配置成功！当前执行时间设置为: [$CRON_TIME]"
+else
+    rm -rf "$REPO_PRIVATE_TMP"
+    err "❌ 部署失败：未在仓库中找到 $FILE_NAME 文件，请检查该私有仓库的内容！"
+fi
+
+# ---------- 11. 运行时自愈 + 自检 ----------
 ensure_docker_runtime_ready
 
-# ---------- 10. 最终环境验证与汇总 ----------
+# ---------- 12. 最终环境验证与汇总 ----------
 REPORT_SUM="/root/docker_env_report_$(date +%Y%m%d_%H%M%S).txt"
 PASS=1
 echo "Docker & Tools Environment Report - $(date)" > "$REPORT_SUM"
@@ -289,9 +425,11 @@ check "containerd 运行" "rc-service containerd status | grep -q 'status: start
 check "docker daemon 运行" "rc-service docker status | grep -q 'status: started' || pgrep dockerd"
 check "open-vm-tools 运行" "rc-service open-vm-tools status | grep -q 'status: started' || pgrep vmtoolsd"
 check "git 工具可用" "git --version"
+check "curl 工具可用" "curl --version"
 check "bridge-nf-call-iptables=1" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-iptables 2>/dev/null)\" = 1 ]"
 check "bridge-nf-call-ip6tables=1" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-ip6tables 2>/dev/null)\" = 1 ]"
 check "hello-world 可运行" "docker run --rm hello-world"
+check "/usr/bin/ 监控脚本可执行" "[ -x $TARGET_BIN_PATH ]"
 
 if docker compose version >/dev/null 2>&1; then
   ok "Compose v2 可用"; echo "[PASS] Compose v2 available" >> "$REPORT_SUM"
