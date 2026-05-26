@@ -1,0 +1,11 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adh
+    restart: unless-stopped
+    network_mode: host   # 💡 开启 Host 模式，强占 53 端口抓真实 IP
+    volumes:
+      - ./conf:/opt/adguardhome/conf
+      - ./work:/opt/adguardhome/work
+    environment:
+      - TZ=Asia/Shanghai
