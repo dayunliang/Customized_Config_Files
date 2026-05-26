@@ -55,7 +55,7 @@ restart_daemons || { err "dockerd 未就绪"; exit 1; }
 ok "dockerd socket 就绪"
 
 # ===== [3/10] 清理环境（端口/容器/进程 + 目录）=====
-echo "[3/10] 清理旧容器并释放端口（53/54/55）..."
+echo "[3/10] 清理旧容器并释放端口（53/5335）..."
 PORTS="53 5335"
 TMP_CONTAINER=$(mktemp); TMP_PROCESS=$(mktemp)
 
