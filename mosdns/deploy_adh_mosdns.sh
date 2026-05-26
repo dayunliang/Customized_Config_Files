@@ -164,7 +164,7 @@ docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1,20p'
 command -v nc >/dev/null 2>&1 && {
   nc -zv 127.0.0.1 80   >/dev/null 2>&1 && ok "AdGuard Home UI 80 OK"     || warn "AdGuard Home UI 80 未监听"
   nc -zv 127.0.0.1 3001 >/dev/null 2>&1 && ok "AdGuard Home 向导 3001 OK" || warn "ADH_CN 向导 3001 未监听"
-  nc -zv 127.0.0.1 53   >/dev/null 2>&1 && ok "AdGuard Home DNS 54/TCP OK" || warn "ADH_CN DNS 54/TCP 未监听"
+  nc -zv 127.0.0.1 53   >/dev/null 2>&1 && ok "AdGuard Home DNS 53/TCP OK" || warn "ADH_CN DNS 53/TCP 未监听"
 } || true
 
 # ===== [10/10] 汇总 =====
