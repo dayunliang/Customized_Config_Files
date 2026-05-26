@@ -1,6 +1,6 @@
 #!/bin/sh
 ###############################################################################
-# MosDNS + ADH 一键部署（依赖：已用 docker_alpine.sh 配好 Docker/Compose/crun）
+# AdGuard Home + MosDNS 一键部署（依赖：已用 docker_alpine.sh 配好 Docker/Compose/crun）
 # 适用：Alpine Linux，Docker 29+/containerd 2.x，默认使用 docker compose v2
 ###############################################################################
 set -e
