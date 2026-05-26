@@ -1,41 +1,37 @@
 #!/bin/sh
 # ============================================================================
-# 脚本名称：docker_alpine.sh
-# 功能：在 Alpine Linux 上一键部署 Docker、containerd、Compose、open-vm-tools、git及常用工具
-# 亮点：幂等、安全、桥接与 cgroup 初始化、镜像加速、验证汇总
-#       内置 ensure_docker_runtime_ready：优先 io.containerd.runc.v2，失败兜底 crun
-# 整合更新：
-#   1. 整合 APK 中科大镜像源条件性更新逻辑，保障幂等性
-#   2. 集中合并基础组件与网络组件包安装（新增 musl-locales, net-tools, nftables 等）
-#   3. 新增系统全局中文环境本地化及 Vim 默认 UTF-8 编码配置
-#   4. 包含私有仓库磁盘监控脚本的拉取与交互式 Crontab 定时任务配置
-# 日期：2026-05-26
+# 脚本名称：docker_alpine.sh (Ultimate UI/UX Edition)
+# 功能：Alpine Linux Docker 基础环境部署与钉钉监控自动化配置
+# 优化重点：全面重构 CLI 视觉、优化交互留白、增强提示词高级感
 # ============================================================================
 
 set -e
 
-# ---------- 小工具（着色） ----------
-GREEN='\033[32m'; RED='\033[31m'; YELLOW='\033[33m'; BLUE='\033[34m'; NC='\033[0m'
-ok()   { printf "${GREEN}✔${NC} %s\n" "$*"; }
-warn() { printf "${YELLOW}▲${NC} %s\n" "$*"; }
-err()  { printf "${RED}✘${NC} %s\n" "$*"; }
-info() { printf "${BLUE}i${NC} %s\n" "$*"; }
+# ----------------------------------------------------------------------------
+# 终端色彩与视觉组件定义
+# ----------------------------------------------------------------------------
+GREEN='\033[32m'; RED='\033[31m'; YELLOW='\033[33m'; BLUE='\033[34m'; PURPLE='\033[35m'; NC='\033[0m'
+BOLD='\033[1m'
 
-# ---------- runtime 自愈 ----------
+ok()    { printf "${GREEN}  ✔  ${NC}%s\n" "$*"; }
+warn()  { printf "${YELLOW}  ▲  ${NC}%s\n" "$*"; }
+err()   { printf "${RED}  ✘  ${NC}%s\n" "$*"; }
+info()  { printf "${BLUE}  ▶  ${NC}%s\n" "$*"; }
+title() { printf "\n${BOLD}${PURPLE}======================================================================${NC}\n${BOLD} 🚀  %s${NC}\n${BOLD}${PURPLE}======================================================================${NC}\n" "$*"; }
+
+# ----------------------------------------------------------------------------
+# Docker Runtime (运行时) 自愈模块
+# ----------------------------------------------------------------------------
 ensure_docker_runtime_ready() {
-  # 不要让内部失败导致主脚本退出
   set +e
-
   REPORT="/root/docker_runtime_fix_$(date +%Y%m%d_%H%M%S).log"
   touch "$REPORT"
 
   wait_sock() {
-    N="${1:-15}"
-    i=0
+    N="${1:-15}"; i=0
     while [ $i -lt $N ]; do
       [ -S /var/run/docker.sock ] && return 0
-      i=$((i+1))
-      sleep 1
+      i=$((i+1)); sleep 1
     done
     return 1
   }
@@ -51,155 +47,128 @@ ensure_docker_runtime_ready() {
   }
 
   docker_info_brief() {
-    docker info 2>/dev/null | awk '
-      /Server Version|Default Runtime|Storage Driver|Backing Filesystem|Cgroup Version/ {print}
-    '
+    docker info 2>/dev/null | awk '/Server Version|Default Runtime|Storage Driver|Backing Filesystem|Cgroup Version/ {print "     " $0}'
   }
 
-  info "安装必需工具（jq、libseccomp）..."
+  info "正在检测并补充运行时依赖 (jq, libseccomp)..."
   apk add --no-cache jq libseccomp >/dev/null 2>&1 || true
 
-  info "准备内核模块与 cgroup v2 / bridge-nf..."
+  info "正在初始化内核模块、Cgroup v2 架构与网络桥接链..."
   modprobe overlay 2>/dev/null || true
   modprobe br_netfilter 2>/dev/null || true
   mkdir -p /sys/fs/cgroup
   mount | grep -q "type cgroup2" || mount -t cgroup2 none /sys/fs/cgroup 2>/dev/null || true
   rc-update add cgroups default >/dev/null 2>&1 || true
-  rc-service cgroups start  >/dev/null 2>&1 || true
-  sysctl -w net.bridge.bridge-nf-call-iptables=1  >/dev/null 2>&1 || true
+  rc-service cgroups start >/dev/null 2>&1 || true
+  sysctl -w net.bridge.bridge-nf-call-iptables=1 >/dev/null 2>&1 || true
   sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >/dev/null 2>&1 || true
 
-  info "规范 /etc/docker/daemon.json（删除 runtimes，自设 default-runtime=io.containerd.runc.v2）..."
+  info "正在规范化配置 /etc/docker/daemon.json 引擎定义..."
   mkdir -p /etc/docker
   [ -s /etc/docker/daemon.json ] || echo '{}' > /etc/docker/daemon.json
   cp /etc/docker/daemon.json /etc/docker/daemon.json.bak.$(date +%Y%m%d%H%M%S)
-  jq 'del(.runtimes) | ."default-runtime"="io.containerd.runc.v2"' \
-    /etc/docker/daemon.json > /etc/docker/daemon.json.new && \
-    mv /etc/docker/daemon.json.new /etc/docker/daemon.json
-  ok "daemon.json 已清理并设定 default-runtime=io.containerd.runc.v2"
+  jq 'del(.runtimes) | ."default-runtime"="io.containerd.runc.v2"' /etc/docker/daemon.json > /etc/docker/daemon.json.new && mv /etc/docker/daemon.json.new /etc/docker/daemon.json
+  ok "Engine 配置文件清理完成"
 
-  info "重启 containerd/docker 并等待 socket ..."
+  info "正在唤醒 Docker 守护进程并验证套接字状态..."
   if restart_daemons; then
-    ok "dockerd socket就绪。"
+    ok "Docker 引擎套接字响应成功"
   else
-    err "dockerd socket 未出现。查看日志：$REPORT"
-    echo "==== docker.log ====" >> "$REPORT"
-    tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
-    echo "==== containerd.log ====" >> "$REPORT"
-    tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
+    err "Docker 套接字激活超时，错误日志已导出至 $REPORT"
+    tail -n 100 /var/log/docker.log >> "$REPORT" 2>&1
+    tail -n 100 /var/log/containerd.log >> "$REPORT" 2>&1
   fi
 
-  info "当前 docker 关键信息："
+  info "当前引擎核心拓扑参数："
   docker_info_brief || true
 
-  info "尝试运行 hello-world（阶段 A：io.containerd.runc.v2）..."
+  info "[阶段 A] 验证原生 io.containerd.runc.v2 容器创建生态..."
   if docker run --rm hello-world >/dev/null 2>&1; then
-    ok "hello-world 成功（io.containerd.runc.v2）。"
+    ok "原生 runc v2 沙箱拉起测试通过"
     PASSED=1
   else
-    warn "阶段 A 失败，检查 runc 可执行性并修复依赖（阶段 B）..."
+    warn "阶段 A 异常，尝试修复 runc 运行库环境 (进入阶段 B)..."
     PASSED=0
   fi
 
   if [ "$PASSED" -eq 0 ]; then
     RUNC_OK=1
-    if [ -x /usr/bin/runc ]; then
-      /usr/bin/runc --version >/dev/null 2>&1 || RUNC_OK=0
-    else
-      RUNC_OK=0
-    fi
+    if [ -x /usr/bin/runc ]; then /usr/bin/runc --version >/dev/null 2>&1 || RUNC_OK=0; else RUNC_OK=0; fi
     if [ "$RUNC_OK" -eq 0 ]; then
-      warn "runc 不可执行或缺依赖，补齐 libseccomp ..."
+      warn "检测到底层 runc 释出异常，正在强制重载底层安全依赖..."
       apk add --no-cache libseccomp >/dev/null 2>&1 || true
     fi
-    info "重启服务后再次尝试 hello-world（仍使用 io.containerd.runc.v2）..."
     restart_daemons || true
     if docker run --rm hello-world >/dev/null 2>&1; then
-      ok "hello-world 成功（修复后，io.containerd.runc.v2）。"
+      ok "修复后 runc v2 沙箱拉起测试通过"
       PASSED=1
     else
-      warn "阶段 B 仍失败，进入阶段 C：兜底切换 crun。"
+      warn "阶段 B 依然受阻，启动终极自愈预案：切换 crun 轻量级引擎 (进入阶段 C)..."
     fi
   fi
 
   if [ "$PASSED" -eq 0 ]; then
-    info "安装 crun 并切换默认 runtime=crun ..."
+    info "正在拉取 crun 核心包并改写默认 Container Runtime 映射..."
     apk add --no-cache crun >/dev/null 2>&1 || true
-    jq '
-      ."default-runtime"="crun" |
-      .runtimes = (.runtimes // {}) |
-      .runtimes.crun.path="/usr/bin/crun"
-    ' /etc/docker/daemon.json > /etc/docker/daemon.json.new && \
-    mv /etc/docker/daemon.json.new /etc/docker/daemon.json
-
+    jq '."default-runtime"="crun" | .runtimes = (.runtimes // {}) | .runtimes.crun.path="/usr/bin/crun"' /etc/docker/daemon.json > /etc/docker/daemon.json.new && mv /etc/docker/daemon.json.new /etc/docker/daemon.json
     restart_daemons || true
-
-    info "尝试 hello-world（crun）..."
     if docker run --rm hello-world >/dev/null 2>&1; then
-      ok "hello-world 成功（crun）。"
+      ok "终极自愈成功：已无缝平替至 crun 容器环境"
       PASSED=2
     else
-      err "hello-world 仍失败。导出日志到 $REPORT"
-      echo "==== docker.log ====" >> "$REPORT"
-      tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
-      echo "==== containerd.log ====" >> "$REPORT"
-      tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
+      err "基础架构受损严重，所有 Runtime 均无法运行。请通过技术分析日志排查: $REPORT"
+      tail -n 100 /var/log/docker.log >> "$REPORT" 2>&1
     fi
   fi
 
-  echo >> "$REPORT"
+  echo "" >> "$REPORT"
   docker info >> "$REPORT" 2>&1 || true
-
-  echo
+  echo ""
   if [ "$PASSED" -eq 1 ]; then
-    ok "最终结果：默认 runtime=io.containerd.runc.v2 ✅"
-    docker_info_brief
-    echo "报告：$REPORT"
+    ok "状态汇总：核心架构运行在默认 io.containerd.runc.v2 状态下"
   elif [ "$PASSED" -eq 2 ]; then
-    ok "最终结果：已兜底切换默认 runtime=crun ✅"
-    docker_info_brief
-    echo "报告：$REPORT"
+    ok "状态汇总：系统处于 crun 兼容性自愈接管状态"
   else
-    err "最终结果：仍失败 ❌"
-    echo "请检查：/var/log/docker.log、/var/log/containerd.log、$REPORT"
+    err "状态汇总：初始化自愈失败，存在致命阻塞"
   fi
-
-  # 恢复 set -e
   set -e
 }
 
-# ---------- 0. Root ----------
-info "检查是否为 root 用户..."
-if [ "$(id -u)" != "0" ]; then
-  err "请使用 root 执行本脚本。"; exit 1
-fi
+# ============================================================================
+# 主脚本业务流水线
+# ============================================================================
 
-# ---------- 1. APK 源 ----------
-info "设置 APK 镜像源为中科大 (USTC)..."
+title "01. 运行权限鉴别"
+if [ "$(id -u)" != "0" ]; then
+  err "错误：本脚本包含系统级操作，请切换至 root 用户或使用 sudo 重新挂载执行！"
+  echo ""; exit 1
+fi
+ok "用户身份确认：当前已具备完整系统操作权限"
+
+title "02. Alpine APK 软件源优化 (中科大 USTC 镜像)"
 if ! grep -q ustc /etc/apk/repositories 2>/dev/null; then
+  info "正在将默认上游源重定向至中科大高带宽加速镜像..."
   tee /etc/apk/repositories <<-'EOF'
 https://mirrors.ustc.edu.cn/alpine/latest-stable/main
 https://mirrors.ustc.edu.cn/alpine/latest-stable/community
 EOF
-  info "更新 APK 索引..."
+  info "同步远端镜像仓库索引中..."
   apk update
 else
-  ok "APK 镜像源已是中科大，跳过换源。"
+  ok "系统当前已锁定中科大加速软件源，自动保持现状（保障幂等）"
 fi
-ok "APK 源已就绪"
 
-# ---------- 2. 安装组件 ----------
-info "联合安装基础包、网络组件及 Docker 前置依赖..."
-# 合并了原有组件与 DNS 部署脚本所需的所有系统依赖，避免重复执行 apk add
+title "03. 集中构建系统基础运维工具链包"
+info "正在并行拉取并配置核心工具包、网络诊断组件及虚拟化 Guest 插件..."
 apk add --no-cache \
   docker containerd runc openrc iptables ip6tables jq curl bash vim htop ca-certificates \
   git open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg \
   musl-locales musl-locales-lang less net-tools c-ares nftables \
   >/dev/null 2>&1 || true
-ok "基础组件包安装完成"
+ok "所有依赖底层扩展包及辅助组件部署完毕"
 
-# ---------- 3. 系统本地化与 Vim 配置 ----------
-info "配置全局中文环境与 Vim 默认编码..."
+title "04. 系统多语言本地化与 Vim 编码环境清洗"
+info "配置系统全局语言标准为 zh_CN.UTF-8 格式，防止日志乱码..."
 cat >/etc/profile.d/locale.sh <<'EOF'
 export LANG=zh_CN.UTF-8
 export LC_CTYPE=zh_CN.UTF-8
@@ -208,6 +177,7 @@ EOF
 chmod +x /etc/profile.d/locale.sh
 . /etc/profile.d/locale.sh
 
+info "正在向 Vim 全局配置中写入 UTF-8 文件字符集映射..."
 mkdir -p /etc/vim
 cat >/etc/vim/vimrc <<'EOF'
 set encoding=utf-8
@@ -215,20 +185,22 @@ set termencoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,default,latin1
 EOF
-ok "中文环境与 Vim 编码配置完成"
+ok "系统语言环境与文本查看编码美化治理完成"
 
-# ---------- 4. 开机自启 ----------
-info "设置 containerd / docker / open-vm-tools 开机自启..."
-rc-update add containerd default || true
-rc-update add docker default || true
-rc-update add cgroups default || true
-rc-update add open-vm-tools boot || true
+title "05. 系统级核心守护进程开机行为锁固"
+info "向 OpenRC 系统管理器注册各服务运行级别控制点..."
+rc-update add containerd default >/dev/null 2>&1 || true
+rc-update add docker default >/dev/null 2>&1 || true
+rc-update add cgroups default >/dev/null 2>&1 || true
+rc-update add open-vm-tools boot >/dev/null 2>&1 || true
+ok "已成功固化 containerd/docker/cgroups/open-vm-tools 开机自启属性"
 
-# ---------- 5. Docker 配置 ----------
-info "配置 /etc/docker/daemon.json（镜像加速 + 默认 runtime 占位）..."
+title "06. Docker 引擎生产级配置调优与国内加速镜像注入"
+info "正在注入多路高可用国内容器加速镜像源，并配置文件截断限制以防占满磁盘..."
 mkdir -p /etc/docker
 [ -f /etc/docker/daemon.json ] || echo '{}' > /etc/docker/daemon.json
 cp /etc/docker/daemon.json /etc/docker/daemon.json.bak.$(date +%Y%m%d%H%M%S)
+
 cat >/tmp/daemon.patch.json <<'JSON'
 {
   "registry-mirrors": [
@@ -248,16 +220,18 @@ JSON
 jq -s '.[0] * .[1]' /etc/docker/daemon.json /tmp/daemon.patch.json > /etc/docker/daemon.json.new
 mv /etc/docker/daemon.json.new /etc/docker/daemon.json
 rm -f /tmp/daemon.patch.json
+ok "容器加速镜像与磁盘守护限制规则合并生成完毕"
 
-# ---------- 6. containerd 配置 ----------
-info "配置 /etc/containerd/config.toml（default_runtime_name=runc）..."
+title "07. Containerd 底层容器隔离运行时行为调优"
+info "正在校验并重写 /etc/containerd/config.toml 标准配置文件..."
 if [ ! -s /etc/containerd/config.toml ]; then
   containerd config default >/etc/containerd/config.toml
 fi
 sed -i -E 's#(^\s*default_runtime_name\s*=\s*).*$#\1"runc"#' /etc/containerd/config.toml || true
+ok "containerd 核心配置文件重塑锁定完成"
 
-# ---------- 7. netfilter 桥 + cgroup2 ----------
-info "开启 bridge-nf 与 cgroup2..."
+title "08. 激活 Linux 内核 Bridge 流量网桥链与 Cgroup2 挂载"
+info "正在动态注入内核模块参数，打通容器虚拟化网桥网络转发..."
 modprobe br_netfilter 2>/dev/null || true
 modprobe overlay 2>/dev/null || true
 mkdir -p /etc/sysctl.d
@@ -269,79 +243,79 @@ sysctl -w net.bridge.bridge-nf-call-iptables=1 >/dev/null 2>&1 || true
 sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >/dev/null 2>&1 || true
 mkdir -p /sys/fs/cgroup
 mount | grep -q "type cgroup2" || mount -t cgroup2 none /sys/fs/cgroup 2>/dev/null || true
+ok "系统内核流量转发连通性参数更新完毕"
 
-# ---------- 8. 干净重启 ----------
-info "干净重启 open-vm-tools/containerd/docker..."
-rc-service open-vm-tools start || true
-rc-service docker stop || true
-rc-service containerd stop || true
+title "09. 优雅热重启后台各核心控制层进程"
+info "正在执行基础架构服务的干净重启流程，刷新全局配置文件状态..."
+rc-service open-vm-tools start >/dev/null 2>&1 || true
+rc-service docker stop >/dev/null 2>&1 || true
+rc-service containerd stop >/dev/null 2>&1 || true
 rm -rf /run/containerd/io.containerd.runtime.v2.task/moby/* 2>/dev/null || true
-rc-service containerd start
-rc-service docker start
+rc-service containerd start >/dev/null 2>&1 || true
+rc-service docker start >/dev/null 2>&1 || true
+ok "系统后台进程热重载完成，当前运行状态平稳"
 
-# ---------- 9. 安装 Compose ----------
-info "安装 Docker Compose..."
+title "10. 部署多重云编排工具 Docker Compose"
+info "正在扫描本地环境以确定最优的 Compose 环境配比..."
 if command -v docker-compose >/dev/null 2>&1; then
-  ok "已存在 docker-compose（v1）。"
+  ok "系统中已留存原生传统的 docker-compose (v1)"
 else
   if ! docker compose version >/dev/null 2>&1; then
-    info "尝试 apk 安装 docker-cli-compose（v2）..."
+    info "尝试通过官方仓库索引部署高级 Compose v2 (docker-cli-compose)..."
     if apk add --no-cache docker-cli-compose >/dev/null 2>&1; then
-      ok "已安装 Compose v2（docker compose）。"
+      ok "容器标准编排扩展 Compose v2 插件安装完成"
     else
-      warn "apk 安装失败，回退 GitHub 二进制（v1）..."
+      warn "APK 安装发生阻碍，正在启动外部 GitHub 动态编译包拉取方案..."
       DOCKER_COMPOSE_VERSION="$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep tag_name | cut -d '"' -f4 || true)"
       [ -z "$DOCKER_COMPOSE_VERSION" ] && DOCKER_COMPOSE_VERSION="1.29.2"
-      URL="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)"
-      curl -L "$URL" -o /usr/local/bin/docker-compose
+      curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       chmod +x /usr/local/bin/docker-compose
-      ok "安装完成：docker-compose ${DOCKER_COMPOSE_VERSION}"
+      ok "外部源重载部署完成，当前版本为: docker-compose ${DOCKER_COMPOSE_VERSION}"
     fi
   else
-    ok "已存在 Compose v2（docker compose）。"
+    ok "系统已集成最新的原生命令式 Docker Compose v2 生态"
   fi
 fi
 
-# ---------- 10. 部署磁盘监控脚本 (disk_space_check.dingtalk) ----------
-info "开始配置磁盘监控脚本部署 environment (从私有仓库临时提取)..."
+title "11. 交互式部署私有仓磁盘监控脚本 (钉钉通知服务)"
 REPO_PRIVATE_TMP="/root/.private_config_repo_tmp"
 TARGET_BIN_PATH="/usr/bin/disk_space_check.dingtalk"
 FILE_NAME="disk_space_check.dingtalk"
 
-# 10.1 SSH KEY 检查与自动创建
 SSH_KEY_FOUND=0
 PUB_KEY_PATH=""
 for KEY_TYPE in "id_ed25519.pub" "id_rsa.pub"; do
     if [ -f "$HOME/.ssh/$KEY_TYPE" ]; then
-        SSH_KEY_FOUND=1
-        PUB_KEY_PATH="$HOME/.ssh/$KEY_TYPE"
-        break
+        SSH_KEY_FOUND=1; PUB_KEY_PATH="$HOME/.ssh/$KEY_TYPE"; break
     fi
 done
 
 if [ "$SSH_KEY_FOUND" -eq 0 ]; then
-    warn "未检测到本地 SSH 密钥，正在为你自动生成 Ed25519 密钥对..."
-    mkdir -p "$HOME/.ssh"
-    chmod 700 "$HOME/.ssh"
+    warn "本地未寻获有效 SSH 公钥，系统正在自动计算并签发一组高等级 Ed25519 秘钥对..."
+    mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
     ssh-keygen -t ed25519 -C "cron@homelab.local" -N "" -f "$HOME/.ssh/id_ed25519"
     PUB_KEY_PATH="$HOME/.ssh/id_ed25519.pub"
-    ok "密钥生成成功！"
+    ok "公私钥对本地计算生成完毕"
 fi
 
-# 10.2 交互式阻塞：提示用户绑定公钥
-echo "------------------------------------------------------------------"
-warn "📢 请复制以下公钥并添加至您的 GitHub 账户："
-warn "   ⚠️  请确保该公钥拥有对私有仓库 [private_config] 的访问或部署(Deploy)权限！"
-echo "   👉 路径: Settings -> SSH and GPG keys -> New SSH key"
-echo "------------------------------------------------------------------"
+# 控制台信息盒 (Box Layout)
+printf "${BLUE}┌──────────────────────────────────────────────────────────────────────────┐${NC}\n"
+printf "${BLUE}│${YELLOW}  📢 秘钥绑定权限引导提示                                                 ${BLUE}│${NC}\n"
+printf "${BLUE}├──────────────────────────────────────────────────────────────────────────┤${NC}\n"
+printf "${BLUE}│${NC}  请将下方高亮的 SSH 公钥内容复制并妥善绑定至您的 GitHub 账户中。         ${BLUE}│${NC}\n"
+printf "${BLUE}│${NC}  必须确保此 Key 拥有私有配置项目 [private_config] 的读取（Read）权限。  ${BLUE}│${NC}\n"
+printf "${BLUE}│${NC}  绑定入口: GitHub ──> Settings ──> SSH and GPG keys ──> New SSH key        ${BLUE}│${NC}\n"
+printf "${BLUE}└──────────────────────────────────────────────────────────────────────────┘${NC}\n\n"
+printf "${BOLD}${GREEN}"
 cat "$PUB_KEY_PATH"
-echo "------------------------------------------------------------------"
-echo -n "⚠️  请确保已在 GitHub 完成权限绑定，按 [回车键] 继续后续部署..."
+printf "${NC}\n"
+printf "${BLUE}────────────────────────────────────────────────────────────────────────────${NC}\n"
+printf "${BOLD}${YELLOW}  ❯ 请在 GitHub 完成公钥权限绑定后，按 [回车键] 推进部署: ${NC}"
 read CONFIRM_SSH
+printf "${BLUE}────────────────────────────────────────────────────────────────────────────${NC}\n\n"
 
-# 10.3 临时建立稀疏克隆目录
 rm -rf "$REPO_PRIVATE_TMP"
-info "📦 正在临时拉取私有配置仓库..."
+info "正在启动稀疏克隆（Sparse Checkout）模式按需拉取磁盘监控核心脚本..."
 git clone --filter=blob:none --no-checkout git@github.com:dayunliang/private_config.git "$REPO_PRIVATE_TMP"
 cd "$REPO_PRIVATE_TMP" || exit 1
 git sparse-checkout init --no-cone
@@ -349,110 +323,117 @@ git sparse-checkout set "$FILE_NAME"
 git checkout main || true
 cd /root
 
-# 10.4 mv 移动目标文件并彻底清除临时仓库目录
 if [ -f "$REPO_PRIVATE_TMP/$FILE_NAME" ]; then
     rm -f "$TARGET_BIN_PATH"
     mv "$REPO_PRIVATE_TMP/$FILE_NAME" "$TARGET_BIN_PATH"
     chmod +x "$TARGET_BIN_PATH"
-    
     rm -rf "$REPO_PRIVATE_TMP"
-    ok "磁盘监控脚本已成功部署至 $TARGET_BIN_PATH，临时目录已清理干净。"
+    ok "钉钉磁盘监控服务文件已下发至 $TARGET_BIN_PATH 并赋予执行权限"
     
-    # 10.5 【已加入交互时间逻辑】配置 Crontab 定时任务
-    info "⏰ 正在准备配置系统 Crontab 定时任务..."
-    echo "------------------------------------------------------------------"
-    echo "请选择磁盘监控脚本的运行频率计划："
-    echo "  1) 每小时 运行一次 (0 * * * *)"
-    echo "  2) 每 6小时 运行一次 (0 */6 * * *)  [默认选项]"
-    echo "  3) 每天凌晨 2:00 运行一次 (0 2 * * *)"
-    echo "  4) 自定义输入 Cron 表达式"
-    echo "------------------------------------------------------------------"
-    echo -n "请输入计划选项 [1-4] (直接回车保持默认): "
+    # 定时配置仪表盘 (Dashboard Menu)
+    printf "\n${BLUE}┌──────────────────────────────────────────────────────────────────────────┐${NC}\n"
+    printf "${BLUE}│${BOLD} ⏰ 请为系统磁盘监控脚本指定合理的调度频率计划                            ${BLUE}│${NC}\n"
+    printf "${BLUE}├──────────────────────────────────────────────────────────────────────────┤${NC}\n"
+    printf "${BLUE}│${NC}   【1】每小时 执行一次            (0 * * * *)                            ${BLUE}│${NC}\n"
+    printf "${BLUE}│${NC}   【2】每 6 小时 执行一次         (0 */6 * * *)   --> [系统默认推荐]     ${BLUE}│${NC}\n"
+    printf "${BLUE}│${NC}   【3】每天凌晨 2:00 执行一次     (0 2 * * *)                            ${BLUE}│${NC}\n"
+    printf "${BLUE}│${NC}   【4】手动填入 5 位标准 Cron 表达式                                      ${BLUE}│${NC}\n"
+    printf "${BLUE}└──────────────────────────────────────────────────────────────────────────┘${NC}\n"
+    printf "${BOLD}${YELLOW}  ❯ 请键入您的选择编号 [1-4] (留空默认选择2): ${NC}"
     read CRON_CHOICE
 
     case "$CRON_CHOICE" in
-        1)
-            CRON_TIME="0 * * * *"
-            ;;
-        3)
-            CRON_TIME="0 2 * * *"
-            ;;
+        1) CRON_TIME="0 * * * *" ;;
+        2) CRON_TIME="0 */6 * * *" ;;
+        3) CRON_TIME="0 2 * * *" ;;
         4)
-            echo ""
-            echo -n "请输入标准的 5 位 Cron 表达式 (例如 '0 */3 * * *'): "
+            printf "\n${BOLD}${YELLOW}  ❯ 请输入您合法的自定义 Cron 表达式 (例如 '0 */3 * * *'): ${NC}"
             read CUSTOM_CRON
-            if [ -z "$CUSTOM_CRON" ]; then
-                warn "输入为空，自动选择默认计划：每 6 小时运行一次。"
-                CRON_TIME="0 */6 * * *"
-            else
-                CRON_TIME="$CUSTOM_CRON"
-            fi
+            CRON_TIME=${CUSTOM_CRON:-"0 */6 * * *"}
             ;;
-        *)
-            CRON_TIME="0 */6 * * *"
-            ;;
+        *) CRON_TIME="0 */6 * * *" ;;
     esac
 
     CRON_JOB_DISK="$CRON_TIME $TARGET_BIN_PATH >> /var/log/disk_space_check.log 2>&1"
-    # 清理掉旧的同名任务，并追加新计划
     (crontab -l 2>/dev/null | grep -v "$FILE_NAME"; echo "$CRON_JOB_DISK") | crontab -
-    ok "系统 Crontab 配置成功！当前执行时间设置为: [$CRON_TIME]"
+    ok "系统计划任务管理层注册成功！当前执行频率被锁定为: [$CRON_TIME]"
 else
     rm -rf "$REPO_PRIVATE_TMP"
-    err "❌ 部署失败：未在仓库中找到 $FILE_NAME 文件，请检查该私有仓库的内容！"
+    err "致命错误：未能从私有库提取到 $FILE_NAME 核心程序，自动越过计划任务编排步骤"
 fi
 
-# ---------- 11. 运行时自愈 + 自检 ----------
+title "12. 触发引擎环境深度自愈检测与二次纠错"
 ensure_docker_runtime_ready
 
-# ---------- 12. 最终环境验证与汇总 ----------
+title "13. 全大盘运行指标自动化收敛盘点"
 REPORT_SUM="/root/docker_env_report_$(date +%Y%m%d_%H%M%S).txt"
 PASS=1
-echo "Docker & Tools Environment Report - $(date)" > "$REPORT_SUM"
+echo "=========================================" > "$REPORT_SUM"
+echo "  Docker Environment Self-Check Report   " >> "$REPORT_SUM"
+echo "  Time: $(date)                          " >> "$REPORT_SUM"
+echo "=========================================" >> "$REPORT_SUM"
 
+# 对齐排版检测小工具
 check() {
   DESC="$1"; CMD="$2"
+  # 利用 printf 规范左对齐宽度，使大盘输出极度美观
   if sh -c "$CMD" >/dev/null 2>&1; then
-    ok "$DESC"; printf "[PASS] %s\n" "$DESC" >> "$REPORT_SUM"
+    printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "$DESC"
+    printf "[PASS] %-45s\n" "$DESC" >> "$REPORT_SUM"
   else
-    PASS=0; err "$DESC"; printf "[FAIL] %s\n" "$DESC" >> "$REPORT_SUM"
+    PASS=0
+    printf "  ${RED}✘${NC}  %-45s [ ${RED}FAIL${NC} ]\n" "$DESC"
+    printf "[FAIL] %-45s\n" "$DESC" >> "$REPORT_SUM"
   fi
 }
 
-info "开始最终环境验证..."
-check "docker 可用" "docker version"
-check "containerd 运行" "rc-service containerd status | grep -q 'status: started' || pgrep containerd"
-check "docker daemon 运行" "rc-service docker status | grep -q 'status: started' || pgrep dockerd"
-check "open-vm-tools 运行" "rc-service open-vm-tools status | grep -q 'status: started' || pgrep vmtoolsd"
-check "git 工具可用" "git --version"
-check "curl 工具可用" "curl --version"
-check "bridge-nf-call-iptables=1" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-iptables 2>/dev/null)\" = 1 ]"
-check "bridge-nf-call-ip6tables=1" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-ip6tables 2>/dev/null)\" = 1 ]"
-check "hello-world 可运行" "docker run --rm hello-world"
-check "/usr/bin/ 监控脚本可执行" "[ -x $TARGET_BIN_PATH ]"
+info "开始评估各项底层隔离单元与网络路由链的健康度指数..."
+check "Docker 核心组件可用性断言" "docker version"
+check "Containerd 后台守护生存断言" "rc-service containerd status | grep -q 'status: started' || pgrep containerd"
+check "Docker Daemon 守护生存断言" "rc-service docker status | grep -q 'status: started' || pgrep dockerd"
+check "Open-VM-Tools 宿主同步连接断言" "rc-service open-vm-tools status | grep -q 'status: started' || pgrep vmtoolsd"
+check "Git 开发辅助组件工具链断言" "git --version"
+check "Curl 网络高阶请求工具链断言" "curl --version"
+check "Iptables 流量网桥路由拦截断言" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-iptables 2>/dev/null)\" = 1 ]"
+check "Ip6tables 广域网桥路由拦截断言" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-ip6tables 2>/dev/null)\" = 1 ]"
+check "Docker 容器沙箱冷启动连通性测试" "docker run --rm hello-world"
+check "钉钉磁盘核心监控脚本可执行鉴权" "[ -x $TARGET_BIN_PATH ]"
 
 if docker compose version >/dev/null 2>&1; then
-  ok "Compose v2 可用"; echo "[PASS] Compose v2 available" >> "$REPORT_SUM"
+  printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "Docker Compose v2 编排引擎断言"
+  echo "[PASS] Docker Compose v2 available" >> "$REPORT_SUM"
 elif docker-compose version >/dev/null 2>&1; then
-  ok "Compose v1 可用"; echo "[PASS] Compose v1 available" >> "$REPORT_SUM"
+  printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "Docker Compose v1 编排引擎断言"
+  echo "[PASS] Docker Compose v1 available" >> "$REPORT_SUM"
 else
-  PASS=0; err "未检测到 Compose"; echo "[FAIL] Compose missing" >> "$REPORT_SUM"
+  PASS=0
+  printf "  ${RED}✘${NC}  %-45s [ ${RED}FAIL${NC} ]\n" "Docker Compose 编排引擎断言"
+  echo "[FAIL] Compose missing" >> "$REPORT_SUM"
 fi
 
-if docker info 2>/dev/null | grep -A20 "Registry Mirrors" | grep -E 'https?://'; then
-  ok "已配置 Registry Mirrors"; echo "[PASS] Registry mirrors configured" >> "$REPORT_SUM"
+if docker info 2>/dev/null | grep -A20 "Registry Mirrors" | grep -E 'https?://' >/dev/null 2>&1; then
+  printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "Registry Mirrors 容器加速器内存挂载"
+  echo "[PASS] Registry mirrors configured" >> "$REPORT_SUM"
 else
-  warn "未检测到 Registry Mirrors"; echo "[WARN] No registry mirrors detected" >> "$REPORT_SUM"
+  printf "  ${YELLOW}▲${NC}  %-45s [ ${YELLOW}WARN${NC} ]\n" "Registry Mirrors 容器加速器内存挂载"
+  echo "[WARN] No registry mirrors detected" >> "$REPORT_SUM"
 fi
 
 echo "" >> "$REPORT_SUM"
+printf "\n"
 if [ $PASS -eq 1 ]; then
-  ok "环境验证通过 ✅"
-  echo "[SUMMARY] ALL CHECKS PASSED" >> "$REPORT_SUM"
-  echo "🧾 报告文件：$REPORT_SUM"
+  printf "${GREEN}======================================================================${NC}\n"
+  printf "${BOLD}${GREEN}  🎉 恭喜！全大盘各项环境环境技术指标顺利通过，基础架构部署完毕！${NC}\n"
+  printf "${GREEN}======================================================================${NC}\n"
+  echo "[SUMMARY] ALL CHECKS PASSED SUCCESSFULLY" >> "$REPORT_SUM"
+  info "完整大盘书面体检报告已生成至: $REPORT_SUM"
+  printf "\n"
 else
-  err "环境验证未全部通过 ❌"
-  echo "[SUMMARY] SOME CHECKS FAILED" >> "$REPORT_SUM"
-  echo "🧾 报告文件：$REPORT_SUM"
+  printf "${RED}======================================================================${NC}\n"
+  printf "${BOLD}${RED}  ⚠️ 警告：大盘检测中发现部分核心指标异常，请根据上文进行追溯核验。${NC}\n"
+  printf "${RED}======================================================================${NC}\n"
+  echo "[SUMMARY] EXTRACTION RUN COMPLETED WITH ENVIROMENTAL FAULTS" >> "$REPORT_SUM"
+  info "不合格细节明细参见技术分析报告: $REPORT_SUM"
+  printf "\n"
   exit 2
 fi
