@@ -1,8 +1,8 @@
 #!/bin/sh
 # ============================================================================
-# 脚本名称：docker_alpine.sh (Ultimate UI/UX Edition)
+# 脚本名称：docker_alpine.sh (Ultimate UI/UX Pixel-Perfect Edition)
 # 功能：Alpine Linux Docker 基础环境部署与钉钉监控自动化配置
-# 优化重点：全面重构 CLI 视觉、优化交互留白、增强提示词高级感
+# 优化重点：引入动态列宽补白算法，解决中英混合文本对齐痛点，实现终端像素级对齐
 # ============================================================================
 
 set -e
@@ -373,17 +373,34 @@ echo "  Docker Environment Self-Check Report   " >> "$REPORT_SUM"
 echo "  Time: $(date)                          " >> "$REPORT_SUM"
 echo "=========================================" >> "$REPORT_SUM"
 
-# 对齐排版检测小工具
+# ============================================================================
+# 极客高精对齐检测小工具（核心修改点）
+# ============================================================================
 check() {
   DESC="$1"; CMD="$2"
-  # 利用 printf 规范左对齐宽度，使大盘输出极度美观
+  
+  # 1. 动态逆向计算中英混合文本在终端显示的实际“视觉列宽”
+  BYTES=$(printf "%s" "$DESC" | wc -c)
+  CHARS=$(printf "%s" "$DESC" | wc -m)
+  VISUAL_WIDTH=$(( (BYTES + CHARS) / 2 ))
+  
+  # 2. 设定大盘文本对齐基准线（50列宽），计算当前行需要精确补多少空格
+  TARGET_LINE_WIDTH=50
+  if [ $VISUAL_WIDTH -lt $TARGET_LINE_WIDTH ]; then
+    PAD_NEED=$(( TARGET_LINE_WIDTH - VISUAL_WIDTH ))
+    PAD_STR=$(printf "%${PAD_NEED}s" " ")
+  else
+    PAD_STR=" "
+  fi
+
+  # 3. 输出完美右对齐的终端行
   if sh -c "$CMD" >/dev/null 2>&1; then
-    printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "$DESC"
-    printf "[PASS] %-45s\n" "$DESC" >> "$REPORT_SUM"
+    printf "  ${GREEN}✔${NC}  %s%s [ ${GREEN}PASS${NC} ]\n" "$DESC" "$PAD_STR"
+    printf "[PASS] %-50s\n" "$DESC" >> "$REPORT_SUM"
   else
     PASS=0
-    printf "  ${RED}✘${NC}  %-45s [ ${RED}FAIL${NC} ]\n" "$DESC"
-    printf "[FAIL] %-45s\n" "$DESC" >> "$REPORT_SUM"
+    printf "  ${RED}✘${NC}  %s%s [ ${RED}FAIL${NC} ]\n" "$DESC" "$PAD_STR"
+    printf "[FAIL] %-50s\n" "$DESC" >> "$REPORT_SUM"
   fi
 }
 
@@ -399,23 +416,37 @@ check "Ip6tables 广域网桥路由拦截断言" "[ \"\$(sysctl -n net.bridge.br
 check "Docker 容器沙箱冷启动连通性测试" "docker run --rm hello-world"
 check "钉钉磁盘核心监控脚本可执行鉴权" "[ -x $TARGET_BIN_PATH ]"
 
+# 混合多构型下的 Compose 断言对齐
 if docker compose version >/dev/null 2>&1; then
-  printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "Docker Compose v2 编排引擎断言"
+  DESC_COMPOSE="Docker Compose v2 编排引擎断言"
+  BYTES=$(printf "%s" "$DESC_COMPOSE" | wc -c); CHARS=$(printf "%s" "$DESC_COMPOSE" | wc -m); W=$(( (BYTES + CHARS) / 2 ))
+  PAD_STR=$(printf "%$(( 50 - W ))s" " ")
+  printf "  ${GREEN}✔${NC}  %s%s [ ${GREEN}PASS${NC} ]\n" "$DESC_COMPOSE" "$PAD_STR"
   echo "[PASS] Docker Compose v2 available" >> "$REPORT_SUM"
 elif docker-compose version >/dev/null 2>&1; then
-  printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "Docker Compose v1 编排引擎断言"
+  DESC_COMPOSE="Docker Compose v1 编排引擎断言"
+  BYTES=$(printf "%s" "$DESC_COMPOSE" | wc -c); CHARS=$(printf "%s" "$DESC_COMPOSE" | wc -m); W=$(( (BYTES + CHARS) / 2 ))
+  PAD_STR=$(printf "%$(( 50 - W ))s" " ")
+  printf "  ${GREEN}✔${NC}  %s%s [ ${GREEN}PASS${NC} ]\n" "$DESC_COMPOSE" "$PAD_STR"
   echo "[PASS] Docker Compose v1 available" >> "$REPORT_SUM"
 else
   PASS=0
-  printf "  ${RED}✘${NC}  %-45s [ ${RED}FAIL${NC} ]\n" "Docker Compose 编排引擎断言"
+  DESC_COMPOSE="Docker Compose 编排引擎断言"
+  BYTES=$(printf "%s" "$DESC_COMPOSE" | wc -c); CHARS=$(printf "%s" "$DESC_COMPOSE" | wc -m); W=$(( (BYTES + CHARS) / 2 ))
+  PAD_STR=$(printf "%$(( 50 - W ))s" " ")
+  printf "  ${RED}✘${NC}  %s%s [ ${RED}FAIL${NC} ]\n" "$DESC_COMPOSE" "$PAD_STR"
   echo "[FAIL] Compose missing" >> "$REPORT_SUM"
 fi
 
+# 混合多构型下的加速器断言对齐
+DESC_MIRROR="Registry Mirrors 容器加速器内存挂载"
+BYTES=$(printf "%s" "$DESC_MIRROR" | wc -c); CHARS=$(printf "%s" "$DESC_MIRROR" | wc -m); W=$(( (BYTES + CHARS) / 2 ))
+PAD_STR=$(printf "%$(( 50 - W ))s" " ")
 if docker info 2>/dev/null | grep -A20 "Registry Mirrors" | grep -E 'https?://' >/dev/null 2>&1; then
-  printf "  ${GREEN}✔${NC}  %-45s [ ${GREEN}PASS${NC} ]\n" "Registry Mirrors 容器加速器内存挂载"
+  printf "  ${GREEN}✔${NC}  %s%s [ ${GREEN}PASS${NC} ]\n" "$DESC_MIRROR" "$PAD_STR"
   echo "[PASS] Registry mirrors configured" >> "$REPORT_SUM"
 else
-  printf "  ${YELLOW}▲${NC}  %-45s [ ${YELLOW}WARN${NC} ]\n" "Registry Mirrors 容器加速器内存挂载"
+  printf "  ${YELLOW}▲${NC}  %s%s [ ${YELLOW}WARN${NC} ]\n" "$DESC_MIRROR" "$PAD_STR"
   echo "[WARN] No registry mirrors detected" >> "$REPORT_SUM"
 fi
 
@@ -423,7 +454,7 @@ echo "" >> "$REPORT_SUM"
 printf "\n"
 if [ $PASS -eq 1 ]; then
   printf "${GREEN}======================================================================${NC}\n"
-  printf "${BOLD}${GREEN}  🎉 恭喜！全大盘各项环境环境技术指标顺利通过，基础架构部署完毕！${NC}\n"
+  printf "${BOLD}${GREEN}  🎉 恭喜！全大盘各项环境技术指标顺利通过，基础架构部署完毕！${NC}\n"
   printf "${GREEN}======================================================================${NC}\n"
   echo "[SUMMARY] ALL CHECKS PASSED SUCCESSFULLY" >> "$REPORT_SUM"
   info "完整大盘书面体检报告已生成至: $REPORT_SUM"
