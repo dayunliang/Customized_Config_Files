@@ -41,43 +41,7 @@ docker_info_brief() {
   '
 }
 
-# ===== [1/14] APK 源 =====
-echo "[1/14] 设置 APK 镜像源为中科大..."
-if ! grep -q ustc /etc/apk/repositories 2>/dev/null; then
-cat >/etc/apk/repositories <<-'EOF'
-https://mirrors.ustc.edu.cn/alpine/latest-stable/main
-https://mirrors.ustc.edu.cn/alpine/latest-stable/community
-EOF
-apk update
-fi
-ok "APK 源已就绪"
-
-# ===== [2/14] 基础包 =====
-echo "[2/14] 安装基础包..."
-apk add --no-cache open-vm-tools jq curl vim musl-locales musl-locales-lang less \
-  net-tools iptables ip6tables c-ares nftables >/dev/null 2>&1 || true
-rc-update add open-vm-tools default >/dev/null 2>&1 || true
-rc-service open-vm-tools start >/dev/null 2>&1 || true
-ok "基础包安装完成"
-
-# ===== [3/14] 本地化（可选）=====
-echo "[3/14] 配置中文环境与 Vim..."
-cat >/etc/profile.d/locale.sh <<'EOF'
-export LANG=zh_CN.UTF-8
-export LC_CTYPE=zh_CN.UTF-8
-export LC_ALL=zh_CN.UTF-8
-EOF
-chmod +x /etc/profile.d/locale.sh
-. /etc/profile.d/locale.sh
-cat >/etc/vim/vimrc <<'EOF'
-set encoding=utf-8
-set termencoding=utf-8
-set fileencoding=utf-8
-set fileencodings=ucs-bom,utf-8,default,latin1
-EOF
-ok "中文环境与 Vim 已配置"
-
-# ===== [4/14] Docker/Containerd/Compose（只做最小校验与提示）=====
+# ===== [1/10] Docker/Containerd/Compose（只做最小校验与提示）=====
 echo "[4/14] 校验 Docker 与 Compose..."
 if ! command -v docker >/dev/null 2>&1; then err "未检测到 docker，请先运行 docker_alpine.sh"; exit 1; fi
 if ! docker compose version >/dev/null 2>&1; then err "未检测到 docker compose v2，请在 docker_alpine.sh 中启用"; exit 1; fi
@@ -85,14 +49,14 @@ ok "Docker 与 Compose 就绪"
 info "Docker 信息（简要）："
 docker_info_brief || true
 
-# ===== [5/14] 重启守护进程并等待 sock（幂等保障）=====
+# ===== [2/10] 重启守护进程并等待 sock（幂等保障）=====
 echo "[5/14] 重启 containerd / docker..."
 restart_daemons || { err "dockerd 未就绪"; exit 1; }
 ok "dockerd socket 就绪"
 
-# ===== [6/14] 清理环境（端口/容器/进程 + 目录）=====
+# ===== [3/10] 清理环境（端口/容器/进程 + 目录）=====
 echo "[6/14] 清理旧容器并释放端口（53/54/55）..."
-PORTS="53 54 55"
+PORTS="53 5335"
 TMP_CONTAINER=$(mktemp); TMP_PROCESS=$(mktemp)
 
 for PORT in $PORTS; do
@@ -132,11 +96,11 @@ rm -f "$TMP_CONTAINER" "$TMP_PROCESS"
 
 # 清理旧目录
 echo "🧹 清理旧配置目录..."
-rm -rf "$MOSDNS_DIR" "$ADH_CN_DIR" "$ADH_GFW_DIR"
-mkdir -p "$MOSDNS_DIR" "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work" "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
+rm -rf "$MOSDNS_DIR" "$ADH_DIR"
+mkdir -p "$MOSDNS_DIR" "$ADH_DIR/conf" "$ADH_DIR/work"
 ok "环境清理完成"
 
-# ===== [7/14] 部署 ADH =====
+# ===== [4/10] 部署 ADH =====
 echo "[7/14] 部署 AdGuard Home..."
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh.yaml \
   -o "$ADH_DIR/conf/AdGuardHome.yaml"
@@ -146,7 +110,7 @@ curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/
 ( cd "$ADH_DIR" && docker compose up -d )
 ok "AdGuard Home 已启动"
 
-# ===== [9/14] MosDNS 资源 =====
+# ===== [5/10] MosDNS 资源 =====
 echo "[9/14] 下载 MosDNS compose 与 update.sh..."
 cd "$MOSDNS_DIR"
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns \
@@ -157,14 +121,14 @@ chmod +x ./update.sh
 ./update.sh || true
 ok "MosDNS 资源已准备"
 
-# ===== [10/14] cron 自动更新 =====
+# ===== [6/10] cron 自动更新 =====
 echo "[10/14] 设置 cron 自动更新..."
 touch "$CRONTAB_FILE"
 sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
 echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
 ok "Cron 规则已更新"
 
-# ===== [11/14] 规则与空白名单 =====
+# ===== [7/10] 规则与空白名单 =====
 echo "[11/14] 下载规则与空白名单..."
 mkdir -p "$MOSDNS_DIR/rules-dat" "$MOSDNS_DIR/config/rule"
 
@@ -185,13 +149,13 @@ done
 
 ok "规则与白/灰名单已就绪"
 
-# ===== [12/14] 启动 MosDNS =====
+# ===== [8/10] 启动 MosDNS =====
 echo "[12/14] 启动 MosDNS..."
 cd "$MOSDNS_DIR"
 docker compose up -d --force-recreate
 ok "MosDNS 已启动"
 
-# ===== [13/14] 验证与端口探测 =====
+# ===== [9/10] 验证与端口探测 =====
 echo "[13/14] 验证服务与端口..."
 echo "—— docker ps ——"
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1,20p'
@@ -203,7 +167,7 @@ command -v nc >/dev/null 2>&1 && {
   nc -zv 127.0.0.1 53   >/dev/null 2>&1 && ok "AdGuard Home DNS 54/TCP OK" || warn "ADH_CN DNS 54/TCP 未监听"
 } || true
 
-# ===== [14/14] 汇总 =====
+# ===== [10/10] 汇总 =====
 echo "==== docker info (brief) ====" >> "$REPORT"
 docker_info_brief >> "$REPORT" 2>&1 || true
 
