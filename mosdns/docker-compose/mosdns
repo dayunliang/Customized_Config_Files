@@ -3,8 +3,8 @@ services:
     image: irinesistiana/mosdns:latest
     container_name: mosdns
     ports:
-      - "53:5333/udp"
-      - "53:5333/tcp"
+      - "5335:53/udp"
+      - "5335:53/tcp"
     volumes:
       - /root/mosdns/config:/etc/mosdns
       - /root/mosdns/rules-dat:/var/mosdns
