@@ -7,10 +7,9 @@ set -e
 
 # ===== 基本变量 =====
 MOSDNS_DIR="${HOME}/mosdns"
-ADH_CN_DIR="${HOME}/adh_cn"
-ADH_GFW_DIR="${HOME}/adh_gfw"
+ADH_DIR="${HOME}/adh"
 CRONTAB_FILE="/etc/crontabs/root"
-REPORT="/root/mosdns_adh_deploy_$(date +%Y%m%d_%H%M%S).log"
+REPORT="/root/adh_mosdns_deploy_$(date +%Y%m%d_%H%M%S).log"
 
 # ===== 彩色输出 =====
 G='\033[32m'; R='\033[31m'; Y='\033[33m'; B='\033[34m'; N='\033[0m'
@@ -137,25 +136,15 @@ rm -rf "$MOSDNS_DIR" "$ADH_CN_DIR" "$ADH_GFW_DIR"
 mkdir -p "$MOSDNS_DIR" "$ADH_CN_DIR/conf" "$ADH_CN_DIR/work" "$ADH_GFW_DIR/conf" "$ADH_GFW_DIR/work"
 ok "环境清理完成"
 
-# ===== [7/14] 部署 ADH_CN =====
-echo "[7/14] 部署 adh_cn..."
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_cn.yaml \
-  -o "$ADH_CN_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_cn \
-  -o "$ADH_CN_DIR/docker-compose.yaml"
-( cd "$ADH_CN_DIR" && docker compose down -v >/dev/null 2>&1 || true )
-( cd "$ADH_CN_DIR" && docker compose up -d )
-ok "adh_cn 已启动"
-
-# ===== [8/14] 部署 ADH_GFW =====
-echo "[8/14] 部署 adh_gfw..."
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh_gfw.yaml \
-  -o "$ADH_GFW_DIR/conf/AdGuardHome.yaml"
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh_gfw \
-  -o "$ADH_GFW_DIR/docker-compose.yaml"
-( cd "$ADH_GFW_DIR" && docker compose down -v >/dev/null 2>&1 || true )
-( cd "$ADH_GFW_DIR" && docker compose up -d )
-ok "adh_gfw 已启动"
+# ===== [7/14] 部署 ADH =====
+echo "[7/14] 部署 AdGuard Home..."
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh.yaml \
+  -o "$ADH_DIR/conf/AdGuardHome.yaml"
+curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh \
+  -o "$ADH_DIR/docker-compose.yaml"
+( cd "$ADH_DIR" && docker compose down -v >/dev/null 2>&1 || true )
+( cd "$ADH_DIR" && docker compose up -d )
+ok "AdGuard Home 已启动"
 
 # ===== [9/14] MosDNS 资源 =====
 echo "[9/14] 下载 MosDNS compose 与 update.sh..."
@@ -209,13 +198,9 @@ docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1,20p'
 
 # TCP 端口探测（按常用映射）
 command -v nc >/dev/null 2>&1 && {
-  nc -zv 127.0.0.1 81   >/dev/null 2>&1 && ok "ADH_CN UI 81 OK"     || warn "ADH_CN UI 81 未监听"
-  nc -zv 127.0.0.1 3001 >/dev/null 2>&1 && ok "ADH_CN 向导 3001 OK" || warn "ADH_CN 向导 3001 未监听"
-  nc -zv 127.0.0.1 54   >/dev/null 2>&1 && ok "ADH_CN DNS 54/TCP OK"|| warn "ADH_CN DNS 54/TCP 未监听"
-
-  nc -zv 127.0.0.1 82   >/dev/null 2>&1 && ok "ADH_GFW UI 82 OK"     || warn "ADH_GFW UI 82 未监听（如你的 compose 没映射则忽略）"
-  nc -zv 127.0.0.1 3002 >/dev/null 2>&1 && ok "ADH_GFW 向导 3002 OK" || warn "ADH_GFW 向导 3002 未监听（如你的 compose 没映射则忽略）"
-  nc -zv 127.0.0.1 55   >/dev/null 2>&1 && ok "ADH_GFW DNS 55/TCP OK"|| warn "ADH_GFW DNS 55/TCP 未监听"
+  nc -zv 127.0.0.1 80   >/dev/null 2>&1 && ok "AdGuard Home UI 80 OK"     || warn "AdGuard Home UI 80 未监听"
+  nc -zv 127.0.0.1 3001 >/dev/null 2>&1 && ok "AdGuard Home 向导 3001 OK" || warn "ADH_CN 向导 3001 未监听"
+  nc -zv 127.0.0.1 53   >/dev/null 2>&1 && ok "AdGuard Home DNS 54/TCP OK" || warn "ADH_CN DNS 54/TCP 未监听"
 } || true
 
 # ===== [14/14] 汇总 =====
@@ -224,6 +209,5 @@ docker_info_brief >> "$REPORT" 2>&1 || true
 
 echo "✅ 所有服务部署完成"
 echo "📌 查看 MosDNS 日志：  cd $MOSDNS_DIR && docker compose logs -f mosdns"
-echo "📌 查看 ADH_CN 日志：  cd $ADH_CN_DIR && docker compose logs -f"
-echo "📌 查看 ADH_GFW 日志： cd $ADH_GFW_DIR && docker compose logs -f"
+echo "📌 查看 AdGuard Home 日志：  cd $ADH_DIR && docker compose logs -f"
 echo "🧾 报告：$REPORT"
