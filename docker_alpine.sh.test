@@ -1,0 +1,61 @@
+# =====================================================================
+# 🔑 1. SSH KEY 检查与 GitHub 提示
+# =====================================================================
+echo "🔎 正在检查 SSH 密钥状态..."
+SSH_KEY_FOUND=0
+PUB_KEY_PATH=""
+
+# 遍历寻找常见的公钥文件
+for KEY_TYPE in "id_ed25519.pub" "id_rsa.pub"; do
+    if [ -f "$HOME/.ssh/$KEY_TYPE" ]; then
+        SSH_KEY_FOUND=1
+        PUB_KEY_PATH="$HOME/.ssh/$KEY_TYPE"
+        break
+    fi
+done
+
+if [ "$SSH_KEY_FOUND" -eq 0 ]; then
+    echo "❌ 未检测到本地 SSH 密钥，正在为你自动生成 Ed25519 密钥对..."
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+    # 生成免密匙密钥
+    ssh-keygen -t ed25519 -C "cron@homelab.local" -N "" -f "$HOME/.ssh/id_ed25519"
+    PUB_KEY_PATH="$HOME/.ssh/id_ed25519.pub"
+    echo "✅ 密钥生成成功！"
+fi
+
+# 打印公钥并提示用户去 GitHub 绑定
+echo "------------------------------------------------------------------"
+echo "📢 请复制以下公钥并添加至您的 GitHub 账户："
+echo "   👉 路径: Settings -> SSH and GPG keys -> New SSH key"
+echo "------------------------------------------------------------------"
+cat "$PUB_KEY_PATH"
+echo "------------------------------------------------------------------"
+echo -n "⚠️  请确保已在 GitHub 完成绑定，按 [回车键] 继续后续部署..."
+read CONFIRM_SSH
+
+# =====================================================================
+# 🚀 2. 隐形初始化与仓库建立
+# =====================================================================
+if [ ! -d "$REPO_DIR" ]; then
+    echo "📦 正在初始化隐藏代码仓库壳子..."
+    git clone --filter=blob:none --sparse git@github.com:dayunliang/Customized_Config_Files.git "$REPO_DIR"
+    cd "$REPO_DIR" || exit 1
+    git sparse-checkout set cfst
+fi
+
+# 2.1 🌟 强制重置软链接大门
+rm -f "$WORK_DIR"
+ln -s "$REPO_DIR/cfst" "$WORK_DIR"
+
+# 2.2 🎯 精准切入你的工作目录
+cd "$WORK_DIR" || exit 1
+
+# 2.3 同步云端最新的代码和配置
+echo "🔄 正在同步云端最新配置..."
+git pull origin main
+
+# 2.4 🌟 顺手赋予定时任务脚本可执行权限，方便后续 cron 或手动调用
+if [ -f "cron-cfst.sh" ]; then
+    chmod +x cron-cfst.sh
+fi
