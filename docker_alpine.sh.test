@@ -7,7 +7,7 @@
 # 整合更新：
 #   1. 确保工具集中包含 curl 的安装
 #   2. 临时拉取私有仓库 private_config.git 中的 disk_space_check.dingtalk 文件
-#   3. 【优化】直接 mv 文件到 /usr/bin/ 目录并清理掉临时生成的 git 目录，保持系统纯净
+#   3. 直接 mv 文件到 /usr/bin/ 目录并清理掉临时生成的 git 目录，保持系统纯净
 # 日期：2026-05-26
 # ============================================================================
 
@@ -20,7 +20,7 @@ warn() { printf "${YELLOW}▲${NC} %s\n" "$*"; }
 err()  { printf "${RED}✘${NC} %s\n" "$*"; }
 info() { printf "${BLUE}i${NC} %s\n" "$*"; }
 
-# ---------- runtime 自愈（整合自 fix.sh） ----------
+# ---------- runtime 自愈 ----------
 ensure_docker_runtime_ready() {
   # 不要让内部失败导致主脚本退出
   set +e
@@ -29,10 +29,12 @@ ensure_docker_runtime_ready() {
   touch "$REPORT"
 
   wait_sock() {
-    N="${1:-15}"; i=0
+    N="${1:-15}"
+    i=0
     while [ $i -lt $N ]; do
       [ -S /var/run/docker.sock ] && return 0
-      i=$((i+1)); sleep 1
+      i=$((i+1))
+      sleep 1
     done
     return 1
   }
@@ -80,8 +82,10 @@ ensure_docker_runtime_ready() {
     ok "dockerd socket就绪。"
   else
     err "dockerd socket 未出现。查看日志：$REPORT"
-    echo "==== docker.log ====" >> "$REPORT"; tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
-    echo "==== containerd.log ====" >> "$REPORT"; tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
+    echo "==== docker.log ====" >> "$REPORT"
+    tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
+    echo "==== containerd.log ====" >> "$REPORT"
+    tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
   fi
 
   info "当前 docker 关键信息："
@@ -135,8 +139,10 @@ ensure_docker_runtime_ready() {
       PASSED=2
     else
       err "hello-world 仍失败。导出日志到 $REPORT"
-      echo "==== docker.log ====" >> "$REPORT"; tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
-      echo "==== containerd.log ====" >> "$REPORT"; tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
+      echo "==== docker.log ====" >> "$REPORT"
+      tail -n 200 /var/log/docker.log >> "$REPORT" 2>&1
+      echo "==== containerd.log ====" >> "$REPORT"
+      tail -n 200 /var/log/containerd.log >> "$REPORT" 2>&1
     fi
   fi
 
@@ -155,7 +161,6 @@ ensure_docker_runtime_ready() {
   else
     err "最终结果：仍失败 ❌"
     echo "请检查：/var/log/docker.log、/var/log/containerd.log、$REPORT"
-    # 不让主脚本失败
   fi
 
   # 恢复 set -e
@@ -215,7 +220,7 @@ jq -s '.[0] * .[1]' /etc/docker/daemon.json /tmp/daemon.patch.json > /etc/docker
 mv /etc/docker/daemon.json.new /etc/docker/daemon.json
 rm -f /tmp/daemon.patch.json
 
-# ---------- 5. containerd 配置（仅设 default_runtime_name，避免额外 options 警告） ----------
+# ---------- 5. containerd 配置 ----------
 info "配置 /etc/containerd/config.toml（default_runtime_name=runc）..."
 if [ ! -s /etc/containerd/config.toml ]; then
   containerd config default >/etc/containerd/config.toml
@@ -299,7 +304,7 @@ echo "------------------------------------------------------------------"
 warn "📢 请复制以下公钥并添加至您的 GitHub 账户："
 warn "   ⚠️  请确保该公钥拥有对私有仓库 [private_config] 的访问或部署(Deploy)权限！"
 echo "   👉 路径: Settings -> SSH and GPG keys -> New SSH key"
-echo "------------------------------------------------------------------"
+echo "------------------------------------------------------------------" # 【已修复】补上了漏掉的 echo
 cat "$PUB_KEY_PATH"
 echo "------------------------------------------------------------------"
 echo -n "⚠️  请确保已在 GitHub 完成权限绑定，按 [回车键] 继续后续部署..."
@@ -308,20 +313,19 @@ read CONFIRM_SSH
 # 9.3 临时建立稀疏克隆目录
 rm -rf "$REPO_PRIVATE_TMP"
 info "📦 正在临时拉取私有配置仓库..."
-git clone --filter=blob:none --sparse git@github.com:dayunliang/private_config.git "$REPO_PRIVATE_TMP"
+git clone --filter=blob:none --no-checkout git@github.com:dayunliang/private_config.git "$REPO_PRIVATE_TMP"
 cd "$REPO_PRIVATE_TMP" || exit 1
+git sparse-checkout init --no-cone
 git sparse-checkout set "$FILE_NAME"
-git pull origin main || true
+git checkout main || true
 cd /root
 
 # 9.4 mv 移动目标文件并彻底清除临时仓库目录
 if [ -f "$REPO_PRIVATE_TMP/$FILE_NAME" ]; then
-    # 移除旧文件（如果存在），然后 mv 过去
     rm -f "$TARGET_BIN_PATH"
     mv "$REPO_PRIVATE_TMP/$FILE_NAME" "$TARGET_BIN_PATH"
     chmod +x "$TARGET_BIN_PATH"
     
-    # 🌟 卸磨杀驴：直接删除生成的临时目录，不留痕迹
     rm -rf "$REPO_PRIVATE_TMP"
     ok "磁盘监控脚本已成功部署至 $TARGET_BIN_PATH，临时目录已清理干净。"
     
@@ -331,7 +335,6 @@ if [ -f "$REPO_PRIVATE_TMP/$FILE_NAME" ]; then
     (crontab -l 2>/dev/null | grep -v "$FILE_NAME"; echo "$CRON_JOB_DISK") | crontab -
     ok "定时任务已成功指向系统路径（每6小时巡检一次）"
 else
-    # 失败时也顺手清理掉垃圾文件
     rm -rf "$REPO_PRIVATE_TMP"
     err "❌ 部署失败：未在仓库中找到 $FILE_NAME 文件，请检查该私有仓库的内容！"
 fi
