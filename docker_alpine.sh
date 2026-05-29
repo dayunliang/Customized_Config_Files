@@ -1,6 +1,6 @@
 #!/bin/sh
 # ============================================================================
-# 脚本名称：docker_alpine_perfect.sh (工业级高可用终极生产力固化版本)
+# 脚本名称：docker_alpine.sh (工业级高可用终极生产力固化版本)
 # 功能：在 Alpine Linux 上一键部署 Docker、containerd、Compose、open-vm-tools、git及常用工具
 # 亮点：幂等设计、底层彻底自愈、内核桥接与 cgroup2 级固化、容器自启死锁终结、全量验证汇总
 # 
@@ -249,6 +249,9 @@ rc-update add cgroups boot || true
 rc-update add containerd default || true
 rc-update add docker default || true
 rc-update add open-vm-tools boot || true
+
+# 立即启动 open-vm-tools，否则后面的健康检查会误判为未通过
+rc-service open-vm-tools start >/dev/null 2>&1 || true
 
 # 【终极正确修正】：永久固化单服务豁免开关，强令 OpenRC 关闭对 Docker/Containerd 的圈禁，使其在根节点拿到全量特权
 mkdir -p /etc/conf.d
