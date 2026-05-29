@@ -193,7 +193,7 @@ info "联合安装基础包、网络组件及 Docker 前置依赖..."
 # 合并了原有组件与 DNS 部署脚本所需的所有系统依赖，避免重复执行 apk add
 apk add --no-cache \
   docker containerd runc openrc iptables ip6tables jq curl bash vim htop ca-certificates \
-  git open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg \
+  git bind-tools open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg \
   musl-locales musl-locales-lang less net-tools c-ares nftables \
   >/dev/null 2>&1 || true
 ok "基础组件包安装完成"
