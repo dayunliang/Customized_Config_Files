@@ -12,7 +12,7 @@
 #      在 daemon.json 中显式强制锁定最经典、最稳固的 "storage-driver": "overlay2"，
 #      确保设备不论经历多少次优雅 reboot 还是突发断电，开机恢复容器读写层时绝不爆出 nil 错误。
 #
-# 更新与维护时间戳：2026-05-29 14:50:00 (Perfect Gold Master Build)
+# 更新与维护时间戳：2026-05-31 13:30:00 (Fixed One-Key Deploy Build)
 # ============================================================================
 
 set -e
@@ -23,6 +23,57 @@ ok()   { printf "${GREEN}✔${NC} %s\n" "$*"; }
 warn() { printf "${YELLOW}▲${NC} %s\n" "$*"; }
 err()  { printf "${RED}✘${NC} %s\n" "$*"; }
 info() { printf "${BLUE}i${NC} %s\n" "$*"; }
+
+# ---------- 通用函数：固定 Alpine 当前大版本软件源，避免 latest-stable 滚动导致库版本混装 ----------
+setup_apk_repositories() {
+  ALPINE_VER="$(cut -d. -f1,2 /etc/alpine-release 2>/dev/null || true)"
+
+  if [ -z "$ALPINE_VER" ]; then
+    err "无法读取 /etc/alpine-release，无法判断 Alpine 大版本。"
+    exit 1
+  fi
+
+  info "检测到当前 Alpine 大版本：v${ALPINE_VER}，将 APK 源固定到该版本，避免 latest-stable 滚动混装。"
+
+  cp /etc/apk/repositories /etc/apk/repositories.bak.$(date +%Y%m%d%H%M%S) 2>/dev/null || true
+
+  cat >/etc/apk/repositories <<EOF
+https://mirrors.ustc.edu.cn/alpine/v${ALPINE_VER}/main
+https://mirrors.ustc.edu.cn/alpine/v${ALPINE_VER}/community
+EOF
+
+  apk update
+}
+
+# ---------- 通用函数：安装包时不吞错误，避免“显示安装完成但实际未安装/库错配” ----------
+apk_install_required() {
+  info "正在安装/补齐必需软件包：$*"
+  apk add --no-cache "$@"
+}
+
+# ---------- 通用函数：修复 dig/bind 与 OpenSSL/libcrypto 的运行库版本错配 ----------
+fix_dig_runtime() {
+  info "正在修复并验证 dig/bind-tools 与 OpenSSL/libcrypto 运行库一致性..."
+
+  apk add --no-cache openssl libcrypto3 libssl3 bind-libs bind-tools
+  apk fix openssl libcrypto3 libssl3 bind-libs bind-tools >/dev/null 2>&1 || true
+
+  if command -v dig >/dev/null 2>&1 && dig -v >/dev/null 2>&1; then
+    ok "dig 运行时验证通过：$(dig -v 2>/dev/null)"
+    return 0
+  fi
+
+  warn "dig 首次验证失败，准备强制重装 bind 相关组件以消除库错配..."
+  apk del bind-tools bind-libs >/dev/null 2>&1 || true
+  apk add --no-cache openssl libcrypto3 libssl3 bind-libs bind-tools
+
+  if command -v dig >/dev/null 2>&1 && dig -v >/dev/null 2>&1; then
+    ok "dig 强制重装后验证通过：$(dig -v 2>/dev/null)"
+  else
+    err "dig 仍不可用，请执行：dig -v，并检查 libcrypto/libssl 是否来自同一 Alpine 版本源。"
+    exit 1
+  fi
+}
 
 # ---------- Docker 运行时底层环境自愈检测函数 ----------
 ensure_docker_runtime_ready() {
@@ -195,26 +246,24 @@ fi
 
 # ---------- 1. APK 官方软件源优化 ----------
 info "正在对 Alpine 官方源进行中科大 (USTC) 高速镜像源幂等性重构..."
-if ! grep -q ustc /etc/apk/repositories 2>/dev/null; then
-  tee /etc/apk/repositories <<-'EOF'
-https://mirrors.ustc.edu.cn/alpine/latest-stable/main
-https://mirrors.ustc.edu.cn/alpine/latest-stable/community
-EOF
-  info "镜像源重写成功，正在动态刷新远程软件索引快照..."
-  apk update
-else
-  ok "经探查，当前 APK 镜像源已是中科大高速源，跳过换源。"
-fi
+setup_apk_repositories
+
+# 先做一次全量可用升级，确保已安装的 openssl/libcrypto/bind-libs 不会停留在旧版本。
+# 这一步是修复 dig 报 EVP_MD_CTX_get_size_ex symbol not found 的关键。
+info "正在同步升级当前系统已安装包，避免新旧运行库混装..."
+apk upgrade --available
 
 # ---------- 2. 联合合并集中式安装组件 ----------
 info "联合批量安装基础运维工具、高级网络协议组件及 Docker 底层前置虚拟化依赖..."
-# 集中集成安装 bind-tools 确保全新部署时开箱即带最新的 dig 工具
-apk add --no-cache \
+# 不再使用 >/dev/null 2>&1 || true 吞掉安装错误，任何关键包安装失败都应立即暴露。
+apk_install_required \
   docker containerd runc openrc iptables ip6tables jq curl bash vim htop ca-certificates \
-  git bind-tools open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg \
-  musl-locales musl-locales-lang less net-tools c-ares nftables bind-tools \
-  >/dev/null 2>&1 || true
-ok "基础及高级运维网络组件(包含bind-tools/dig)联合集成安装完成"
+  git openssh-client bind-tools bind-libs openssl libcrypto3 libssl3 \
+  open-vm-tools open-vm-tools-guestinfo open-vm-tools-deploypkg \
+  musl-locales musl-locales-lang less net-tools c-ares nftables docker-cli-compose
+
+fix_dig_runtime
+ok "基础及高级运维网络组件联合集成安装完成"
 
 # ---------- 3. 全局系统中文环境本地化与 Vim 字符集优化 ----------
 info "配置系统全局中文 UTF-8 字符环境本地化与 Vim 文本编辑器默认字符集编码..."
@@ -260,8 +309,8 @@ sed -i '/rc_cgroup_mode=/d' /etc/conf.d/docker 2>/dev/null || true
 sed -i '/rc_cgroup_mode=/d' /etc/conf.d/containerd 2>/dev/null || true
 sed -i '/rc_cgroups=/d' /etc/conf.d/docker 2>/dev/null || true
 sed -i '/rc_cgroups=/d' /etc/conf.d/containerd 2>/dev/null || true
-grep -q 'rc_groups="NO"' /etc/conf.d/docker || echo 'rc_groups="NO"' >> /etc/conf.d/docker
-grep -q 'rc_groups="NO"' /etc/conf.d/containerd || echo 'rc_groups="NO"' >> /etc/conf.d/containerd
+grep -q 'rc_cgroups="NO"' /etc/conf.d/docker || echo 'rc_cgroups="NO"' >> /etc/conf.d/docker
+grep -q 'rc_cgroups="NO"' /etc/conf.d/containerd || echo 'rc_cgroups="NO"' >> /etc/conf.d/containerd
 
 # ---------- 5. Docker 核心虚拟化守护引擎配置 ----------
 info "正在配置 /etc/docker/daemon.json (国内多路镜像加速 + 焊死锁定 overlay2 老牌经典存储驱动) ..."
@@ -312,10 +361,16 @@ sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >/dev/null 2>&1 || true
 # ---------- 8. 现代 Docker Compose 高级编排引擎集成自动化 ----------
 info "正在检测并智能化集成现代化 Docker Compose 容器集群高级编排引擎..."
 if ! docker compose version >/dev/null 2>&1; then
-  apk add --no-cache docker-cli-compose >/dev/null 2>&1 || true
+  apk_install_required docker-cli-compose
 fi
 
 # ---------- 9. Homelab 专属私有仓库磁盘监控高级脚本自动化拉取与部署 ----------
+# 默认保留原有私有仓库磁盘监控脚本部署逻辑。
+# 若只想纯一键部署 Docker 环境、不想在 SSH 公钥授权处交互阻塞，可这样执行：
+#   SKIP_PRIVATE_DISK_MONITOR=1 sh docker_alpine_fixed_onekey.sh
+if [ "${SKIP_PRIVATE_DISK_MONITOR:-0}" = "1" ]; then
+    warn "已按 SKIP_PRIVATE_DISK_MONITOR=1 跳过私有磁盘监控脚本部署。"
+else
 info "开始配置磁盘监控脚本部署环境 (从 GitHub 私有配置仓库临时稀疏提取)..."
 REPO_PRIVATE_TMP="/root/.private_config_repo_tmp"
 TARGET_BIN_PATH="/usr/bin/disk_space_check.dingtalk"
@@ -393,6 +448,7 @@ else
     rm -rf "$REPO_PRIVATE_TMP"
     err "❌ 严重部署失败：未能拉取到目标脚本，请检查仓库权限！"
 fi
+fi
 
 # ---------- 10. 运行时自愈检测层全面激活校验 ----------
 ensure_docker_runtime_ready
@@ -419,7 +475,7 @@ check "Open-VM-Tools 虚拟化客户机高级守护进程状态" "rc-service ope
 check "Git 分布式版本控制小工具执行可用性" "git --version"
 check "Linux 内核高级虚拟网桥虚拟转发层桥接开启契约验证 (iptables=1)" "[ \"\$(sysctl -n net.bridge.bridge-nf-call-iptables 2>/dev/null)\" = 1 ]"
 check "Docker 虚拟化隔离沙箱最底层容器实例冷启动链路跑通性验证" "docker run --rm hello-world"
-check "Dig 高级 DNS 运维排查小工具可用性" "dig -v"
+check "Dig 高级 DNS 运维排查小工具可用性" "command -v dig >/dev/null 2>&1 && dig -v >/dev/null 2>&1"
 
 if [ $PASS -eq 1 ]; then
   printf "\n"
