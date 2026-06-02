@@ -9,7 +9,7 @@ services:
     mac_address: 02:42:c0:a8:88:88
     
     # 所有的测速定制参数和输出路径，统一合并到这里
-    command: -n 1000 -tl 200 -sl 4 -p 10 -o data/result.csv
+    command: -n 1000 -tl 200 -sl 5 -p 10 -o data/result.csv
     #command: -n 1000 -tl 200 -sl 5 -p 50 -allip -o data/result.csv
     
     # 映射本地目录，完美对接容器内的 /cfst
