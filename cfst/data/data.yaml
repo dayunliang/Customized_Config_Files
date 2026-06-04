@@ -1,222 +1,10 @@
 ################################################################
-# 美国优选 (United States)
-################################################################
-
-- name: CF-优选-美国 01
-  type: vless
-  server: 104.19.211.100
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 02
-  type: vless
-  server: 104.19.207.198
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 03
-  type: vless
-  server: 104.19.214.252
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 04
-  type: vless
-  server: 104.19.208.24
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 05
-  type: vless
-  server: 104.19.210.102
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 06
-  type: vless
-  server: 104.19.205.48
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 07
-  type: vless
-  server: 104.16.164.128
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 08
-  type: vless
-  server: 104.19.251.19
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 09
-  type: vless
-  server: 104.16.156.83
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 10
-  type: vless
-  server: 104.19.244.106
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 11
-  type: vless
-  server: 104.16.157.168
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 12
-  type: vless
-  server: 104.16.158.13
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-- name: CF-优选-美国 13
-  type: vless
-  server: 104.16.161.6
-  port: 443
-  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
-  cipher: none
-  tls: true
-  udp: true
-  servername: b-gfw.cf-ip.cfd
-  network: ws
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: b-gfw.cf-ip.cfd
-  client-fingerprint: chrome
-
-################################################################
 # 德国优选 (Germany)
 ################################################################
 
 - name: CF-优选-德国 01
   type: vless
-  server: 104.20.16.223
+  server: 104.20.4.128
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
@@ -232,7 +20,7 @@
 
 - name: CF-优选-德国 02
   type: vless
-  server: 104.20.15.58
+  server: 104.20.10.125
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
@@ -248,7 +36,7 @@
 
 - name: CF-优选-德国 03
   type: vless
-  server: 104.20.38.224
+  server: 104.20.0.67
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
@@ -264,7 +52,7 @@
 
 - name: CF-优选-德国 04
   type: vless
-  server: 104.20.40.39
+  server: 104.20.33.56
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
@@ -280,7 +68,7 @@
 
 - name: CF-优选-德国 05
   type: vless
-  server: 104.20.7.232
+  server: 104.20.49.48
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
@@ -296,7 +84,7 @@
 
 - name: CF-优选-德国 06
   type: vless
-  server: 104.20.10.84
+  server: 104.20.31.15
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
@@ -312,7 +100,219 @@
 
 - name: CF-优选-德国 07
   type: vless
-  server: 104.20.4.85
+  server: 104.20.3.35
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-德国 08
+  type: vless
+  server: 104.20.61.19
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-德国 09
+  type: vless
+  server: 104.20.63.141
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+################################################################
+# 美国优选 (United States)
+################################################################
+
+- name: CF-优选-美国 01
+  type: vless
+  server: 104.19.241.183
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 02
+  type: vless
+  server: 104.19.174.227
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 03
+  type: vless
+  server: 104.19.165.220
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 04
+  type: vless
+  server: 104.19.172.79
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 05
+  type: vless
+  server: 104.19.177.96
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 06
+  type: vless
+  server: 104.19.168.14
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 07
+  type: vless
+  server: 104.19.185.7
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 08
+  type: vless
+  server: 104.19.183.147
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 09
+  type: vless
+  server: 104.19.181.244
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 10
+  type: vless
+  server: 104.19.167.58
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+- name: CF-优选-美国 11
+  type: vless
+  server: 104.19.176.165
   port: 443
   uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
   cipher: none
