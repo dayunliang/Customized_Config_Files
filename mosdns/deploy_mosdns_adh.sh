@@ -172,7 +172,7 @@ ok "MosDNS 资源已准备"
 echo "[10/14] 设置 cron 自动更新..."
 touch "$CRONTAB_FILE"
 sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
-echo "0 4 * * 1 cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
+echo "0 4 * * * cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
 ok "Cron 规则已更新"
 
 # ===== [11/14] 规则与空白名单 =====
