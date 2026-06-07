@@ -1,1 +1,4 @@
+# Splashtop
 
+full:splashtop.com
+domain:splashtop.com
