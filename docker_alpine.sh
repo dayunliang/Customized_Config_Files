@@ -441,7 +441,7 @@ if [ -f "$REPO_PRIVATE_TMP/$FILE_NAME" ]; then
         *)  CRON_TIME="0 */6 * * *" ;;
     esac
 
-    CRON_JOB_DISK="$CRON_TIME $TARGET_BIN_PATH >> /var/log/disk_space_check.log 2>&1"
+    CRON_JOB_DISK="$CRON_TIME $TARGET_BIN_PATH >> ~/disk_space_check.log 2>&1"
     (crontab -l 2>/dev/null | grep -v "$FILE_NAME"; echo "$CRON_JOB_DISK") | crontab -
     ok "系统核心 Crontab 调度任务池固化配置成功！当前时间表被锁定为: [$CRON_TIME]"
 else
