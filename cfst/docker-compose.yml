@@ -13,7 +13,7 @@ services:
     #command: -n 200 -t 4 -dn 20 -dt 10 -tl 200 -sl 20 -p 10 -allip -o data/result.csv
     #command: -httping -cfcolo HKG,NRT,KHH,SIN,ICN,LAX,SEA,SJC -n 300 -t 4 -dn 20 -dt 10 -tl 220 -sl 15 -p 5 -o data/result.csv
     #command: -httping -cfcolo HKG,NRT,KHH,SIN,ICN -n 300 -t 4 -dn 20 -dt 10 -tl 200 -sl 20 -p 5 -o data/result.csv
-    command: -n 200 -t 4 -dn 10 -dt 8 -tl 200 -sl 0 -p 10 -url https://speed.cloudflare.com/__down?bytes=200000000 -o data/result.csv
+    command: -n 100 -t 3 -dn 5 -dt 8 -tl 200 -sl 0 -p 10 -debug -url https://speed.cloudflare.com/__down?bytes=200000000 -o data/result.csv
     
     # 映射本地目录，完美对接容器内的 /cfst
     volumes:
