@@ -9,7 +9,7 @@ services:
     mac_address: 02:42:c0:a8:88:88
     
     # 所有的测速定制参数和输出路径，统一合并到这里
-    command: -n 300 -t 4 -dn 20 -dt 10 -tl 200 -sl 20 -p 5 -o data/result.csv
+    command: -n 300 -t 4 -dn 20 -dt 10 -tl 200 -sl 10 -p 10 -o data/result.csv
     #command: -n 200 -t 4 -dn 20 -dt 10 -tl 200 -sl 20 -p 10 -allip -o data/result.csv
     #command: -httping -cfcolo HKG,NRT,KHH,SIN,ICN,LAX,SEA,SJC -n 300 -t 4 -dn 20 -dt 10 -tl 220 -sl 15 -p 5 -o data/result.csv
     #command: -httping -cfcolo HKG,NRT,KHH,SIN,ICN -n 300 -t 4 -dn 20 -dt 10 -tl 200 -sl 20 -p 5 -o data/result.csv
