@@ -14,7 +14,8 @@ services:
     #command: -httping -cfcolo HKG,NRT,KHH,SIN,ICN,LAX,SEA,SJC -n 300 -t 4 -dn 20 -dt 10 -tl 220 -sl 15 -p 5 -o data/result.csv
     #command: -httping -cfcolo HKG,NRT,KHH,SIN,ICN -n 300 -t 4 -dn 20 -dt 10 -tl 200 -sl 20 -p 5 -o data/result.csv
     #command: -n 1000 -t 4 -dn 10 -dt 8 -tl 200 -sl 10 -p 10 -allip -url https://speedtest.b-gfw.cf-ip.cfd/100mb.bin -o data/result.csv
-    command: -n 200 -t 4 -dn 10 -dt 8 -tl 200 -sl 10 -p 10 -url https://speedtest.b-gfw.cf-ip.cfd/300mb.bin -o data/result.csv
+    #command: -n 200 -t 4 -dn 10 -dt 8 -tl 200 -sl 10 -p 10 -url https://speedtest.b-gfw.cf-ip.cfd/300mb.bin -o data/result.csv
+    command: -n 1000 -t 4 -dn 20 -dt 5 -tl 200 -sl 1 -p 10 -cfcolo HKG -url https://speedtest.b-gfw.cf-ip.cfd/100mb.bin -o data/result.csv
     
     # 测试 debug 参数：
     #command: -n 50 -t 2 -dn 3 -dt 8 -tl 200 -sl 0 -p 10 -debug -url https://speedtest.b-gfw.cf-ip.cfd/100mb.bin -o data/result.csv
