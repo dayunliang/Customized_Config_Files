@@ -1,94 +1,57 @@
 # =============================================================================
-# 新架构：MosDNS v4 完美闭环配置文件（config_custom.yaml）
-# 流向：客户端 ──> 本地 ADH（Host:53） ──> 本地 MosDNS（Bridge:5335） ──> 分流上游
+# 新架构：MosDNS v5 闭环配置文件（config_custom.yaml）
+# 修正时间：2026-06-27 CST
+# 修正重点：
+# 1. 修复 sequence 插件 args 结构：args 下直接写规则列表，不再套 exec:
+# 2. 自定义插件调用统一使用 $tag
+# 3. 保持原有 Hosts -> nocache -> ads -> cache -> gfw -> local 的闭环逻辑
 # =============================================================================
 
 log:
-  level: info                   # 生产环境建议 info，如需排错可改为 debug
+  level: info
   file: "/var/log/mosdns.log"
 
 api:
-  http: "0.0.0.0:8338"          # MosDNS HTTP API 接口
+  http: "0.0.0.0:8338"
 
-# =============================================================================
-# 引入外部数据包（继续复用您原有的 $geosite_gfw 和 $geosite_category-ads-all 变量）
-# =============================================================================
+# 引入一键脚本拉取的外挂规则包
 include:
   - "/etc/mosdns/dat_exec.yaml"
 
-# =============================================================================
-# 插件定义区
-# =============================================================================
 plugins:
-
-  # ---------------------------------------------------------------------------
-  # 1. 本地大缓存插件（由 MosDNS 统一接管全家 DNS 缓存大脑）
-  # ---------------------------------------------------------------------------
+  # 1. 本地大缓存插件
   - tag: local_cache
     type: cache
     args:
-      size: 10240               # 内存缓存大小（条数）
-      lazy_cache_ttl: 86400     # 开启 24 小时懒缓存，极致加速二次解析
+      size: 10240
+      lazy_cache_ttl: 86400
 
-  # ---------------------------------------------------------------------------
-  # 2. 穿透缓存匹配器（强制穿透，不准查缓存）
-  # ---------------------------------------------------------------------------
+  # 2. 穿透缓存匹配器
   - tag: query_is_nocache
     type: domain_set
     args:
       files:
-        - "/etc/mosdns/rule/nocache.txt" # 对应宿主机路径：/root/mosdns/config/rule/nocache.txt
+        - "/etc/mosdns/rule/nocache.txt"
 
-  # ---------------------------------------------------------------------------
-  # 3. 广告硬拒绝插件（保持您原有的 NXDOMAIN 逻辑）
-  # ---------------------------------------------------------------------------
-  - tag: reject_ads
-    type: sequence
-    args:
-      - exec: "reject 3"        # 返回 3 = NXDOMAIN
-
-  - tag: route_ads
-    type: sequence
-    args:
-      - matches: qname $geosite_category-ads-all
-        exec: $reject_ads
-
-# ---------------------------------------------------------------------------
-  # 4. 国内直连上游 DNS（改用最简单、低延迟的普通 53 端口 UDP DNS）
-  # ---------------------------------------------------------------------------
+  # 3. 国内直连上游 DNS
   - tag: forward_local
     type: forward
     args:
       upstreams:
-        - addr: "116.228.111.18"   # 上海电信主 DNS（本地 ISP，延迟最低、CDN 分配最准）
+        - addr: "116.228.111.18"   # 上海电信主 DNS
         - addr: "180.168.255.118"  # 上海电信备 DNS
-        - addr: "223.5.5.5"        # 阿里公共 DNS（高可靠兜底）
-        - addr: "119.29.29.29"      # 腾讯公共 DNS（高可靠兜底）
+        - addr: "223.5.5.5"        # 阿里公共 DNS
+        - addr: "119.29.29.29"     # 腾讯公共 DNS
 
-  # ---------------------------------------------------------------------------
-  # 5. 海外自建 VPS 加密上游（已完美写入您真实的公网 442 端口 DoH）
-  # ---------------------------------------------------------------------------
+  # 4. 海外自建 VPS 加密上游
   - tag: forward_remote_vps
     type: forward
     args:
       upstreams:
-        - addr: "https://ali-hk.b-gfw.cfd:442/dns-query" # 阿里云香港单体 ADH
-        - addr: "https://ali-sg.b-gfw.cfd:442/dns-query" # 阿里云新加坡单体 ADH
+        - addr: "https://ali-hk.b-gfw.cfd:442/dns-query"
+        - addr: "https://ali-sg.b-gfw.cfd:442/dns-query"
 
-  # ---------------------------------------------------------------------------
-  # 6. 海外 GFW 路由执行序列（解析成功后自动回写本地缓存）
-  # ---------------------------------------------------------------------------
-  - tag: route_gfw_sequence
-    type: sequence
-    args:
-      - matches: qname $geosite_gfw
-        exec: $forward_remote_vps
-      - matches: has_resp
-        exec: $local_cache
-
-  # ---------------------------------------------------------------------------
-  # 7. 本地 Hosts 文件解析（保持您原有的内网设备固定域名习惯）
-  # ---------------------------------------------------------------------------
+  # 5. 本地 Hosts 文件解析
   - tag: local_hosts
     type: hosts
     args:
@@ -101,40 +64,43 @@ plugins:
   - tag: main_sequence
     type: sequence
     args:
-      # 【第一步】本地 Hosts 匹配
+      # 第 1 步：优先查本地 Hosts
       - exec: $local_hosts
-      - matches: has_resp
-        exec: return
 
-      # 【第二步】🔥 穿透缓存匹配（遇到直接走国内公共 DNS，不查缓存也不写入缓存）
-      - matches: qname $query_is_nocache
+      # 第 2 步：如果 Hosts 没命中，并且命中 nocache 列表，直接走国内直连 DNS
+      - matches:
+          - "!has_resp"
+          - qname $query_is_nocache
         exec: $forward_local
-      - matches: has_resp
-        exec: return
 
-      # 【第三步】广告域名硬拦截
-      - exec: $route_ads
-      - matches: has_resp
-        exec: return
+      # 第 3 步：如果仍无应答，并且命中广告列表，直接返回 NXDOMAIN
+      - matches:
+          - "!has_resp"
+          - qname $geosite_category-ads-all
+        exec: reject 3
 
-      # 【第四步】核心缓存大盘盘查（国内/海外通查，命中直接秒回）
-      - exec: $local_cache
-      - matches: has_resp
-        exec: return
-
-      # 【第五步】明确属于 GFW 的海外域名分流流程
-      - exec: $route_gfw_sequence
-      - matches: has_resp
-        exec: return
-
-      # 【第六步】Fallback 兜底流程：其余所有域名（CN域名/未分类域名）走国内解析并写入缓存
-      - exec: $forward_local
-      - matches: has_resp
+      # 第 4 步：如果仍无应答，查询本地缓存
+      - matches:
+          - "!has_resp"
         exec: $local_cache
 
-# =============================================================================
-# DNS 服务监听（对接 Docker 内部的标准 53 端口）
-# =============================================================================
+      # 第 5 步：如果缓存没命中，并且属于 GFW 域名，走海外 VPS DoH
+      - matches:
+          - "!has_resp"
+          - qname $geosite_gfw
+        exec: $forward_remote_vps
+
+      # 第 6 步：其他剩余域名兜底走国内直连
+      - matches:
+          - "!has_resp"
+        exec: $forward_local
+
+      # 第 7 步：有新应答后再次调用 cache，写回缓存
+      - exec: $local_cache
+
+  # =============================================================================
+  # DNS 服务监听
+  # =============================================================================
   - type: udp_server
     args:
       entry: main_sequence
