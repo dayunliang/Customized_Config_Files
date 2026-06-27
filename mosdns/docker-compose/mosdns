@@ -6,8 +6,11 @@ services:
       - "5335:53/udp"
       - "5335:53/tcp"
     volumes:
+volumes:
+      # 配置文件挂载（确保指向你实际 config.yaml 所在的绝对路径）
       - /root/mosdns/config:/etc/mosdns
-      - /root/mosdns/rules-dat:/var/mosdns
+      # ⚠️ 关键：直接把外部的 rules-dat 文件夹精准送进容器
+      - /root/mosdns/rules-dat:/etc/mosdns/rules-dat
     entrypoint: |
       /bin/sh -c "\
       : > /var/log/mosdns.log && \
