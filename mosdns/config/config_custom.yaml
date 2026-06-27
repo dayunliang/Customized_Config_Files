@@ -93,7 +93,7 @@ plugins:
     type: hosts
     args:
       files:
-        - /var/mosdns/hosts.txt
+        - "/etc/mosdns/rule/hosts.txt"
 
   # =============================================================================
   # 主处理流程控制序列（main_sequence）
