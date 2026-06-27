@@ -6,14 +6,21 @@ services:
       - "5335:53/udp"
       - "5335:53/tcp"
     volumes:
-volumes:
-      # 配置文件挂载（确保指向你实际 config.yaml 所在的绝对路径）
+      # MosDNS 主配置目录：
+      # 容器内 /etc/mosdns/config_custom.yaml
+      # 容器内 /etc/mosdns/dat_exec.yaml
+      # 容器内 /etc/mosdns/rule/nocache.txt
       - /root/mosdns/config:/etc/mosdns
-      # ⚠️ 关键：直接把外部的 rules-dat 文件夹精准送进容器
+
+      # rules-dat 规则文件目录：
+      # 供 local_hosts 使用 /etc/mosdns/rules-dat/hosts.txt
       - /root/mosdns/rules-dat:/etc/mosdns/rules-dat
-    entrypoint: |
-      /bin/sh -c "\
-      : > /var/log/mosdns.log && \
-      exec mosdns start -c /etc/mosdns/config_custom.yaml\
-      "
+
+      # 兼容 dat_exec.yaml 内部引用：
+      # /var/mosdns/geoip_private.txt
+      # /var/mosdns/geosite_gfw.txt
+      # /var/mosdns/geosite_cn.txt 等
+      - /root/mosdns/rules-dat:/var/mosdns
+
+    command: mosdns start -c /etc/mosdns/config_custom.yaml
     restart: unless-stopped
