@@ -652,6 +652,34 @@ clients:
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 小餐厅 AP
+      ids:
+        - 192.168.12.246
+      tags: []
+      upstreams: []
+      uid: 019f0d1d-45fa-7d2d-a0a6-d9eebeabedd6
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
 log:
   enabled: true
   file: ""
