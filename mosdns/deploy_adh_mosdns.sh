@@ -321,11 +321,11 @@ curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/
 #   该脚本用于首次拉取和后续定时更新 MosDNS 所需规则数据。
 #   下方第 06/10 阶段会将它挂入 root crontab，形成每周自动更新任务。
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh \
-  -o ./update.sh
-chmod +x ./update.sh
+  -o ~/update.sh
+chmod +x ~/update.sh
 
 info "唤醒内部数据自维护功能，执行地理特征库（GeoIP/GeoSite）首次冷拉取..."
-./update.sh || true
+~/update.sh || true
 ok "MosDNS 运行生命周期管理层构建完成"
 
 
@@ -344,8 +344,8 @@ touch "$CRONTAB_FILE"
 # 日志输出：
 #   标准输出和错误输出都会追加写入：
 #     $MOSDNS_DIR/update.log
-sed -i '\#cd '"$MOSDNS_DIR"' && ./update.sh#d' "$CRONTAB_FILE"
-echo "0 4 * * * cd $MOSDNS_DIR && ./update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
+sed -i '\#cd '"$MOSDNS_DIR"' && ~/update.sh#d' "$CRONTAB_FILE"
+echo "0 4 * * * cd $MOSDNS_DIR && ~/update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
 ok "系统自动巡检任务队列挂载完成（执行频次：每周一凌晨 04:00）"
 
 
