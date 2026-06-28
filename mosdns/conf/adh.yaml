@@ -443,7 +443,7 @@ clients:
         ids: []
       name: Philips 77OLED808
       ids:
-        - 192.168.90.104
+        - 192.168.90.102
       tags: []
       upstreams: []
       uid: 019f0bed-8bd4-7dd1-afb7-9ae4d7ccf88e
