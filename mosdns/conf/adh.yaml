@@ -189,6 +189,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: Andy Da`s iPhone 17 Pro
+      ids:
+        - 192.168.90.108
+      tags: []
+      upstreams: []
+      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: Beverly Oasis`s iMac
       ids:
         - 192.168.12.2
@@ -262,6 +290,62 @@ clients:
       ignore_statistics: false
     - safe_search:
         enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Julie Wu`s iPhone 16 Pro
+      ids:
+        - 192.168.80.108
+      tags: []
+      upstreams: []
+      uid: 019f0bea-4954-7847-bb62-f42e4907663f
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Lean Openwrt Compiler
+      ids:
+        - 192.168.12.70
+      tags: []
+      upstreams: []
+      uid: 019f0bda-918d-782b-9f45-571d68891d56
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
         bing: false
         duckduckgo: false
         ecosia: false
@@ -279,6 +363,118 @@ clients:
       tags: []
       upstreams: []
       uid: 019e64cf-2180-76aa-8c00-cfed24c7393c
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: MosDNS-2
+      ids:
+        - 192.168.12.11
+      tags: []
+      upstreams: []
+      uid: 019f0bdb-3330-70fc-a761-807add9152be
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Panasonic 43LX800
+      ids:
+        - 192.168.90.105
+      tags: []
+      upstreams: []
+      uid: 019f0bf5-18f6-719c-877c-47257bc2ff09
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Philips 77OLED808
+      ids:
+        - 192.168.90.104
+      tags: []
+      upstreams: []
+      uid: 019f0bed-8bd4-7dd1-afb7-9ae4d7ccf88e
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: TCL 65C845
+      ids:
+        - 192.168.90.101
+      tags: []
+      upstreams: []
+      uid: 019f0bf2-ae49-7a15-87ec-cfaee44d9832
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -329,12 +525,124 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: WIN11-LOFT
+      ids:
+        - 192.168.12.3
+      tags: []
+      upstreams: []
+      uid: 019f0bee-ca16-7acc-99b9-a44edecb790e
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: WIN11-VM-R730xd
       ids:
         - 192.168.12.110
       tags: []
       upstreams: []
       uid: 019e64d0-a608-72f6-931d-2197cf5bd4a4
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 地下室除湿机
+      ids:
+        - 192.168.50.111
+      tags: []
+      upstreams: []
+      uid: 019f0bec-65d3-7edc-a830-08d305c0f3aa
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 大客厅 AP
+      ids:
+        - 192.168.12.247
+      tags: []
+      upstreams: []
+      uid: 019f0bf0-6e66-7182-9a09-1bc1f4c672d5
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 小爱音箱
+      ids:
+        - 192.168.50.101
+      tags: []
+      upstreams: []
+      uid: 019f0bed-044d-7e6d-aafe-0ddfc59cdeac
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
