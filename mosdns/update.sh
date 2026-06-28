@@ -180,6 +180,8 @@ download_files "$RULES_DAT_URL_FILE_LIST" "$RULES_DAT_DIR" "rules-dat 规则文�
 CUSTOM_RULE_START=$((RULES_DAT_TOTAL + 1))
 download_files "$CUSTOM_RULE_URL_FILE_LIST" "$RULE_DIR" "MosDNS 自定义 rule 文件" "$CUSTOM_RULE_START" "$TOTAL_FILES"
 
+docker-compose down && docker-compose up -d
+
 echo "=============================================================================="
 echo "All lists updated."
 echo "rules-dat directory : ${RULES_DAT_DIR}"
