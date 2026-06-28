@@ -486,6 +486,34 @@ clients:
       ignore_statistics: false
     - safe_search:
         enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Unifi Network Appliance
+      ids:
+        - 192.168.12.60
+      tags: []
+      upstreams: []
+      uid: 019f0d34-8e9f-7c7e-98b6-41798d808a2e
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
         bing: true
         duckduckgo: true
         ecosia: true
@@ -559,6 +587,118 @@ clients:
       tags: []
       upstreams: []
       uid: 019e64d0-a608-72f6-931d-2197cf5bd4a4
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 一楼 扫地机器人
+      ids:
+        - 192.168.50.106
+      tags: []
+      upstreams: []
+      uid: 019f0d38-282f-77ad-ab2c-2e781e805507
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 主卧室 AP
+      ids:
+        - 192.168.12.243
+      tags: []
+      upstreams: []
+      uid: 019f0d36-5c40-7110-9a53-0e496bef7cc8
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 儿童房 AP
+      ids:
+        - 192.168.12.250
+      tags: []
+      upstreams: []
+      uid: 019f0d37-2e17-73e3-9e30-6bafe7ec2358
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 厨房大冰箱
+      ids:
+        - 192.168.50.109
+      tags: []
+      upstreams: []
+      uid: 019f0d35-5233-7710-a0aa-b5d9d264aede
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
