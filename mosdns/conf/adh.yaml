@@ -329,6 +329,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: Justin Da`s MacBook Air M5
+      ids:
+        - 192.168.90.109
+      tags: []
+      upstreams: []
+      uid: 019f2330-4951-731b-817a-03b32fc5c4f2
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: Lean Openwrt Compiler
       ids:
         - 192.168.12.70
@@ -665,6 +693,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: 书房 AP
+      ids:
+        - 192.168.12.244
+      tags: []
+      upstreams: []
+      uid: 019f2332-9e24-78db-82fc-922d7a496956
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: 儿童房 AP
       ids:
         - 192.168.12.250
@@ -699,6 +755,34 @@ clients:
       tags: []
       upstreams: []
       uid: 019f0d35-5233-7710-a0aa-b5d9d264aede
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 地下室 AP
+      ids:
+        - 192.168.12.249
+      tags: []
+      upstreams: []
+      uid: 019f2332-3912-7444-a74c-bd72e42a4fee
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -777,6 +861,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: 大餐厅 AP
+      ids:
+        - 192.168.12.248
+      tags: []
+      upstreams: []
+      uid: 019f2333-dac9-72b9-8693-ac50bd123dca
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: 小爱音箱
       ids:
         - 192.168.50.101
@@ -811,6 +923,90 @@ clients:
       tags: []
       upstreams: []
       uid: 019f0d1d-45fa-7d2d-a0a6-d9eebeabedd6
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 花园东北角 AP
+      ids:
+        - 192.168.12.242
+      tags: []
+      upstreams: []
+      uid: 019f2331-272b-714e-b1c7-fb22f32e43ae
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 花园西北角 AP
+      ids:
+        - 192.168.12.241
+      tags: []
+      upstreams: []
+      uid: 019f2331-e18e-75de-bdc5-5030aa3c45fd
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 阁楼 AP
+      ids:
+        - 192.168.12.245
+      tags: []
+      upstreams: []
+      uid: 019f2334-4762-70b9-a698-8057982ae169
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
