@@ -218,6 +218,62 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: Auntie`s Phone
+      ids:
+        - 192.168.70.102
+      tags: []
+      upstreams: []
+      uid: 019f9dec-683f-7234-ad6b-cfd30245d515
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Auntie`s Phone 2
+      ids:
+        - 192.168.70.105
+      tags: []
+      upstreams: []
+      uid: 019f9ded-6cd4-70eb-b54a-40d9dad55ded
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: Beverly Oasis`s iMac
       ids:
         - 192.168.12.2
@@ -610,6 +666,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: Unifi-Switch-24-PoE
+      ids:
+        - 192.168.12.251
+      tags: []
+      upstreams: []
+      uid: 019f9deb-e02e-7d54-8fcc-a5801847aa87
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: 'VPN: Andy Da'
       ids:
         - 10.10.10.2
@@ -672,6 +756,34 @@ clients:
       tags: []
       upstreams: []
       uid: 019e64d0-a608-72f6-931d-2197cf5bd4a4
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: XPEnology-VM
+      ids:
+        - 192.168.12.200
+      tags: []
+      upstreams: []
+      uid: 019f9dea-7db8-77e3-bdae-dfa6a8ca18ac
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
