@@ -217,6 +217,21 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: 阁楼 AP
+      ids:
+        - 192.168.12.245
+      tags: []
+      upstreams: []
+      uid: 019f2334-4762-70b9-a698-8057982ae169
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
 log:
   enabled: true
   file: ""
