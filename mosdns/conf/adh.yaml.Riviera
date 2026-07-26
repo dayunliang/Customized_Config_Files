@@ -246,12 +246,12 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 客厅电视机
+      name: Riviera One`s iMac
       ids:
-        - 10.29.90.107
+        - 10.29.90.2
       tags: []
       upstreams: []
-      uid: 019f9c61-b140-7886-91b5-e481393be78f
+      uid: 019f2334-4762-70b9-a698-8057982ae169
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -274,12 +274,12 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Riviera One`s iMac
+      name: 客厅电视机
       ids:
-        - 10.29.90.2
+        - 10.29.90.107
       tags: []
       upstreams: []
-      uid: 019f2334-4762-70b9-a698-8057982ae169
+      uid: 019f9c61-b140-7886-91b5-e481393be78f
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
