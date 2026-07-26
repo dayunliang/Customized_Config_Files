@@ -222,7 +222,7 @@ clients:
         - 192.168.12.2
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b1
+      uid: 7b889589-f201-4e0e-a652-603f405cfa4f
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -250,7 +250,7 @@ clients:
         - 192.168.12.1
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-7117c-9a6e-4e8c54c7095b
+      uid: eb41e69e-2186-430b-80e0-2ccba2103f5c
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -278,7 +278,7 @@ clients:
         - 192.168.12.30
       tags: []
       upstreams: []
-      uid: 0119f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 25815f4d-ec6e-48c0-accd-a34b9680d852
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -306,7 +306,7 @@ clients:
         - 192.168.80.108
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-1717c-9a6e-4e8c54c7095b
+      uid: 66f4cace-54a5-4ec5-9f2a-5d8458dd790d
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -334,7 +334,7 @@ clients:
         - 192.168.90.109
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 37675227-aa10-4050-a5f5-d74f0fc2a96d
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -362,7 +362,7 @@ clients:
         - 192.168.12.70
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 3b84dce1-6cf3-4156-bdf7-548f51007602
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -390,7 +390,7 @@ clients:
         - 192.168.12.10
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 30d726f0-4f9a-4db0-b1c2-d5220c7d06bd
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -418,7 +418,7 @@ clients:
         - 192.168.12.11
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 8398f817-a5a2-4c8b-8269-bec019ec3e9a
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -446,7 +446,7 @@ clients:
         - 192.168.90.103
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 8920783b-8a56-4730-8f32-60478293d569
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -474,7 +474,7 @@ clients:
         - 192.168.90.102
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: c6e4be20-280b-4ccb-8d4e-8a77b03684f9
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
