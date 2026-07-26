@@ -223,7 +223,7 @@ clients:
         - 192.168.12.2
       tags: []
       upstreams: []
-      uid: 019e643d-6209-7092-a2ba-176d2d40a3d7
+      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -251,7 +251,7 @@ clients:
         - 192.168.12.1
       tags: []
       upstreams: []
-      uid: 019e643e-03bd-742b-96e9-0afde5a1f8fe
+      uid: 019f0bee-0885-717c-91a6e-4e8c54c7095b
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
