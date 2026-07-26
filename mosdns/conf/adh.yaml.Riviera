@@ -217,9 +217,9 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 阁楼 AP
+      name: Riviera One`s iMac
       ids:
-        - 192.168.12.245
+        - 10.29.90.2
       tags: []
       upstreams: []
       uid: 019f2334-4762-70b9-a698-8057982ae169
