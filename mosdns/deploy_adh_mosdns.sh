@@ -188,6 +188,22 @@ ADH_DIR="${HOME}/adh"
 CRONTAB_FILE="/etc/crontabs/root"
 REPORT="/root/adh_mosdns_deploy_$(date +%Y%m%d_%H%M%S).log"
 
+# ============================================================================
+# 宿主机网段唯一识别机制 (站点精准锁桩)
+# ============================================================================
+CURRENT_SITE=""
+
+if ip -4 addr show 2>/dev/null | grep -qE "inet 192\.168\.12\.[0-9]+"; then
+  CURRENT_SITE="Beverly"
+elif ip -4 addr show 2>/dev/null | grep -qE "inet 10\.29\.2\.[0-9]+"; then
+  CURRENT_SITE="Riviera"
+else
+  err "【系统错误】无法通过当前宿主机 IP 网段识别站点！脚本触发安全熔断，停止执行。"
+  echo ""; exit 1
+fi
+
+info "当前成功锁桩站点环境 : 【 ${CURRENT_SITE} 】"
+
 title "00/10. 部署阶段临时 DNS 兜底"
 info "正在备份当前 resolv.conf，并写入临时公共 DNS，防止新环境无法解析远程下载地址..."
 setup_temporary_dns
@@ -288,95 +304,97 @@ ok "目标拓扑环境根目录彻底清洗与二次重塑完成"
 
 
 title "04/10. 拉取并编排下发 AdGuard Home 云配方"
-info "正在从远端镜像仓拉取定制版 adh.yaml 核心配置定义..."
-# AdGuard Home 配置说明：
-#   下载后的文件固定保存为：
-#     $ADH_DIR/conf/AdGuardHome.yaml
-#   该文件会被 Docker Compose 挂载进 AdGuard Home 容器。
-#   因此如果下载失败，AdGuard Home 即使容器启动，也可能没有预期的上游 DNS / 规则配置。
-curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh.yaml \
+info "正在根据当前站点 【${CURRENT_SITE}】 从远端镜像仓拉取定制版专属配置..."
+
+# 【黄金对齐】：动态拼接站点后缀，拉取真正属于该站点的 adh.yaml
+curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/conf/adh.yaml.${CURRENT_SITE}" \
   -o "$ADH_DIR/conf/AdGuardHome.yaml"
+
 info "正在从远端镜像仓拉取最新版 docker-compose.yaml 编排规约..."
-# Compose 文件说明：
-#   此处下载的是 AdGuard Home 专用 docker-compose.yaml。
-#   后续会在 $ADH_DIR 内执行 docker compose up -d。
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/adh \
   -o "$ADH_DIR/docker-compose.yaml"
 
 info "触发 Compose 编排，拉起 AdGuard Home 独立隔离沙箱..."
 ( cd "$ADH_DIR" && docker compose down -v >/dev/null 2>&1 || true )
 ( cd "$ADH_DIR" && docker compose up -d )
-ok "AdGuard Home 容器沙箱实例化运行完毕"
+ok "AdGuard Home 容器沙箱 【${CURRENT_SITE} 专属版】 实例化运行完毕"
 
 
 title "05/10. 拉取并配置 MosDNS 业务核心资源文件"
 info "正在下发 MosDNS 多态编排堆栈定义与自维护更新控制台脚本..."
 cd "$MOSDNS_DIR"
-# MosDNS Compose 文件说明：
-#   下载后保存为 $MOSDNS_DIR/docker-compose.yaml。
-#   该文件负责定义 MosDNS 容器、端口映射、配置挂载路径等运行参数。
+
+# 1. 下载基础 Compose 编排文件
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/docker-compose/mosdns \
   -o ./docker-compose.yaml
-# update.sh 说明：
-#   该脚本用于首次拉取和后续定时更新 MosDNS 所需规则数据。
-#   下方第 06/10 阶段会将它挂入 root crontab，形成每周自动更新任务。
+
+# 2. 下载自维护脚本（仅作下发并赋权，不在脚本内直接触发运行，完全交由 Crontab 异步自愈）
 curl -fsSL https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/update.sh \
   -o ~/update.sh
 chmod +x ~/update.sh
 
-info "唤醒内部数据自维护功能，执行地理特征库（GeoIP/GeoSite）首次冷拉取..."
-~/update.sh || true
-ok "MosDNS 运行生命周期管理层构建完成"
+ok "MosDNS 运行生命周期管理层（编排与脚本）构建完成"
 
 
 title "06/10. 绑定持久化系统的 Crontab 定时规则"
-info "正在向 Alpine 核心计划任务管理器中挂载规则特征库每周自动刷新任务..."
+info "正在向 Alpine 核心计划任务管理器中挂载两路网络组件每天自动刷新任务..."
 touch "$CRONTAB_FILE"
-# Crontab 幂等设计：
-#   1. 先删除旧的同路径 update.sh 任务。
-#   2. 再追加新的标准任务。
-#   这样脚本重复执行时，不会在 /etc/crontabs/root 中产生多条重复任务。
-#
-# 当前任务含义：
-#   0 4 * * 1
-#   每周一凌晨 04:00 执行 MosDNS 规则更新。
-#
-# 日志输出：
-#   标准输出和错误输出都会追加写入：
-#     $MOSDNS_DIR/update.log
-sed -i '\#cd '"$MOSDNS_DIR"' && ~/update.sh#d' "$CRONTAB_FILE"
-echo "0 4 * * * cd $MOSDNS_DIR && ~/update.sh >> $MOSDNS_DIR/update.log 2>&1" >> "$CRONTAB_FILE"
-ok "系统自动巡检任务队列挂载完成（执行频次：每周一凌晨 04:00）"
+
+# Crontab 幂等与绝对路径终极设计：
+#   1. 贪婪消杀：只要旧任务行包含 update.sh，不管带不带 cd，通通连根拔起，确保脚本成百上千次重复执行后计划任务依旧纯净唯一。
+#   2. 绝对路径落地：Crontab (busybox crond) 运行时无法解析波浪号 ~ 路径展开。因此在echo写入时直接利用 ${HOME} 变量
+#      将其强制展开为真实的绝对路径（如 /root/update.sh 和 /root/update.log），彻底堵死凌晨 4 点定时触发时的寻址失败故障。
+#   3. 全局定位对齐：鉴于 update.sh 统筹 MosDNS 与 AdGuard Home 两大容器，定时任务直接在物理根目录平铺触发，不再耦合 cd 进入 mosdns 目录。
+
+# 先行净化历史残留，确保绝对幂等性
+sed -i '\#update.sh#d' "$CRONTAB_FILE"
+
+# 终极落桩：注入绝对路径的全局联合更新任务线（执行频次：每天凌晨 04:00）
+echo "0 4 * * * ${HOME}/update.sh >> ${HOME}/update.log 2>&1" >> "$CRONTAB_FILE"
+
+ok "全局网络协同巡检任务挂载完成（执行频次：每天凌晨 04:00）"
 
 
 title "07/10. 下发全局域名分流规则与白/灰名册精细化策略"
-info "正在同步下发本地专属分流名单（geoip_private.txt、hosts.txt）..."
+info "正在创建规则文件持久化目录结构..."
 mkdir -p "$MOSDNS_DIR/rules-dat" "$MOSDNS_DIR/config/rule"
-# rules-dat 目录说明：
-#   geoip_private.txt：用于识别私有地址、内网地址等特殊 IP 段。
-#   hosts.txt：用于承载本地静态 hosts 映射。
+
+info "正在拉取 MosDNS 启动必需的外部通用特征库 (GeoIP/GeoSite 全量初始种子)..."
+# 说明：将 update.sh 中的 8 个通用基础分流特征库集中在此处单次下载完成，确保不重不漏
+cat << 'EOF_INIT_RULES' | while read -r url fname; do
+https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt geoip_cn.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/reject-list.txt geosite_category-ads-all.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt geosite_geolocation-!cn.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt geosite_cn.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt geosite_gfw.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/china-list.txt geosite_cn_extra.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt geosite_cn_apple.txt
+https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt geosite_cn_google.txt
+EOF_INIT_RULES
+  [ -z "$url" ] && continue
+  curl -fsSL --connect-timeout 5 --max-time 20 "$url" -o "$MOSDNS_DIR/rules-dat/$fname" || {
+    warn "初始下载 $fname 变慢或超时，尝试从 CDN/二级代理兜底..."
+    # 如果直连 GitHub 失败，尝试用 ghproxy 等代理加速，保障初始化不中断
+    curl -fsSL --connect-timeout 5 --max-time 20 "https://ghproxy.net/$url" -o "$MOSDNS_DIR/rules-dat/$fname" || true
+  }
+done
+
+info "正在同步下发本地专属分流名单（geoip_private.txt、hosts.txt）..."
 for s in geoip_private.txt hosts.txt; do
   curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/$s" -o "$MOSDNS_DIR/rules-dat/$s"
 done
 
-info "正在构建高精路由分流规则控制拓扑配置文件（config_custom.yaml、dns.yaml）..."
-# config 目录说明：
-#   config_custom.yaml：MosDNS 主逻辑入口，通常定义 CN / GFW / 非 CN 分流链路。
-#   dns.yaml：上游 DNS 定义文件，通常包含 ADH_CN、ADH_GFW 或其它上游。
-#   dat_exec.yaml：规则数据执行与 ECS / no_ecs 等处理逻辑。
+info "正在构建高精路由分流规则控制拓扑配置文件（config_custom.yaml、dns.yaml、dat_exec.yaml）..."
 for f in config_custom.yaml dns.yaml dat_exec.yaml; do
   curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/main/mosdns/config/$f" -o "$MOSDNS_DIR/config/$f"
 done
 
 info "正在向静态过滤池追加高可用名单策略白名册/灰名册/跳过缓存表..."
-# config/rule 目录说明：
-#   whitelist.txt：强制白名单，通常用于指定域名走特定解析路径。
-#   greylist.txt：灰名单，通常用于需要特殊判断或特殊分流的域名。
-#   nocache.txt：跳过缓存名单，适合经常变化或不希望缓存的域名。
 for r in whitelist.txt greylist.txt nocache.txt; do
   curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/config/rule/$r" -o "$MOSDNS_DIR/config/rule/$r"
 done
-ok "多级联动规则过滤数据库及逻辑调配节点全部对齐完毕"
+
+ok "多级联动规则过滤数据库及逻辑调配节点全部对齐完毕，所有必需依赖文件已就绪"
 
 
 title "08/10. 唤醒并冷启动 MosDNS 域名分流服务"
