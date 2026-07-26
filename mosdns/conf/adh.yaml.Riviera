@@ -204,7 +204,19 @@ clients:
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
-
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: Riviera One`s iMac
       ids:
         - 10.29.90.2
