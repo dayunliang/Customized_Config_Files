@@ -218,6 +218,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: Julie Wu`s iPhone 16 Pro
+      ids:
+        - 10.29.80.108
+      tags: []
+      upstreams: []
+      uid: 019f9c75-8658-70bc-9814-28ce212794c9
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: Riviera One`s 2nd Router
       ids:
         - 10.29.2.111
