@@ -157,6 +157,7 @@ filtering:
   rewrites: []
   safe_fs_patterns:
     - /opt/adguardhome/work/userfilters/*
+  max_http_size: 256MB
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
   parental_cache_size: 1048576
@@ -195,6 +196,34 @@ clients:
       tags: []
       upstreams: []
       uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Riviera One`s 2nd Router
+      ids:
+        - 10.29.2.111
+      tags: []
+      upstreams: []
+      uid: 019f9c61-b140-7886-91b5-e481393be78d
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
