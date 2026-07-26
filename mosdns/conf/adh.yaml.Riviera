@@ -223,35 +223,7 @@ clients:
         - 10.29.80.108
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: 扫地机器人
-      ids:
-        - 10.29.50.103
-      tags: []
-      upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 77df1126-8c23-4546-a96d-17b63d6cf9b2
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -279,63 +251,7 @@ clients:
         - 10.29.2.10
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: 小度智能屏
-      ids:
-        - 10.29.80.102
-      tags: []
-      upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: 客房电视机
-      ids:
-        - 10.29.90.102
-      tags: []
-      upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 05e65141-8455-438b-a2be-fb7dd1b496b9
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -363,7 +279,7 @@ clients:
         - 10.29.2.111
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 780795e2-18a5-4c22-9f4e-3d06aa04f15c
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -391,7 +307,7 @@ clients:
         - 10.29.90.2
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 3a7965c5-3ec4-4130-bda5-8204caad4dc7
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -419,7 +335,91 @@ clients:
         - 10.29.90.107
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 48dbe563-7017-4ba3-ba12-bb1802c1b84e
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 客房电视机
+      ids:
+        - 10.29.90.102
+      tags: []
+      upstreams: []
+      uid: 85bcb51d-0388-46e6-8225-1f64158e088b
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 小度智能屏
+      ids:
+        - 10.29.80.102
+      tags: []
+      upstreams: []
+      uid: ec2ebd38-8ca7-4de3-a0cf-590906c98190
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: 扫地机器人
+      ids:
+        - 10.29.50.103
+      tags: []
+      upstreams: []
+      uid: dc6fdd11-e8ad-431e-8fdb-65b351c14dd5
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
