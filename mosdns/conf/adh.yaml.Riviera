@@ -223,7 +223,7 @@ clients:
         - 10.29.80.108
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
+      uid: 855486a0-6992-44fa-9e05-93aacb52e0f5
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -251,7 +251,7 @@ clients:
         - 10.29.2.10
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b1
+      uid: 3d399206-6369-4ae9-9e7d-c88a4de6c73f
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
