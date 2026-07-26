@@ -335,7 +335,7 @@ clients:
         - 10.29.90.107
       tags: []
       upstreams: []
-      uid: ffe1f567-a99e-46c9-823e-02e5aa18f011
+      uid: 89ade222-bbcb-4b72-95d9-201e4da2b1f7
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -363,7 +363,7 @@ clients:
         - 10.29.90.102
       tags: []
       upstreams: []
-      uid: e886b48e-39f3-4361-bc8e-743d9df534ee
+      uid: 89ade222-bbcb-4b72-95d9-201e4da2b1f7
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -391,7 +391,7 @@ clients:
         - 10.29.80.102
       tags: []
       upstreams: []
-      uid: 8fcb3f69-0553-4012-a125-bb7531e54d26
+      uid: 89ade222-bbcb-4b72-95d9-201e4da2b1f71
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
@@ -419,7 +419,7 @@ clients:
         - 10.29.50.103
       tags: []
       upstreams: []
-      uid: 03c33325-c560-46a3-b6e3-3a4a7e116909
+      uid: 189ade222-bbcb-4b72-95d9-201e4da2b1f7
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
