@@ -319,6 +319,34 @@ clients:
       ignore_statistics: false
     - safe_search:
         enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Justin Da`s MacBook Air
+      ids:
+        - 192.168.90.107
+      tags: []
+      upstreams: []
+      uid: 019f9de9-642e-72d8-bd96-f242438c1dac
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
         bing: false
         duckduckgo: false
         ecosia: false
@@ -504,6 +532,34 @@ clients:
       tags: []
       upstreams: []
       uid: 019f0bf2-ae49-7a15-87ec-cfaee44d9832
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safebrowsing_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: false
+        duckduckgo: false
+        ecosia: false
+        google: false
+        pixabay: false
+        yandex: false
+        youtube: false
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: Tesla Model YL
+      ids:
+        - 192.168.50.112
+      tags: []
+      upstreams: []
+      uid: 019f9de8-3182-70f6-ba1a-3cf94d5d7327
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
