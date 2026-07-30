@@ -1058,10 +1058,150 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "dmaker-fan-p5_miap3B91"
+      name: "小米风扇-1"
+      ids:
+        - "192.168.50.102"
+        - "78:11:dc:bc:14:c2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米风扇-2"
+      ids:
+        - "192.168.50.104"
+        - "7c:49:eb:46:a1:ee"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米风扇-3"
       ids:
         - "192.168.50.107"
         - "44:23:7c:ac:3b:91"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米空气净化器"
+      ids:
+        - "192.168.50.108"
+        - "04:cf:8c:2b:35:6e"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米风扇-4"
+      ids:
+        - "192.168.50.110"
+        - "40:31:3c:b0:ad:4b"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "海尔冰箱"
+      ids:
+        - "192.168.50.109"
+        - "ac:82:26:71:16:20"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1170,62 +1310,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "zhimi-airpurifier-va1_mibt356E"
-      ids:
-        - "192.168.50.108"
-        - "04:cf:8c:2b:35:6e"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "zhimi-fan-za4_mibtAD4B"
-      ids:
-        - "192.168.50.110"
-        - "40:31:3c:b0:ad:4b"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Device-b0:f8:93:5c:b0:5a"
       ids:
         - "192.168.50.111"
@@ -1254,10 +1338,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "yunmi-waterpuri-lx6_miio92701683"
+      name: "Device-f0:9f:c2:61:c3:3e"
       ids:
-        - "192.168.50.104"
-        - "7c:49:eb:46:a1:ee"
+        - "192.168.12.251"
+        - "f0:9f:c2:61:c3:3e"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1286,62 +1370,6 @@ clients:
       ids:
         - "192.168.50.105"
         - "54:48:e6:5d:56:1f"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "zhimi-airpurifier-sa2_miio79096092"
-      ids:
-        - "192.168.50.102"
-        - "78:11:dc:bc:14:c2"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "uplus-haier-0128-1620-v6-sapbz"
-      ids:
-        - "192.168.50.109"
-        - "ac:82:26:71:16:20"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
