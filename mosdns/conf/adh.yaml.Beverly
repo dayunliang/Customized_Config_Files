@@ -1226,34 +1226,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-50:9a:4c:61:79:ae"
-      ids:
-        - "192.168.12.30"
-        - "50:9a:4c:61:79:ae"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "zhimi-airpurifier-sa2_miio79096092"
       ids:
         - "192.168.50.102"
