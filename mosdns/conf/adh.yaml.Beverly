@@ -330,34 +330,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Lean Openwrt Compiler"
-      ids:
-        - "192.168.12.70"
-        - "00:0c:29:16:c4:2f"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Julie Wu`s iPhone 16 Pro"
       ids:
         - "192.168.80.108"
@@ -946,6 +918,62 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "地下室 AP"
+      ids:
+        - "192.168.12.249"
+        - "74:83:c2:c6:5d:eb"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "儿童房 AP"
+      ids:
+        - "192.168.12.250"
+        - "78:8a:20:53:68:b9"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "H3C-1G-Switch"
       ids:
         - "192.168.12.252"
@@ -1146,6 +1174,34 @@ clients:
       ids:
         - "192.168.50.109"
         - "ac:82:26:71:16:20"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "ESXi-R230"
+      ids:
+        - "192.168.12.30"
+        - "50:9a:4c:61:79:ae"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T10:32:41.",
-  "count": 44,
+  "exportedAt": "2026-07-30T10:40:32.",
+  "count": 46,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.1",
@@ -26,10 +26,6 @@
     {
       "sourceIP": "192.168.90.107",
       "tagName": "Justin Da`s MacBook Air"
-    },
-    {
-      "sourceIP": "192.168.12.70",
-      "tagName": "Lean Openwrt Compiler"
     },
     {
       "sourceIP": "192.168.80.108",
@@ -116,6 +112,14 @@
       "tagName": "大餐厅 AP"
     },
     {
+      "sourceIP": "192.168.12.249",
+      "tagName": "地下室 AP"
+    },
+    {
+      "sourceIP": "192.168.12.250",
+      "tagName": "儿童房 AP"
+    },
+    {
       "sourceIP": "192.168.12.252",
       "tagName": "H3C-1G-Switch"
     },
@@ -146,6 +150,10 @@
     {
       "sourceIP": "192.168.50.109",
       "tagName": "海尔冰箱"
+    },
+    {
+      "sourceIP": "192.168.12.30",
+      "tagName": "ESXi-R230"
     },
     {
       "sourceIP": "192.168.50.111",
