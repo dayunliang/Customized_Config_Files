@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T10:49:11.",
-  "count": 37,
+  "exportedAt": "2026-07-30T10:51:21.",
+  "count": 40,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -36,12 +36,20 @@
       "tagName": "Device-00:0c:29:2c:45:06"
     },
     {
+      "sourceIP": "192.168.12.249",
+      "tagName": "Device-74:83:c2:c6:5d:eb"
+    },
+    {
       "sourceIP": "192.168.90.103",
       "tagName": "Device-38:b8:00:42:66:83"
     },
     {
       "sourceIP": "192.168.12.243",
       "tagName": "Device-e0:63:da:17:9d:7c"
+    },
+    {
+      "sourceIP": "192.168.12.246",
+      "tagName": "Device-74:83:c2:b9:43:cb"
     },
     {
       "sourceIP": "192.168.60.32",
@@ -62,6 +70,10 @@
     {
       "sourceIP": "192.168.90.101",
       "tagName": "TCL"
+    },
+    {
+      "sourceIP": "192.168.12.248",
+      "tagName": "Device-74:83:c2:c6:5e:44"
     },
     {
       "sourceIP": "192.168.12.10",
@@ -120,12 +132,12 @@
       "tagName": "Device-74:1f:4a:46:6c:44"
     },
     {
-      "sourceIP": "192.168.50.102",
-      "tagName": "zhimi-airpurifier-sa2_miio79096092"
+      "sourceIP": "192.168.12.30",
+      "tagName": "Device-50:9a:4c:61:79:ae"
     },
     {
-      "sourceIP": "192.168.90.107",
-      "tagName": "Justins-Air"
+      "sourceIP": "192.168.50.102",
+      "tagName": "zhimi-airpurifier-sa2_miio79096092"
     },
     {
       "sourceIP": "192.168.12.242",

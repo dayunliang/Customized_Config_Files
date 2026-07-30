@@ -385,6 +385,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "Device-74:83:c2:c6:5d:eb"
+      ids:
+        - "192.168.12.249"
+        - "74:83:c2:c6:5d:eb"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Device-38:b8:00:42:66:83"
       ids:
         - "192.168.90.103"
@@ -417,6 +445,34 @@ clients:
       ids:
         - "192.168.12.243"
         - "e0:63:da:17:9d:7c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-74:83:c2:b9:43:cb"
+      ids:
+        - "192.168.12.246"
+        - "74:83:c2:b9:43:cb"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -557,6 +613,34 @@ clients:
       ids:
         - "192.168.90.101"
         - "a8:16:9d:ff:a6:7c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-74:83:c2:c6:5e:44"
+      ids:
+        - "192.168.12.248"
+        - "74:83:c2:c6:5e:44"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -973,10 +1057,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "zhimi-airpurifier-sa2_miio79096092"
+      name: "Device-50:9a:4c:61:79:ae"
       ids:
-        - "192.168.50.102"
-        - "78:11:dc:bc:14:c2"
+        - "192.168.12.30"
+        - "50:9a:4c:61:79:ae"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1001,10 +1085,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justins-Air"
+      name: "zhimi-airpurifier-sa2_miio79096092"
       ids:
-        - "192.168.90.107"
-        - "10:b5:88:5e:b4:f9"
+        - "192.168.50.102"
+        - "78:11:dc:bc:14:c2"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
