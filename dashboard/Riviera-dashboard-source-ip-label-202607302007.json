@@ -1,0 +1,87 @@
+{
+  "type": "source-ip-label-backup",
+  "formatVersion": 4,
+  "app": "metacubexd",
+  "sourceKey": "clientSourceIPTags",
+  "sourceFormat": "metacubexd",
+  "exportedAt": "2026-07-30T12:07:09.",
+  "count": 19,
+  "normalizedData": [
+    {
+      "sourceIP": "10.29.2.80",
+      "tagName": "Home Assistant OS"
+    },
+    {
+      "sourceIP": "10.29.50.105",
+      "tagName": "HoneyWell 家庭控制屏"
+    },
+    {
+      "sourceIP": "10.29.50.104",
+      "tagName": "Y5000FVXU_BH1096326_EZVIZ"
+    },
+    {
+      "sourceIP": "10.29.50.106",
+      "tagName": "CozyLife_0VQD"
+    },
+    {
+      "sourceIP": "10.29.60.201",
+      "tagName": "Device-c4:aa:c4:bc:67:06"
+    },
+    {
+      "sourceIP": "10.29.90.2",
+      "tagName": "Riviera One`s iMac"
+    },
+    {
+      "sourceIP": "10.29.2.30",
+      "tagName": "ESXi-Riviera"
+    },
+    {
+      "sourceIP": "10.29.80.102",
+      "tagName": "小度智能屏"
+    },
+    {
+      "sourceIP": "10.29.50.101",
+      "tagName": "ChinaGateway"
+    },
+    {
+      "sourceIP": "10.29.60.204",
+      "tagName": "Device-c4:aa:c4:75:a6:84"
+    },
+    {
+      "sourceIP": "10.29.60.202",
+      "tagName": "Device-c4:aa:c4:bc:66:f8"
+    },
+    {
+      "sourceIP": "10.29.50.102",
+      "tagName": "Bouffalolab_tg7100c-e233d0"
+    },
+    {
+      "sourceIP": "10.29.2.60",
+      "tagName": "Unifi-Network-Application"
+    },
+    {
+      "sourceIP": "10.29.60.205",
+      "tagName": "Device-c4:aa:c4:bc:da:57"
+    },
+    {
+      "sourceIP": "10.29.2.10",
+      "tagName": "MosDNS"
+    },
+    {
+      "sourceIP": "10.29.2.111",
+      "tagName": "Device-00:0c:29:59:e5:74"
+    },
+    {
+      "sourceIP": "10.29.50.103",
+      "tagName": "扫地机器人"
+    },
+    {
+      "sourceIP": "10.29.2.253",
+      "tagName": "Device-24:5a:5f:f0:e5:ac"
+    },
+    {
+      "sourceIP": "10.29.60.203",
+      "tagName": "Device-c4:aa:c4:75:a6:ae"
+    }
+  ]
+}
