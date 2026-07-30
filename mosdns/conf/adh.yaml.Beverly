@@ -637,6 +637,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "大餐厅 AP"
+      ids:
+        - "192.168.12.248"
+        - "74:83:c2:c6:5e:44"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "MosDNS-1"
       ids:
         - "192.168.12.10"
@@ -1029,10 +1057,66 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "ESXi-R230"
+      ids:
+        - "192.168.12.30"
+        - "50:9a:4c:61:79:ae"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "小米风扇-4"
       ids:
         - "192.168.50.102"
         - "78:11:dc:bc:14:c2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "花园东北角 AP"
+      ids:
+        - "192.168.12.242"
+        - "74:ac:b9:bc:bf:fb"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T10:53:33.",
-  "count": 37,
+  "exportedAt": "2026-07-30T10:54:29.",
+  "count": 40,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -72,6 +72,10 @@
       "tagName": "TCL 65C845"
     },
     {
+      "sourceIP": "192.168.12.248",
+      "tagName": "大餐厅 AP"
+    },
+    {
       "sourceIP": "192.168.12.10",
       "tagName": "MosDNS-1"
     },
@@ -128,8 +132,16 @@
       "tagName": "H3C-10G-Switch"
     },
     {
+      "sourceIP": "192.168.12.30",
+      "tagName": "ESXi-R230"
+    },
+    {
       "sourceIP": "192.168.50.102",
       "tagName": "小米风扇-4"
+    },
+    {
+      "sourceIP": "192.168.12.242",
+      "tagName": "花园东北角 AP"
     },
     {
       "sourceIP": "192.168.12.40",
