@@ -4,28 +4,28 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T10:51:21.",
-  "count": 40,
+  "exportedAt": "2026-07-30T10:53:33.",
+  "count": 37,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
-      "tagName": "Device-08:68:8d:cd:e3:7d"
+      "tagName": "H3C-1G-Switch"
     },
     {
       "sourceIP": "192.168.12.11",
-      "tagName": "Device-00:0c:29:f4:60:c5"
+      "tagName": "MosDNS-2"
     },
     {
       "sourceIP": "192.168.50.107",
-      "tagName": "dmaker-fan-p5_miap3B91"
+      "tagName": "小米风扇-1"
     },
     {
       "sourceIP": "192.168.12.250",
-      "tagName": "Device-78:8a:20:53:68:b9"
+      "tagName": "儿童房 AP"
     },
     {
       "sourceIP": "192.168.12.245",
-      "tagName": "Device-74:83:c2:02:d5:f2"
+      "tagName": "阁楼 AP"
     },
     {
       "sourceIP": "10.10.10.4",
@@ -33,23 +33,23 @@
     },
     {
       "sourceIP": "192.168.12.60",
-      "tagName": "Device-00:0c:29:2c:45:06"
+      "tagName": "Unifi Network Appliance"
     },
     {
       "sourceIP": "192.168.12.249",
-      "tagName": "Device-74:83:c2:c6:5d:eb"
+      "tagName": "地下室 AP"
     },
     {
       "sourceIP": "192.168.90.103",
-      "tagName": "Device-38:b8:00:42:66:83"
+      "tagName": "Panasonic 43LX800"
     },
     {
       "sourceIP": "192.168.12.243",
-      "tagName": "Device-e0:63:da:17:9d:7c"
+      "tagName": "主卧室 AP"
     },
     {
       "sourceIP": "192.168.12.246",
-      "tagName": "Device-74:83:c2:b9:43:cb"
+      "tagName": "小餐厅 AP"
     },
     {
       "sourceIP": "192.168.60.32",
@@ -61,35 +61,31 @@
     },
     {
       "sourceIP": "192.168.12.200",
-      "tagName": "Device-00:0c:29:f9:de:38"
+      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "192.168.12.50",
-      "tagName": "metatube"
+      "tagName": "MetaTube"
     },
     {
       "sourceIP": "192.168.90.101",
-      "tagName": "TCL"
-    },
-    {
-      "sourceIP": "192.168.12.248",
-      "tagName": "Device-74:83:c2:c6:5e:44"
+      "tagName": "TCL 65C845"
     },
     {
       "sourceIP": "192.168.12.10",
-      "tagName": "Device-00:0c:29:3e:a2:94"
+      "tagName": "MosDNS-1"
     },
     {
       "sourceIP": "192.168.50.108",
-      "tagName": "zhimi-airpurifier-va1_mibt356E"
+      "tagName": "小米空气净化器"
     },
     {
       "sourceIP": "192.168.12.247",
-      "tagName": "Device-78:8a:20:53:60:b0"
+      "tagName": "大客厅 AP"
     },
     {
       "sourceIP": "192.168.50.110",
-      "tagName": "zhimi-fan-za4_mibtAD4B"
+      "tagName": "小米风扇-2"
     },
     {
       "sourceIP": "192.168.12.3",
@@ -97,31 +93,31 @@
     },
     {
       "sourceIP": "192.168.50.111",
-      "tagName": "Device-b0:f8:93:5c:b0:5a"
+      "tagName": "地下室除湿机"
     },
     {
       "sourceIP": "192.168.12.100",
-      "tagName": "DiskStation"
+      "tagName": "Synology DS411+"
     },
     {
       "sourceIP": "192.168.12.244",
-      "tagName": "Device-fc:ec:da:3d:5f:2b"
+      "tagName": "书房 AP"
     },
     {
       "sourceIP": "192.168.12.2",
-      "tagName": "AndyDasiMac128"
+      "tagName": "Beverly Oasis`s iMac"
     },
     {
       "sourceIP": "192.168.12.1",
-      "tagName": "Device-00:0c:29:7c:37:6d"
+      "tagName": "Beverly.2nd.Router"
     },
     {
       "sourceIP": "192.168.50.101",
-      "tagName": "MiAiSoundbox"
+      "tagName": "小爱音箱"
     },
     {
       "sourceIP": "192.168.50.104",
-      "tagName": "yunmi-waterpuri-lx6_miio92701683"
+      "tagName": "小米风扇-3"
     },
     {
       "sourceIP": "192.168.50.105",
@@ -129,39 +125,31 @@
     },
     {
       "sourceIP": "192.168.12.253",
-      "tagName": "Device-74:1f:4a:46:6c:44"
-    },
-    {
-      "sourceIP": "192.168.12.30",
-      "tagName": "Device-50:9a:4c:61:79:ae"
+      "tagName": "H3C-10G-Switch"
     },
     {
       "sourceIP": "192.168.50.102",
-      "tagName": "zhimi-airpurifier-sa2_miio79096092"
-    },
-    {
-      "sourceIP": "192.168.12.242",
-      "tagName": "Device-74:ac:b9:bc:bf:fb"
+      "tagName": "小米风扇-4"
     },
     {
       "sourceIP": "192.168.12.40",
-      "tagName": "Device-24:6e:96:3c:3b:18"
+      "tagName": "ESXi-R730xd"
     },
     {
       "sourceIP": "192.168.80.108",
-      "tagName": "JulieWuone16Pro"
+      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "192.168.50.113",
-      "tagName": "mijia-clock"
+      "tagName": "米家闹钟"
     },
     {
       "sourceIP": "192.168.12.241",
-      "tagName": "Device-f0:9f:c2:a3:55:5b"
+      "tagName": "花园西北角 AP"
     },
     {
       "sourceIP": "192.168.50.109",
-      "tagName": "uplus-haier-0128-1620-v6-sapbz"
+      "tagName": "海尔冰箱"
     },
     {
       "sourceIP": "192.168.12.31",
