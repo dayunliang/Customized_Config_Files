@@ -2,13 +2,9 @@
   "type": "source-ip-label-backup",
   "formatVersion": 4,
   "app": "metacubexd",
-  "dashboardVersion": null,
-  "dashboardVersionType": null,
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "origin": "http://192.168.12.1:9090",
-  "pathname": "/ui/metacubexd/",
-  "exportedAt": "2026-07-30T09:30:58.",
+  "exportedAt": "2026-07-30T09:37:00.",
   "count": 47,
   "normalizedData": [
     {
@@ -176,12 +172,12 @@
       "tagName": "Device-b0:f8:93:5c:b0:5a"
     },
     {
-      "sourceIP": "192.168.50.105",
-      "tagName": "nwt-derh-312en_mibt561F"
+      "sourceIP": "192.168.12.251",
+      "tagName": "Device-f0:9f:c2:61:c3:3e"
     },
     {
-      "sourceIP": "192.168.12.30",
-      "tagName": "Device-50:9a:4c:61:79:ae"
+      "sourceIP": "192.168.50.105",
+      "tagName": "nwt-derh-312en_mibt561F"
     },
     {
       "sourceIP": "192.168.12.31",

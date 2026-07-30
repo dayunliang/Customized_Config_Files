@@ -1338,10 +1338,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "nwt-derh-312en_mibt561F"
+      name: "Device-f0:9f:c2:61:c3:3e"
       ids:
-        - "192.168.50.105"
-        - "54:48:e6:5d:56:1f"
+        - "192.168.12.251"
+        - "f0:9f:c2:61:c3:3e"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1366,10 +1366,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-50:9a:4c:61:79:ae"
+      name: "nwt-derh-312en_mibt561F"
       ids:
-        - "192.168.12.30"
-        - "50:9a:4c:61:79:ae"
+        - "192.168.50.105"
+        - "54:48:e6:5d:56:1f"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
