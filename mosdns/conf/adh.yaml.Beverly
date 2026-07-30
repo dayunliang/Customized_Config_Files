@@ -190,18 +190,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Andy Da`s iPhone 17 Pro
+      name: "Beverly.2nd.Router"
       ids:
-        - 192.168.90.108
+        - "192.168.12.1"
+        - "00:0c:29:7c:37:6d"
       tags: []
       upstreams: []
-      uid: 019f0bee-0885-717c-9a6e-4e8c54c7095b
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -218,18 +218,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Auntie`s Phone
+      name: "MosDNS-1"
       ids:
-        - 192.168.70.102
+        - "192.168.12.10"
+        - "00:0c:29:3e:a2:94"
       tags: []
       upstreams: []
-      uid: 019f9dec-683f-7234-ad6b-cfd30245d515
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -246,18 +246,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Auntie`s Phone 2
+      name: "MosDNS-2"
       ids:
-        - 192.168.70.105
+        - "192.168.12.11"
+        - "00:0c:29:f4:60:c5"
       tags: []
       upstreams: []
-      uid: 019f9ded-6cd4-70eb-b54a-40d9dad55ded
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -274,18 +274,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Beverly Oasis`s iMac
+      name: "Andy Da`s iPhone 17 Pro"
       ids:
-        - 192.168.12.2
+        - "192.168.90.108"
+        - "78:3f:4d:2d:4e:30"
       tags: []
       upstreams: []
-      uid: cc37c828-ca74-4223-a5cd-f9ddef144cb1
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -302,18 +302,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Beverly.2nd.Router
+      name: "Justin Da`s MacBook Air"
       ids:
-        - 192.168.12.1
+        - "192.168.90.107"
+        - "10:b5:88:5e:b4:f9"
       tags: []
       upstreams: []
-      uid: 1f890b41-ffc1-46fa-99f2-b0da15049343
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -330,18 +330,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: ESXi-R230
+      name: "Lean Openwrt Compiler"
       ids:
-        - 192.168.12.30
+        - "192.168.12.70"
+        - "00:0c:29:16:c4:2f"
       tags: []
       upstreams: []
-      uid: 019e64cf-7b3e-7abf-86a3-81ab7a8de1f7
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -358,18 +358,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Julie Wu`s iPhone 16 Pro
+      name: "Julie Wu`s iPhone 16 Pro"
       ids:
-        - 192.168.80.108
+        - "192.168.80.108"
+        - "6c:3a:ff:1e:5f:03"
       tags: []
       upstreams: []
-      uid: 3b18b9a0-4bdd-4c17-abdc-5b86d72d5a78
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -386,102 +386,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Justin Da`s MacBook Air
+      name: "WIN11-LOFT"
       ids:
-        - 192.168.90.107
+        - "192.168.12.3"
+        - "60:45:cb:9f:37:67"
       tags: []
       upstreams: []
-      uid: 019f9de9-642e-72d8-bd96-f242438c1dac
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: Justin Da`s MacBook Air M5
-      ids:
-        - 192.168.90.109
-      tags: []
-      upstreams: []
-      uid: be24314f-c8c8-4a0f-898d-43d5477926a0
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: Lean Openwrt Compiler
-      ids:
-        - 192.168.12.70
-      tags: []
-      upstreams: []
-      uid: cd7976b5-3161-4966-a10c-209b002fabd0
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: MosDNS-1
-      ids:
-        - 192.168.12.10
-      tags: []
-      upstreams: []
-      uid: a07284d2-c8a2-4fcf-aa43-be38062832b0
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -498,18 +414,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: MosDNS-2
+      name: "TCL 65C845"
       ids:
-        - 192.168.12.11
+        - "192.168.90.101"
+        - "a8:16:9d:ff:a6:7c"
       tags: []
       upstreams: []
-      uid: 395571bd-9b3f-4ca2-b171-5f3c81f26521
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -526,18 +442,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Panasonic 43LX800
+      name: "Panasonic 43LX800"
       ids:
-        - 192.168.90.103
+        - "192.168.90.103"
+        - "38:b8:00:42:66:83"
       tags: []
       upstreams: []
-      uid: 55bddebe-a15c-475c-b5f9-541c207d78b2
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -554,18 +470,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Philips 77OLED808
+      name: "Unifi Network Appliance"
       ids:
-        - 192.168.90.102
+        - "192.168.12.60"
+        - "00:0c:29:2c:45:06"
       tags: []
       upstreams: []
-      uid: 288f887f-e7a7-4f2f-b38c-3dac725ce263
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -582,74 +498,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: TCL 65C845
+      name: "Beverly Oasis`s iMac"
       ids:
-        - 192.168.90.101
+        - "192.168.12.2"
+        - "80:4a:14:69:92:88"
       tags: []
       upstreams: []
-      uid: 019f0bf2-ae49-7a15-87ec-cfaee44d9832
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: Tesla Model YL
-      ids:
-        - 192.168.50.112
-      tags: []
-      upstreams: []
-      uid: 019f9de8-3182-70f6-ba1a-3cf94d5d7327
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: Unifi Network Appliance
-      ids:
-        - 192.168.12.60
-      tags: []
-      upstreams: []
-      uid: 019f0d34-8e9f-7c7e-98b6-41798d808a2e
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -666,18 +526,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: Unifi-Switch-24-PoE
+      name: "ESXi-R730xd"
       ids:
-        - 192.168.12.251
+        - "192.168.12.40"
+        - "24:6e:96:3c:3b:18"
       tags: []
       upstreams: []
-      uid: 019f9deb-e02e-7d54-8fcc-a5801847aa87
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -694,18 +554,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 'VPN: Andy Da'
+      name: "Synology DS411+"
       ids:
-        - 10.10.10.2
+        - "192.168.12.100"
+        - "00:11:32:08:93:b6"
       tags: []
       upstreams: []
-      uid: 019e64d1-1f4b-7f22-8281-8c0e7aad5a01
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -722,18 +582,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: WIN11-LOFT
+      name: "XPEnology-VM"
       ids:
-        - 192.168.12.3
+        - "192.168.12.200"
+        - "00:0c:29:f9:de:38"
       tags: []
       upstreams: []
-      uid: 019f0bee-ca16-7acc-99b9-a44edecb790e
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -750,18 +610,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: WIN11-VM-R730xd
+      name: "Auntie`s Phone"
       ids:
-        - 192.168.12.110
+        - "192.168.70.105"
+        - "a2:e8:8f:dd:db:30"
       tags: []
       upstreams: []
-      uid: 019e64d0-a608-72f6-931d-2197cf5bd4a4
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -778,18 +638,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: XPEnology-VM
+      name: "小爱音箱"
       ids:
-        - 192.168.12.200
+        - "192.168.50.101"
+        - "3c:bd:3e:62:6e:c9"
       tags: []
       upstreams: []
-      uid: 019f9dea-7db8-77e3-bdae-dfa6a8ca18ac
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -806,18 +666,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 一楼 扫地机器人
+      name: "米家闹钟"
       ids:
-        - 192.168.50.106
+        - "192.168.50.113"
+        - "50:ec:50:74:0e:57"
       tags: []
       upstreams: []
-      uid: 019f0d38-282f-77ad-ab2c-2e781e805507
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -834,18 +694,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 主卧室 AP
+      name: "小餐厅 AP"
       ids:
-        - 192.168.12.243
+        - "192.168.12.246"
+        - "74:83:c2:b9:43:cb"
       tags: []
       upstreams: []
-      uid: 019f0d36-5c40-7110-9a53-0e496bef7cc8
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -862,18 +722,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 书房 AP
+      name: "Device-08:68:8d:cd:e3:7d"
       ids:
-        - 192.168.12.244
+        - "192.168.12.252"
+        - "08:68:8d:cd:e3:7d"
       tags: []
       upstreams: []
-      uid: 019f2332-9e24-78db-82fc-922d7a496956
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -890,18 +750,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 儿童房 AP
+      name: "dmaker-fan-p5_miap3B91"
       ids:
-        - 192.168.12.250
+        - "192.168.50.107"
+        - "44:23:7c:ac:3b:91"
       tags: []
       upstreams: []
-      uid: 019f0d37-2e17-73e3-9e30-6bafe7ec2358
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -918,18 +778,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 厨房大冰箱
+      name: "Device-78:8a:20:53:68:b9"
       ids:
-        - 192.168.50.109
+        - "192.168.12.250"
+        - "78:8a:20:53:68:b9"
       tags: []
       upstreams: []
-      uid: 019f0d35-5233-7710-a0aa-b5d9d264aede
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -946,18 +806,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 地下室 AP
+      name: "Device-74:83:c2:02:d5:f2"
       ids:
-        - 192.168.12.249
+        - "192.168.12.245"
+        - "74:83:c2:02:d5:f2"
       tags: []
       upstreams: []
-      uid: 019f2332-3912-7444-a74c-bd72e42a4fee
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -974,18 +834,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 地下室除湿机
+      name: "VPN: Andy Da"
       ids:
-        - 192.168.50.111
+        - "10.10.10.4"
+        - "00:00:00:00:00:00"
       tags: []
       upstreams: []
-      uid: 019f0bec-65d3-7edc-a830-08d305c0f3aa
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -1002,18 +862,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 大客厅 AP
+      name: "Device-74:83:c2:c6:5d:eb"
       ids:
-        - 192.168.12.247
+        - "192.168.12.249"
+        - "74:83:c2:c6:5d:eb"
       tags: []
       upstreams: []
-      uid: 019f0bf0-6e66-7182-9a09-1bc1f4c672d5
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -1030,18 +890,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 大餐厅 AP
+      name: "Device-e0:63:da:17:9d:7c"
       ids:
-        - 192.168.12.248
+        - "192.168.12.243"
+        - "e0:63:da:17:9d:7c"
       tags: []
       upstreams: []
-      uid: 019f2333-dac9-72b9-8693-ac50bd123dca
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -1058,46 +918,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 小爱音箱
+      name: "Device-04:03:12:09:a1:52"
       ids:
-        - 192.168.50.101
+        - "192.168.60.32"
+        - "04:03:12:09:a1:52"
       tags: []
       upstreams: []
-      uid: 019f0bed-044d-7e6d-aafe-0ddfc59cdeac
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: false
-        duckduckgo: false
-        ecosia: false
-        google: false
-        pixabay: false
-        yandex: false
-        youtube: false
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: 小餐厅 AP
-      ids:
-        - 192.168.12.246
-      tags: []
-      upstreams: []
-      uid: 019f0d1d-45fa-7d2d-a0a6-d9eebeabedd6
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -1114,18 +946,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 花园东北角 AP
+      name: "WIN11-VM-R730xd"
       ids:
-        - 192.168.12.242
+        - "192.168.12.110"
+        - "00:50:56:90:20:25"
       tags: []
       upstreams: []
-      uid: 019f2331-272b-714e-b1c7-fb22f32e43ae
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -1142,18 +974,18 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 花园西北角 AP
+      name: "Device-74:83:c2:c6:5e:44"
       ids:
-        - 192.168.12.241
+        - "192.168.12.248"
+        - "74:83:c2:c6:5e:44"
       tags: []
       upstreams: []
-      uid: 019f2331-e18e-75de-bdc5-5030aa3c45fd
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
@@ -1170,18 +1002,494 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: 阁楼 AP
+      name: "zhimi-airpurifier-va1_mibt356E"
       ids:
-        - 192.168.12.245
+        - "192.168.50.108"
+        - "04:cf:8c:2b:35:6e"
       tags: []
       upstreams: []
-      uid: 019f2334-4762-70b9-a698-8057982ae169
       upstreams_cache_size: 0
       upstreams_cache_enabled: false
       use_global_settings: true
       filtering_enabled: false
       parental_enabled: false
-      safebrowsing_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-78:8a:20:53:60:b0"
+      ids:
+        - "192.168.12.247"
+        - "78:8a:20:53:60:b0"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "zhimi-fan-za4_mibtAD4B"
+      ids:
+        - "192.168.50.110"
+        - "40:31:3c:b0:ad:4b"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-b0:f8:93:5c:b0:5a"
+      ids:
+        - "192.168.50.111"
+        - "b0:f8:93:5c:b0:5a"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-fc:ec:da:3d:5f:2b"
+      ids:
+        - "192.168.12.244"
+        - "fc:ec:da:3d:5f:2b"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "yunmi-waterpuri-lx6_miio92701683"
+      ids:
+        - "192.168.50.104"
+        - "7c:49:eb:46:a1:ee"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "nwt-derh-312en_mibt561F"
+      ids:
+        - "192.168.50.105"
+        - "54:48:e6:5d:56:1f"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-74:1f:4a:46:6c:44"
+      ids:
+        - "192.168.12.253"
+        - "74:1f:4a:46:6c:44"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-50:9a:4c:61:79:ae"
+      ids:
+        - "192.168.12.30"
+        - "50:9a:4c:61:79:ae"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "zhimi-airpurifier-sa2_miio79096092"
+      ids:
+        - "192.168.50.102"
+        - "78:11:dc:bc:14:c2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-74:ac:b9:bc:bf:fb"
+      ids:
+        - "192.168.12.242"
+        - "74:ac:b9:bc:bf:fb"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-f0:9f:c2:a3:55:5b"
+      ids:
+        - "192.168.12.241"
+        - "f0:9f:c2:a3:55:5b"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "uplus-haier-0128-1620-v6-sapbz"
+      ids:
+        - "192.168.50.109"
+        - "ac:82:26:71:16:20"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "idrac-DDBJJK2"
+      ids:
+        - "192.168.12.31"
+        - "50:9a:4c:61:79:b0"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "2023P168"
+      ids:
+        - "192.168.70.101"
+        - "2a:16:2d:90:3c:10"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-5c:c5:63:e3:2c:94"
+      ids:
+        - "192.168.50.106"
+        - "5c:c5:63:e3:2c:94"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "idrac-6FYM8M2"
+      ids:
+        - "192.168.12.41"
+        - "d0:94:66:20:f5:f4"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "metatube"
+      ids:
+        - "192.168.12.50"
+        - "00:0c:29:66:2e:a9"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
