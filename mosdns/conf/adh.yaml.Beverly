@@ -330,33 +330,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00"
-      ids:
-        - "10.10.10.4"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Unifi Network Appliance"
       ids:
         - "192.168.12.60"
@@ -637,10 +610,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "大餐厅 AP"
+      name: "MosDNS-1"
       ids:
-        - "192.168.12.248"
-        - "74:83:c2:c6:5e:44"
+        - "192.168.12.10"
+        - "00:0c:29:3e:a2:94"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -665,10 +638,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "MosDNS-1"
+      name: "idrac-6FYM8M2"
       ids:
-        - "192.168.12.10"
-        - "00:0c:29:3e:a2:94"
+        - "192.168.12.41"
+        - "d0:94:66:20:f5:f4"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -861,34 +834,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "书房 AP"
-      ids:
-        - "192.168.12.244"
-        - "fc:ec:da:3d:5f:2b"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Beverly Oasis`s iMac"
       ids:
         - "192.168.12.2"
@@ -921,6 +866,34 @@ clients:
       ids:
         - "192.168.12.1"
         - "00:0c:29:7c:37:6d"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-f0:9f:c2:61:c3:3e"
+      ids:
+        - "192.168.12.251"
+        - "f0:9f:c2:61:c3:3e"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1005,6 +978,34 @@ clients:
       ids:
         - "192.168.50.105"
         - "54:48:e6:5d:56:1f"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Lean Openwrt Compiler"
+      ids:
+        - "192.168.12.70"
+        - "00:0c:29:16:c4:2f"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

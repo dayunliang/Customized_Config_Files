@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T10:54:29.",
+  "exportedAt": "2026-07-30T18:00:00.",
   "count": 40,
   "normalizedData": [
     {
@@ -26,10 +26,6 @@
     {
       "sourceIP": "192.168.12.245",
       "tagName": "阁楼 AP"
-    },
-    {
-      "sourceIP": "10.10.10.4",
-      "tagName": "Device-00:00:00:00:00:00"
     },
     {
       "sourceIP": "192.168.12.60",
@@ -72,12 +68,12 @@
       "tagName": "TCL 65C845"
     },
     {
-      "sourceIP": "192.168.12.248",
-      "tagName": "大餐厅 AP"
-    },
-    {
       "sourceIP": "192.168.12.10",
       "tagName": "MosDNS-1"
+    },
+    {
+      "sourceIP": "192.168.12.41",
+      "tagName": "idrac-6FYM8M2"
     },
     {
       "sourceIP": "192.168.50.108",
@@ -104,16 +100,16 @@
       "tagName": "Synology DS411+"
     },
     {
-      "sourceIP": "192.168.12.244",
-      "tagName": "书房 AP"
-    },
-    {
       "sourceIP": "192.168.12.2",
       "tagName": "Beverly Oasis`s iMac"
     },
     {
       "sourceIP": "192.168.12.1",
       "tagName": "Beverly.2nd.Router"
+    },
+    {
+      "sourceIP": "192.168.12.251",
+      "tagName": "Device-f0:9f:c2:61:c3:3e"
     },
     {
       "sourceIP": "192.168.50.101",
@@ -126,6 +122,10 @@
     {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
+    },
+    {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
     },
     {
       "sourceIP": "192.168.12.253",
