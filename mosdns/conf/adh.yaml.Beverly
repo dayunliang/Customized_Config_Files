@@ -1310,6 +1310,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "idrac-6FYM8M2"
+      ids:
+        - "192.168.12.41"
+        - "d0:94:66:20:f5:f4"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Device-b0:f8:93:5c:b0:5a"
       ids:
         - "192.168.50.111"
@@ -1426,34 +1454,6 @@ clients:
       ids:
         - "192.168.50.106"
         - "5c:c5:63:e3:2c:94"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "idrac-6FYM8M2"
-      ids:
-        - "192.168.12.41"
-        - "d0:94:66:20:f5:f4"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
