@@ -8,8 +8,8 @@
   "sourceFormat": "metacubexd",
   "origin": "http://192.168.12.1:9090",
   "pathname": "/ui/metacubexd/",
-  "exportedAt": "2026-07-30T06:19:39.",
-  "count": 46,
+  "exportedAt": "2026-07-30T09:30:58.",
+  "count": 47,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.1",
@@ -136,8 +136,28 @@
       "tagName": "H3C-10G-Switch"
     },
     {
+      "sourceIP": "192.168.50.102",
+      "tagName": "小米风扇-1"
+    },
+    {
+      "sourceIP": "192.168.50.104",
+      "tagName": "小米风扇-2"
+    },
+    {
       "sourceIP": "192.168.50.107",
-      "tagName": "dmaker-fan-p5_miap3B91"
+      "tagName": "小米风扇-3"
+    },
+    {
+      "sourceIP": "192.168.50.108",
+      "tagName": "小米空气净化器"
+    },
+    {
+      "sourceIP": "192.168.50.110",
+      "tagName": "小米风扇-4"
+    },
+    {
+      "sourceIP": "192.168.50.109",
+      "tagName": "海尔冰箱"
     },
     {
       "sourceIP": "10.10.10.4",
@@ -152,32 +172,16 @@
       "tagName": "WIN11-VM-R730xd"
     },
     {
-      "sourceIP": "192.168.50.108",
-      "tagName": "zhimi-airpurifier-va1_mibt356E"
-    },
-    {
-      "sourceIP": "192.168.50.110",
-      "tagName": "zhimi-fan-za4_mibtAD4B"
-    },
-    {
       "sourceIP": "192.168.50.111",
       "tagName": "Device-b0:f8:93:5c:b0:5a"
-    },
-    {
-      "sourceIP": "192.168.50.104",
-      "tagName": "yunmi-waterpuri-lx6_miio92701683"
     },
     {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
     },
     {
-      "sourceIP": "192.168.50.102",
-      "tagName": "zhimi-airpurifier-sa2_miio79096092"
-    },
-    {
-      "sourceIP": "192.168.50.109",
-      "tagName": "uplus-haier-0128-1620-v6-sapbz"
+      "sourceIP": "192.168.12.30",
+      "tagName": "Device-50:9a:4c:61:79:ae"
     },
     {
       "sourceIP": "192.168.12.31",
