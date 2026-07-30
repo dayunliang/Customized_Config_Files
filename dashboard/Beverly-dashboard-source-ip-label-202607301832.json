@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T09:37:00.",
-  "count": 47,
+  "exportedAt": "2026-07-30T10:32:41.",
+  "count": 44,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.1",
@@ -116,14 +116,6 @@
       "tagName": "大餐厅 AP"
     },
     {
-      "sourceIP": "192.168.12.249",
-      "tagName": "地下室 AP"
-    },
-    {
-      "sourceIP": "192.168.12.250",
-      "tagName": "儿童房 AP"
-    },
-    {
       "sourceIP": "192.168.12.252",
       "tagName": "H3C-1G-Switch"
     },
@@ -156,6 +148,10 @@
       "tagName": "海尔冰箱"
     },
     {
+      "sourceIP": "192.168.50.111",
+      "tagName": "地下室除湿机"
+    },
+    {
       "sourceIP": "10.10.10.4",
       "tagName": "VPN: Andy Da"
     },
@@ -166,14 +162,6 @@
     {
       "sourceIP": "192.168.12.110",
       "tagName": "WIN11-VM-R730xd"
-    },
-    {
-      "sourceIP": "192.168.50.111",
-      "tagName": "Device-b0:f8:93:5c:b0:5a"
-    },
-    {
-      "sourceIP": "192.168.12.251",
-      "tagName": "Device-f0:9f:c2:61:c3:3e"
     },
     {
       "sourceIP": "192.168.50.105",
