@@ -414,6 +414,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "小餐厅 AP"
+      ids:
+        - "192.168.12.246"
+        - "74:83:c2:b9:43:cb"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Device-04:03:12:09:a1:52"
       ids:
         - "192.168.60.32"
@@ -614,6 +642,34 @@ clients:
       ids:
         - "192.168.50.108"
         - "04:cf:8c:2b:35:6e"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "大客厅 AP"
+      ids:
+        - "192.168.12.247"
+        - "78:8a:20:53:60:b0"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -946,10 +1002,66 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "ESXi-R230"
+      ids:
+        - "192.168.12.30"
+        - "50:9a:4c:61:79:ae"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "小米风扇-4"
       ids:
         - "192.168.50.102"
         - "78:11:dc:bc:14:c2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "花园东北角 AP"
+      ids:
+        - "192.168.12.242"
+        - "74:ac:b9:bc:bf:fb"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
