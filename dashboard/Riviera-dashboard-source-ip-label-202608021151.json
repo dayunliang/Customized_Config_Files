@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-07-30T12:07:09.",
-  "count": 19,
+  "exportedAt": "2026-08-02T03:51:39.",
+  "count": 32,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -24,12 +24,28 @@
       "tagName": "CozyLife_0VQD"
     },
     {
+      "sourceIP": "10.29.70.105",
+      "tagName": "CET-AL00"
+    },
+    {
+      "sourceIP": "10.29.50.107",
+      "tagName": "Device-98:17:1a:ee:7c:e2"
+    },
+    {
       "sourceIP": "10.29.60.201",
       "tagName": "Device-c4:aa:c4:bc:67:06"
     },
     {
       "sourceIP": "10.29.90.2",
       "tagName": "Riviera One`s iMac"
+    },
+    {
+      "sourceIP": "10.29.90.103",
+      "tagName": "Box R 4K Plus"
+    },
+    {
+      "sourceIP": "10.29.90.107",
+      "tagName": "客厅电视机"
     },
     {
       "sourceIP": "10.29.2.30",
@@ -40,8 +56,16 @@
       "tagName": "小度智能屏"
     },
     {
+      "sourceIP": "10.29.50.108",
+      "tagName": "Device-34:fa:1c:b6:49:4e"
+    },
+    {
       "sourceIP": "10.29.50.101",
       "tagName": "ChinaGateway"
+    },
+    {
+      "sourceIP": "10.29.2.200",
+      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -52,6 +76,10 @@
       "tagName": "Device-c4:aa:c4:bc:66:f8"
     },
     {
+      "sourceIP": "10.29.70.104",
+      "tagName": "OPPO-A55-5G"
+    },
+    {
       "sourceIP": "10.29.50.102",
       "tagName": "Bouffalolab_tg7100c-e233d0"
     },
@@ -60,12 +88,32 @@
       "tagName": "Unifi-Network-Application"
     },
     {
+      "sourceIP": "10.29.2.103",
+      "tagName": "北客房-AP"
+    },
+    {
       "sourceIP": "10.29.60.205",
       "tagName": "Device-c4:aa:c4:bc:da:57"
     },
     {
+      "sourceIP": "10.29.90.102",
+      "tagName": "北客房电视机"
+    },
+    {
+      "sourceIP": "10.29.50.109",
+      "tagName": "Device-98:e0:81:df:91:da"
+    },
+    {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
+    },
+    {
+      "sourceIP": "10.29.90.108",
+      "tagName": "Andy Da`s iPhone 17 Pro"
+    },
+    {
+      "sourceIP": "10.29.90.105",
+      "tagName": "ShadowtkiiPhone"
     },
     {
       "sourceIP": "10.29.2.111",
@@ -74,6 +122,10 @@
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
+    },
+    {
+      "sourceIP": "10.29.80.108",
+      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "10.29.2.253",
