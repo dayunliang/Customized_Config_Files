@@ -190,6 +190,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "Tesla Model YL"
+      ids:
+        - "192.168.50.112"
+        - "0c:29:8f:76:27:ac"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "H3C-1G-Switch"
       ids:
         - "192.168.12.252"
@@ -302,6 +330,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "阁楼 AP"
+      ids:
+        - "192.168.12.245"
+        - "74:83:c2:02:d5:f2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Unifi Network Appliance"
       ids:
         - "192.168.12.60"
@@ -390,6 +446,34 @@ clients:
       ids:
         - "192.168.12.243"
         - "e0:63:da:17:9d:7c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Andy Da`s iPhone 17 Pro"
+      ids:
+        - "192.168.90.108"
+        - "78:3f:4d:2d:4e:30"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -974,10 +1058,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "H3C-10G-Switch"
+      name: "Auntie`s Phone"
       ids:
-        - "192.168.12.253"
-        - "74:1f:4a:46:6c:44"
+        - "192.168.70.105"
+        - "a2:e8:8f:dd:db:30"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1002,10 +1086,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "ESXi-R230"
+      name: "H3C-10G-Switch"
       ids:
-        - "192.168.12.30"
-        - "50:9a:4c:61:79:ae"
+        - "192.168.12.253"
+        - "74:1f:4a:46:6c:44"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1090,6 +1174,34 @@ clients:
       ids:
         - "192.168.12.40"
         - "24:6e:96:3c:3b:18"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Julie Wu`s iPhone 16 Pro"
+      ids:
+        - "192.168.80.108"
+        - "6c:3a:ff:1e:5f:03"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
