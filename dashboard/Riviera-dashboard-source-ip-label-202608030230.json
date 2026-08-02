@@ -4,12 +4,12 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-02T03:51:39.",
-  "count": 32,
+  "exportedAt": "2026-08-02T18:30:02.",
+  "count": 24,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
-      "tagName": "Home Assistant OS"
+      "tagName": "homeassistant"
     },
     {
       "sourceIP": "10.29.50.105",
@@ -22,10 +22,6 @@
     {
       "sourceIP": "10.29.50.106",
       "tagName": "CozyLife_0VQD"
-    },
-    {
-      "sourceIP": "10.29.70.105",
-      "tagName": "CET-AL00"
     },
     {
       "sourceIP": "10.29.50.107",
@@ -42,10 +38,6 @@
     {
       "sourceIP": "10.29.90.103",
       "tagName": "Box R 4K Plus"
-    },
-    {
-      "sourceIP": "10.29.90.107",
-      "tagName": "客厅电视机"
     },
     {
       "sourceIP": "10.29.2.30",
@@ -76,10 +68,6 @@
       "tagName": "Device-c4:aa:c4:bc:66:f8"
     },
     {
-      "sourceIP": "10.29.70.104",
-      "tagName": "OPPO-A55-5G"
-    },
-    {
       "sourceIP": "10.29.50.102",
       "tagName": "Bouffalolab_tg7100c-e233d0"
     },
@@ -88,16 +76,8 @@
       "tagName": "Unifi-Network-Application"
     },
     {
-      "sourceIP": "10.29.2.103",
-      "tagName": "北客房-AP"
-    },
-    {
       "sourceIP": "10.29.60.205",
       "tagName": "Device-c4:aa:c4:bc:da:57"
-    },
-    {
-      "sourceIP": "10.29.90.102",
-      "tagName": "北客房电视机"
     },
     {
       "sourceIP": "10.29.50.109",
@@ -108,24 +88,12 @@
       "tagName": "MosDNS"
     },
     {
-      "sourceIP": "10.29.90.108",
-      "tagName": "Andy Da`s iPhone 17 Pro"
-    },
-    {
-      "sourceIP": "10.29.90.105",
-      "tagName": "ShadowtkiiPhone"
-    },
-    {
       "sourceIP": "10.29.2.111",
       "tagName": "Device-00:0c:29:59:e5:74"
     },
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
-    },
-    {
-      "sourceIP": "10.29.80.108",
-      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "10.29.2.253",
