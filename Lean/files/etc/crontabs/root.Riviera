@@ -1,3 +1,4 @@
 */4 * * * * /usr/bin/back-route-cron.sh
 0 5 * * * /usr/share/openclash/openclash.sh
 * * * * * /usr/bin/wireguard_refresh.sh
+*   * * * * /usr/bin/wstunnel_watchdog.sh
