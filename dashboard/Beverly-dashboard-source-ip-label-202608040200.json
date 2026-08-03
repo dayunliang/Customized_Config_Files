@@ -4,13 +4,9 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-02T18:00:00.",
-  "count": 41,
+  "exportedAt": "2026-08-03T18:00:01.",
+  "count": 37,
   "normalizedData": [
-    {
-      "sourceIP": "192.168.50.112",
-      "tagName": "Tesla Model YL"
-    },
     {
       "sourceIP": "192.168.12.252",
       "tagName": "H3C-1G-Switch"
@@ -44,16 +40,8 @@
       "tagName": "Panasonic 43LX800"
     },
     {
-      "sourceIP": "192.168.12.243",
-      "tagName": "主卧室 AP"
-    },
-    {
       "sourceIP": "192.168.90.108",
       "tagName": "Andy Da`s iPhone 17 Pro"
-    },
-    {
-      "sourceIP": "192.168.12.246",
-      "tagName": "小餐厅 AP"
     },
     {
       "sourceIP": "192.168.60.32",
@@ -104,10 +92,6 @@
       "tagName": "地下室除湿机"
     },
     {
-      "sourceIP": "192.168.12.244",
-      "tagName": "书房 AP"
-    },
-    {
       "sourceIP": "192.168.12.100",
       "tagName": "Synology DS411+"
     },
@@ -128,12 +112,12 @@
       "tagName": "小米风扇-3"
     },
     {
-      "sourceIP": "192.168.50.105",
-      "tagName": "nwt-derh-312en_mibt561F"
+      "sourceIP": "192.168.90.104",
+      "tagName": "iPhone"
     },
     {
-      "sourceIP": "192.168.70.105",
-      "tagName": "Auntie`s Phone"
+      "sourceIP": "192.168.50.105",
+      "tagName": "nwt-derh-312en_mibt561F"
     },
     {
       "sourceIP": "192.168.12.253",

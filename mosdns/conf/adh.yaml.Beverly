@@ -190,34 +190,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Tesla Model YL"
-      ids:
-        - "192.168.50.112"
-        - "0c:29:8f:76:27:ac"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "H3C-1G-Switch"
       ids:
         - "192.168.12.252"
@@ -442,66 +414,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "主卧室 AP"
-      ids:
-        - "192.168.12.243"
-        - "e0:63:da:17:9d:7c"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Andy Da`s iPhone 17 Pro"
       ids:
         - "192.168.90.108"
         - "78:3f:4d:2d:4e:30"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "小餐厅 AP"
-      ids:
-        - "192.168.12.246"
-        - "74:83:c2:b9:43:cb"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -862,34 +778,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "书房 AP"
-      ids:
-        - "192.168.12.244"
-        - "fc:ec:da:3d:5f:2b"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Synology DS411+"
       ids:
         - "192.168.12.100"
@@ -1030,10 +918,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "nwt-derh-312en_mibt561F"
+      name: "iPhone"
       ids:
-        - "192.168.50.105"
-        - "54:48:e6:5d:56:1f"
+        - "192.168.90.104"
+        - "c6:48:b6:0f:e7:c6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1058,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone"
+      name: "nwt-derh-312en_mibt561F"
       ids:
-        - "192.168.70.105"
-        - "a2:e8:8f:dd:db:30"
+        - "192.168.50.105"
+        - "54:48:e6:5d:56:1f"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
