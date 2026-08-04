@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-03T18:30:00.",
-  "count": 28,
+  "exportedAt": "2026-08-04T18:30:00.",
+  "count": 30,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -60,6 +60,10 @@
       "tagName": "XPEnology-VM-1"
     },
     {
+      "sourceIP": "10.29.90.109",
+      "tagName": "Mac"
+    },
+    {
       "sourceIP": "10.29.60.200",
       "tagName": "XPEnology-VM-2"
     },
@@ -98,6 +102,10 @@
     {
       "sourceIP": "10.29.70.200",
       "tagName": "XPEnology-VM-4"
+    },
+    {
+      "sourceIP": "10.29.90.105",
+      "tagName": "iPhone"
     },
     {
       "sourceIP": "10.29.2.111",
