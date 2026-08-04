@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-03T18:00:01.",
-  "count": 37,
+  "exportedAt": "2026-08-04T18:00:00.",
+  "count": 39,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -40,12 +40,16 @@
       "tagName": "Panasonic 43LX800"
     },
     {
-      "sourceIP": "192.168.90.108",
-      "tagName": "Andy Da`s iPhone 17 Pro"
+      "sourceIP": "192.168.12.243",
+      "tagName": "主卧室 AP"
     },
     {
       "sourceIP": "192.168.60.32",
       "tagName": "Device-04:03:12:09:a1:52"
+    },
+    {
+      "sourceIP": "10.10.10.2",
+      "tagName": "Device-00:00:00:00:00:00"
     },
     {
       "sourceIP": "192.168.12.110",
@@ -72,6 +76,10 @@
       "tagName": "MosDNS-1"
     },
     {
+      "sourceIP": "192.168.12.41",
+      "tagName": "idrac-6FYM8M2"
+    },
+    {
       "sourceIP": "192.168.50.108",
       "tagName": "小米空气净化器"
     },
@@ -90,6 +98,10 @@
     {
       "sourceIP": "192.168.50.111",
       "tagName": "地下室除湿机"
+    },
+    {
+      "sourceIP": "192.168.12.244",
+      "tagName": "书房 AP"
     },
     {
       "sourceIP": "192.168.12.100",
@@ -112,12 +124,12 @@
       "tagName": "小米风扇-3"
     },
     {
-      "sourceIP": "192.168.90.104",
-      "tagName": "iPhone"
-    },
-    {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
+    },
+    {
+      "sourceIP": "192.168.70.105",
+      "tagName": "Auntie`s Phone"
     },
     {
       "sourceIP": "192.168.12.253",
@@ -126,10 +138,6 @@
     {
       "sourceIP": "192.168.50.102",
       "tagName": "小米风扇-4"
-    },
-    {
-      "sourceIP": "192.168.12.242",
-      "tagName": "花园东北角 AP"
     },
     {
       "sourceIP": "192.168.12.40",
