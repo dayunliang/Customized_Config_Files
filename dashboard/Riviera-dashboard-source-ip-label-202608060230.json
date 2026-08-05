@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-04T18:30:00.",
-  "count": 30,
+  "exportedAt": "2026-08-05T18:30:00.",
+  "count": 24,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -36,10 +36,6 @@
       "tagName": "Riviera One`s iMac"
     },
     {
-      "sourceIP": "10.29.90.103",
-      "tagName": "Box R 4K Plus"
-    },
-    {
       "sourceIP": "10.29.2.30",
       "tagName": "ESXi-Riviera"
     },
@@ -56,16 +52,8 @@
       "tagName": "ChinaGateway"
     },
     {
-      "sourceIP": "10.29.80.200",
-      "tagName": "XPEnology-VM-1"
-    },
-    {
-      "sourceIP": "10.29.90.109",
-      "tagName": "Mac"
-    },
-    {
-      "sourceIP": "10.29.60.200",
-      "tagName": "XPEnology-VM-2"
+      "sourceIP": "10.29.2.200",
+      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -92,20 +80,12 @@
       "tagName": "Device-98:e0:81:df:91:da"
     },
     {
-      "sourceIP": "10.29.50.200",
-      "tagName": "XPEnology-VM-3"
-    },
-    {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
     },
     {
-      "sourceIP": "10.29.70.200",
-      "tagName": "XPEnology-VM-4"
-    },
-    {
-      "sourceIP": "10.29.90.105",
-      "tagName": "iPhone"
+      "sourceIP": "10.29.2.101",
+      "tagName": "主卧室-AP"
     },
     {
       "sourceIP": "10.29.2.111",
@@ -114,10 +94,6 @@
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
-    },
-    {
-      "sourceIP": "10.29.90.200",
-      "tagName": "XPEnology-VM-5"
     },
     {
       "sourceIP": "10.29.2.253",
