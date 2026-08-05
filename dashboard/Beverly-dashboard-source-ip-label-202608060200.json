@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-04T18:00:00.",
-  "count": 39,
+  "exportedAt": "2026-08-05T18:00:01.",
+  "count": 36,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -24,28 +24,24 @@
       "tagName": "儿童房 AP"
     },
     {
-      "sourceIP": "192.168.12.245",
-      "tagName": "阁楼 AP"
-    },
-    {
       "sourceIP": "192.168.12.60",
       "tagName": "Unifi Network Appliance"
-    },
-    {
-      "sourceIP": "192.168.12.249",
-      "tagName": "地下室 AP"
     },
     {
       "sourceIP": "192.168.90.103",
       "tagName": "Panasonic 43LX800"
     },
     {
-      "sourceIP": "192.168.12.243",
-      "tagName": "主卧室 AP"
+      "sourceIP": "192.168.12.246",
+      "tagName": "小餐厅 AP"
     },
     {
       "sourceIP": "192.168.60.32",
       "tagName": "Device-04:03:12:09:a1:52"
+    },
+    {
+      "sourceIP": "192.168.90.109",
+      "tagName": "Justin Da`s MacBook Air M5"
     },
     {
       "sourceIP": "10.10.10.2",
@@ -68,16 +64,8 @@
       "tagName": "TCL 65C845"
     },
     {
-      "sourceIP": "192.168.12.248",
-      "tagName": "大餐厅 AP"
-    },
-    {
       "sourceIP": "192.168.12.10",
       "tagName": "MosDNS-1"
-    },
-    {
-      "sourceIP": "192.168.12.41",
-      "tagName": "idrac-6FYM8M2"
     },
     {
       "sourceIP": "192.168.50.108",
@@ -124,16 +112,20 @@
       "tagName": "小米风扇-3"
     },
     {
+      "sourceIP": "192.168.90.104",
+      "tagName": "iPhone"
+    },
+    {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
     },
     {
-      "sourceIP": "192.168.70.105",
-      "tagName": "Auntie`s Phone"
-    },
-    {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
+    },
+    {
+      "sourceIP": "192.168.12.30",
+      "tagName": "ESXi-R230"
     },
     {
       "sourceIP": "192.168.50.102",
@@ -142,10 +134,6 @@
     {
       "sourceIP": "192.168.12.40",
       "tagName": "ESXi-R730xd"
-    },
-    {
-      "sourceIP": "192.168.80.108",
-      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "192.168.50.113",
