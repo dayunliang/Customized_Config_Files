@@ -302,10 +302,94 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "Justin Da`s MacBook Air"
+      ids:
+        - "192.168.90.110"
+        - "fc:b2:14:4d:bf:74"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "阁楼 AP"
+      ids:
+        - "192.168.12.245"
+        - "74:83:c2:02:d5:f2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Unifi Network Appliance"
       ids:
         - "192.168.12.60"
         - "00:0c:29:2c:45:06"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "地下室 AP"
+      ids:
+        - "192.168.12.249"
+        - "74:83:c2:c6:5d:eb"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -358,10 +442,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小餐厅 AP"
+      name: "Andy Da`s iPhone 17 Pro"
       ids:
-        - "192.168.12.246"
-        - "74:83:c2:b9:43:cb"
+        - "192.168.90.108"
+        - "78:3f:4d:2d:4e:30"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -390,34 +474,6 @@ clients:
       ids:
         - "192.168.60.32"
         - "04:03:12:09:a1:52"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "Justin Da`s MacBook Air M5"
-      ids:
-        - "192.168.90.109"
-        - "3a:d7:22:b1:ef:70"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -557,6 +613,34 @@ clients:
       ids:
         - "192.168.90.101"
         - "a8:16:9d:ff:a6:7c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "大餐厅 AP"
+      ids:
+        - "192.168.12.248"
+        - "74:83:c2:c6:5e:44"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1001,34 +1085,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "ESXi-R230"
-      ids:
-        - "192.168.12.30"
-        - "50:9a:4c:61:79:ae"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "小米风扇-4"
       ids:
         - "192.168.50.102"
@@ -1061,6 +1117,34 @@ clients:
       ids:
         - "192.168.12.40"
         - "24:6e:96:3c:3b:18"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Julie Wu`s iPhone 16 Pro"
+      ids:
+        - "192.168.80.108"
+        - "6c:3a:ff:1e:5f:03"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
