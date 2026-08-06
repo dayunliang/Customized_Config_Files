@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-05T18:30:00.",
-  "count": 24,
+  "exportedAt": "2026-08-06T18:30:01.",
+  "count": 23,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -50,10 +50,6 @@
     {
       "sourceIP": "10.29.50.101",
       "tagName": "ChinaGateway"
-    },
-    {
-      "sourceIP": "10.29.2.200",
-      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "10.29.60.204",
