@@ -4,9 +4,13 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-06T18:00:01.",
-  "count": 39,
+  "exportedAt": "2026-08-07T18:00:00.",
+  "count": 43,
   "normalizedData": [
+    {
+      "sourceIP": "192.168.50.112",
+      "tagName": "Tesla Model YL"
+    },
     {
       "sourceIP": "192.168.12.252",
       "tagName": "H3C-1G-Switch"
@@ -22,6 +26,10 @@
     {
       "sourceIP": "192.168.12.250",
       "tagName": "儿童房 AP"
+    },
+    {
+      "sourceIP": "192.168.80.101",
+      "tagName": "Device-c6:10:dc:07:7b:1b"
     },
     {
       "sourceIP": "192.168.90.110",
@@ -44,8 +52,12 @@
       "tagName": "Panasonic 43LX800"
     },
     {
-      "sourceIP": "192.168.90.108",
-      "tagName": "Andy Da`s iPhone 17 Pro"
+      "sourceIP": "192.168.12.243",
+      "tagName": "主卧室 AP"
+    },
+    {
+      "sourceIP": "192.168.12.246",
+      "tagName": "小餐厅 AP"
     },
     {
       "sourceIP": "192.168.60.32",
@@ -58,6 +70,10 @@
     {
       "sourceIP": "192.168.12.110",
       "tagName": "WIN11-VM-R730xd"
+    },
+    {
+      "sourceIP": "192.168.90.106",
+      "tagName": "Justin Da`s Huawei Phone"
     },
     {
       "sourceIP": "192.168.12.200",
@@ -124,10 +140,6 @@
       "tagName": "小米风扇-3"
     },
     {
-      "sourceIP": "192.168.90.104",
-      "tagName": "iPhone"
-    },
-    {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
     },
@@ -136,16 +148,20 @@
       "tagName": "H3C-10G-Switch"
     },
     {
+      "sourceIP": "192.168.12.30",
+      "tagName": "ESXi-R230"
+    },
+    {
       "sourceIP": "192.168.50.102",
       "tagName": "小米风扇-4"
     },
     {
-      "sourceIP": "192.168.12.40",
-      "tagName": "ESXi-R730xd"
+      "sourceIP": "192.168.12.242",
+      "tagName": "花园东北角 AP"
     },
     {
-      "sourceIP": "192.168.80.108",
-      "tagName": "Julie Wu`s iPhone 16 Pro"
+      "sourceIP": "192.168.12.40",
+      "tagName": "ESXi-R730xd"
     },
     {
       "sourceIP": "192.168.50.113",
