@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-06T18:30:01.",
+  "exportedAt": "2026-08-07T18:30:00.",
   "count": 23,
   "normalizedData": [
     {
@@ -52,6 +52,10 @@
       "tagName": "ChinaGateway"
     },
     {
+      "sourceIP": "10.29.2.200",
+      "tagName": "XPEnology-VM"
+    },
+    {
       "sourceIP": "10.29.60.204",
       "tagName": "Device-c4:aa:c4:75:a6:84"
     },
@@ -78,10 +82,6 @@
     {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
-    },
-    {
-      "sourceIP": "10.29.2.101",
-      "tagName": "主卧室-AP"
     },
     {
       "sourceIP": "10.29.2.111",
