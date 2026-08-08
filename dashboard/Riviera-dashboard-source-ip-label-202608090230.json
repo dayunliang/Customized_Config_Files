@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-07T18:30:00.",
-  "count": 23,
+  "exportedAt": "2026-08-08T18:30:00.",
+  "count": 28,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -53,7 +53,15 @@
     },
     {
       "sourceIP": "10.29.2.200",
-      "tagName": "XPEnology-VM"
+      "tagName": "XPEnology-VM-1"
+    },
+    {
+      "sourceIP": "10.29.80.200",
+      "tagName": "XPEnology-VM-2"
+    },
+    {
+      "sourceIP": "10.29.60.200",
+      "tagName": "XPEnology-VM-3"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -80,8 +88,16 @@
       "tagName": "Device-98:e0:81:df:91:da"
     },
     {
+      "sourceIP": "10.29.50.200",
+      "tagName": "XPEnology-VM-4"
+    },
+    {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
+    },
+    {
+      "sourceIP": "10.29.70.200",
+      "tagName": "XPEnology-VM-5"
     },
     {
       "sourceIP": "10.29.2.111",
@@ -90,6 +106,10 @@
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
+    },
+    {
+      "sourceIP": "10.29.90.200",
+      "tagName": "XPEnology-VM-6"
     },
     {
       "sourceIP": "10.29.2.253",
