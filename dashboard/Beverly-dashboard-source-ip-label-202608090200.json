@@ -4,13 +4,9 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-07T18:00:00.",
-  "count": 43,
+  "exportedAt": "2026-08-08T18:00:00.",
+  "count": 37,
   "normalizedData": [
-    {
-      "sourceIP": "192.168.50.112",
-      "tagName": "Tesla Model YL"
-    },
     {
       "sourceIP": "192.168.12.252",
       "tagName": "H3C-1G-Switch"
@@ -28,24 +24,12 @@
       "tagName": "儿童房 AP"
     },
     {
-      "sourceIP": "192.168.80.101",
-      "tagName": "Device-c6:10:dc:07:7b:1b"
-    },
-    {
-      "sourceIP": "192.168.90.110",
-      "tagName": "Justin Da`s MacBook Air"
-    },
-    {
       "sourceIP": "192.168.12.245",
       "tagName": "阁楼 AP"
     },
     {
       "sourceIP": "192.168.12.60",
       "tagName": "Unifi Network Appliance"
-    },
-    {
-      "sourceIP": "192.168.12.249",
-      "tagName": "地下室 AP"
     },
     {
       "sourceIP": "192.168.90.103",
@@ -56,24 +40,12 @@
       "tagName": "主卧室 AP"
     },
     {
-      "sourceIP": "192.168.12.246",
-      "tagName": "小餐厅 AP"
-    },
-    {
       "sourceIP": "192.168.60.32",
       "tagName": "Device-04:03:12:09:a1:52"
     },
     {
-      "sourceIP": "10.10.10.2",
-      "tagName": "Device-00:00:00:00:00:00"
-    },
-    {
       "sourceIP": "192.168.12.110",
       "tagName": "WIN11-VM-R730xd"
-    },
-    {
-      "sourceIP": "192.168.90.106",
-      "tagName": "Justin Da`s Huawei Phone"
     },
     {
       "sourceIP": "192.168.12.200",
@@ -142,6 +114,10 @@
     {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
+    },
+    {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
     },
     {
       "sourceIP": "192.168.12.253",
