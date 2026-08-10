@@ -190,7 +190,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-1"
+      name: "homeassistant"
       ids:
         - "10.29.2.80"
         - "data"
@@ -306,6 +306,34 @@ clients:
       ids:
         - "10.29.50.107"
         - "98:17:1a:ee:7c:e2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Honeywell 智能设备网关"
+      ids:
+        - "10.29.50.100"
+        - "d0:76:50:30:08:6a"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -498,90 +526,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-2"
-      ids:
-        - "10.29.2.200"
-        - "00:0c:29:fa:47:a9"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "XPEnology-VM-3"
-      ids:
-        - "10.29.80.200"
-        - "00:0c:29:fa:47:d1"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "XPEnology-VM-4"
-      ids:
-        - "10.29.60.200"
-        - "00:0c:29:fa:47:bd"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Device-c4:aa:c4:75:a6:84"
       ids:
         - "10.29.60.204"
@@ -750,66 +694,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-5"
-      ids:
-        - "10.29.50.200"
-        - "00:0c:29:fa:47:b3"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "MosDNS"
       ids:
         - "10.29.2.10"
         - "00:0c:29:21:64:e7"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "XPEnology-VM-6"
-      ids:
-        - "10.29.70.200"
-        - "00:0c:29:fa:47:c7"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -866,34 +754,6 @@ clients:
       ids:
         - "10.29.50.103"
         - "c8:26:e2:f4:ae:07"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "XPEnology-VM-7"
-      ids:
-        - "10.29.90.200"
-        - "00:0c:29:fa:47:db"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

@@ -4,12 +4,12 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-09T18:30:01.",
-  "count": 28,
+  "exportedAt": "2026-08-10T18:30:00.",
+  "count": 23,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
-      "tagName": "XPEnology-VM-1"
+      "tagName": "homeassistant"
     },
     {
       "sourceIP": "10.29.50.105",
@@ -26,6 +26,10 @@
     {
       "sourceIP": "10.29.50.107",
       "tagName": "Device-98:17:1a:ee:7c:e2"
+    },
+    {
+      "sourceIP": "10.29.50.100",
+      "tagName": "Honeywell 智能设备网关"
     },
     {
       "sourceIP": "10.29.60.201",
@@ -52,18 +56,6 @@
       "tagName": "ChinaGateway"
     },
     {
-      "sourceIP": "10.29.2.200",
-      "tagName": "XPEnology-VM-2"
-    },
-    {
-      "sourceIP": "10.29.80.200",
-      "tagName": "XPEnology-VM-3"
-    },
-    {
-      "sourceIP": "10.29.60.200",
-      "tagName": "XPEnology-VM-4"
-    },
-    {
       "sourceIP": "10.29.60.204",
       "tagName": "Device-c4:aa:c4:75:a6:84"
     },
@@ -88,16 +80,8 @@
       "tagName": "Device-98:e0:81:df:91:da"
     },
     {
-      "sourceIP": "10.29.50.200",
-      "tagName": "XPEnology-VM-5"
-    },
-    {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
-    },
-    {
-      "sourceIP": "10.29.70.200",
-      "tagName": "XPEnology-VM-6"
     },
     {
       "sourceIP": "10.29.2.111",
@@ -106,10 +90,6 @@
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
-    },
-    {
-      "sourceIP": "10.29.90.200",
-      "tagName": "XPEnology-VM-7"
     },
     {
       "sourceIP": "10.29.2.253",
