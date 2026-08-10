@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-09T18:00:00.",
-  "count": 33,
+  "exportedAt": "2026-08-10T18:00:00.",
+  "count": 38,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -20,6 +20,14 @@
       "tagName": "小米风扇-1"
     },
     {
+      "sourceIP": "192.168.12.250",
+      "tagName": "儿童房 AP"
+    },
+    {
+      "sourceIP": "192.168.80.101",
+      "tagName": "Device-c6:10:dc:07:7b:1b"
+    },
+    {
       "sourceIP": "192.168.12.60",
       "tagName": "Unifi Network Appliance"
     },
@@ -30,6 +38,10 @@
     {
       "sourceIP": "192.168.90.103",
       "tagName": "Panasonic 43LX800"
+    },
+    {
+      "sourceIP": "192.168.12.243",
+      "tagName": "主卧室 AP"
     },
     {
       "sourceIP": "192.168.12.246",
@@ -56,20 +68,16 @@
       "tagName": "TCL 65C845"
     },
     {
-      "sourceIP": "192.168.12.248",
-      "tagName": "大餐厅 AP"
-    },
-    {
       "sourceIP": "192.168.12.10",
       "tagName": "MosDNS-1"
     },
     {
-      "sourceIP": "192.168.12.41",
-      "tagName": "idrac-6FYM8M2"
-    },
-    {
       "sourceIP": "192.168.50.108",
       "tagName": "小米空气净化器"
+    },
+    {
+      "sourceIP": "192.168.12.247",
+      "tagName": "大客厅 AP"
     },
     {
       "sourceIP": "192.168.50.110",
@@ -82,6 +90,10 @@
     {
       "sourceIP": "192.168.50.111",
       "tagName": "地下室除湿机"
+    },
+    {
+      "sourceIP": "192.168.12.244",
+      "tagName": "书房 AP"
     },
     {
       "sourceIP": "192.168.12.100",
@@ -104,6 +116,10 @@
       "tagName": "小米风扇-3"
     },
     {
+      "sourceIP": "192.168.90.104",
+      "tagName": "iPhone"
+    },
+    {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
     },
@@ -112,16 +128,20 @@
       "tagName": "H3C-10G-Switch"
     },
     {
-      "sourceIP": "192.168.12.30",
-      "tagName": "ESXi-R230"
-    },
-    {
       "sourceIP": "192.168.50.102",
       "tagName": "小米风扇-4"
     },
     {
+      "sourceIP": "192.168.12.242",
+      "tagName": "花园东北角 AP"
+    },
+    {
       "sourceIP": "192.168.12.40",
       "tagName": "ESXi-R730xd"
+    },
+    {
+      "sourceIP": "192.168.80.108",
+      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "192.168.50.113",
