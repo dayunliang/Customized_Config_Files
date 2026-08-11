@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-10T18:30:00.",
-  "count": 23,
+  "exportedAt": "2026-08-11T18:30:02.",
+  "count": 27,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -25,11 +25,7 @@
     },
     {
       "sourceIP": "10.29.50.107",
-      "tagName": "Device-98:17:1a:ee:7c:e2"
-    },
-    {
-      "sourceIP": "10.29.50.100",
-      "tagName": "Honeywell 智能设备网关"
+      "tagName": "xiaomi-fan-p90_mibt7CE2"
     },
     {
       "sourceIP": "10.29.60.201",
@@ -48,12 +44,20 @@
       "tagName": "小度智能屏"
     },
     {
+      "sourceIP": "10.29.80.101",
+      "tagName": "Device-c6:10:dc:07:7b:1b"
+    },
+    {
       "sourceIP": "10.29.50.108",
       "tagName": "Device-34:fa:1c:b6:49:4e"
     },
     {
       "sourceIP": "10.29.50.101",
       "tagName": "ChinaGateway"
+    },
+    {
+      "sourceIP": "10.29.2.200",
+      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -84,12 +88,24 @@
       "tagName": "MosDNS"
     },
     {
+      "sourceIP": "10.29.90.108",
+      "tagName": "Andy Da`s iPhone 17 Pro"
+    },
+    {
+      "sourceIP": "10.29.90.105",
+      "tagName": "MacBook-Air"
+    },
+    {
       "sourceIP": "10.29.2.111",
       "tagName": "Device-00:0c:29:59:e5:74"
     },
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
+    },
+    {
+      "sourceIP": "10.29.80.108",
+      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "10.29.2.253",
