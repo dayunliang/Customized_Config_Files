@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-10T18:00:00.",
-  "count": 38,
+  "exportedAt": "2026-08-11T18:00:00.",
+  "count": 36,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -22,10 +22,6 @@
     {
       "sourceIP": "192.168.12.250",
       "tagName": "儿童房 AP"
-    },
-    {
-      "sourceIP": "192.168.80.101",
-      "tagName": "Device-c6:10:dc:07:7b:1b"
     },
     {
       "sourceIP": "192.168.12.60",
@@ -50,6 +46,10 @@
     {
       "sourceIP": "192.168.60.32",
       "tagName": "Device-04:03:12:09:a1:52"
+    },
+    {
+      "sourceIP": "10.10.10.2",
+      "tagName": "Device-00:00:00:00:00:00"
     },
     {
       "sourceIP": "192.168.12.110",
@@ -116,10 +116,6 @@
       "tagName": "小米风扇-3"
     },
     {
-      "sourceIP": "192.168.90.104",
-      "tagName": "iPhone"
-    },
-    {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
     },
@@ -138,10 +134,6 @@
     {
       "sourceIP": "192.168.12.40",
       "tagName": "ESXi-R730xd"
-    },
-    {
-      "sourceIP": "192.168.80.108",
-      "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
       "sourceIP": "192.168.50.113",

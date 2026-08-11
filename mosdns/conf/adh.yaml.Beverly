@@ -302,34 +302,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c6:10:dc:07:7b:1b"
-      ids:
-        - "192.168.80.101"
-        - "c6:10:dc:07:7b:1b"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Unifi Network Appliance"
       ids:
         - "192.168.12.60"
@@ -474,6 +446,33 @@ clients:
       ids:
         - "192.168.60.32"
         - "04:03:12:09:a1:52"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-00:00:00:00:00:00"
+      ids:
+        - "10.10.10.2"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -946,34 +945,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "iPhone"
-      ids:
-        - "192.168.90.104"
-        - "c6:48:b6:0f:e7:c6"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "nwt-derh-312en_mibt561F"
       ids:
         - "192.168.50.105"
@@ -1090,34 +1061,6 @@ clients:
       ids:
         - "192.168.12.40"
         - "24:6e:96:3c:3b:18"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "Julie Wu`s iPhone 16 Pro"
-      ids:
-        - "192.168.80.108"
-        - "6c:3a:ff:1e:5f:03"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
