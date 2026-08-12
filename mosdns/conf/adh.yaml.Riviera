@@ -274,35 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "CozyLife_0VQD"
-      ids:
-        - "10.29.50.106"
-        - "70:4b:ca:c0:34:b0"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "xiaomi-fan-p90_mibt7CE2"
+      name: "Device-98:17:1a:ee:7c:e2"
       ids:
         - "10.29.50.107"
         - "98:17:1a:ee:7c:e2"
@@ -362,6 +334,34 @@ clients:
       ids:
         - "10.29.90.2"
         - "d0:d4:9f:24:9a:72"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "iPhone"
+      ids:
+        - "10.29.90.103"
+        - "c6:48:b6:0f:e7:c6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -526,10 +526,66 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM"
+      name: "XPEnology-VM-1"
       ids:
         - "10.29.2.200"
         - "00:0c:29:fa:47:a9"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "XPEnology-VM-2"
+      ids:
+        - "10.29.80.200"
+        - "00:0c:29:fa:47:d1"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "XPEnology-VM-3"
+      ids:
+        - "10.29.60.200"
+        - "00:0c:29:fa:47:bd"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -722,6 +778,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "XPEnology-VM-4"
+      ids:
+        - "10.29.50.200"
+        - "00:0c:29:fa:47:b3"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "MosDNS"
       ids:
         - "10.29.2.10"
@@ -750,10 +834,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Andy Da`s iPhone 17 Pro"
+      name: "XPEnology-VM-5"
       ids:
-        - "10.29.90.108"
-        - "78:3f:4d:2d:4e:30"
+        - "10.29.70.200"
+        - "00:0c:29:fa:47:c7"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -778,10 +862,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "MacBook-Air"
+      name: "Andy Da`s iPhone 17 Pro"
       ids:
-        - "10.29.90.105"
-        - "fc:b2:14:4d:bf:74"
+        - "10.29.90.108"
+        - "78:3f:4d:2d:4e:30"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -862,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Julie Wu`s iPhone 16 Pro"
+      name: "XPEnology-VM-6"
       ids:
-        - "10.29.80.108"
-        - "6c:3a:ff:1e:5f:03"
+        - "10.29.90.200"
+        - "00:0c:29:fa:47:db"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
