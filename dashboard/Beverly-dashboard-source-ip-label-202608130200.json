@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-11T18:00:00.",
-  "count": 36,
+  "exportedAt": "2026-08-12T18:00:00.",
+  "count": 38,
   "normalizedData": [
     {
       "sourceIP": "192.168.12.252",
@@ -22,6 +22,10 @@
     {
       "sourceIP": "192.168.12.250",
       "tagName": "儿童房 AP"
+    },
+    {
+      "sourceIP": "192.168.12.245",
+      "tagName": "阁楼 AP"
     },
     {
       "sourceIP": "192.168.12.60",
@@ -66,6 +70,10 @@
     {
       "sourceIP": "192.168.90.101",
       "tagName": "TCL 65C845"
+    },
+    {
+      "sourceIP": "192.168.12.248",
+      "tagName": "大餐厅 AP"
     },
     {
       "sourceIP": "192.168.12.10",
@@ -120,6 +128,10 @@
       "tagName": "nwt-derh-312en_mibt561F"
     },
     {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
+    },
+    {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
     },
@@ -138,10 +150,6 @@
     {
       "sourceIP": "192.168.50.113",
       "tagName": "米家闹钟"
-    },
-    {
-      "sourceIP": "192.168.12.241",
-      "tagName": "花园西北角 AP"
     },
     {
       "sourceIP": "192.168.50.109",

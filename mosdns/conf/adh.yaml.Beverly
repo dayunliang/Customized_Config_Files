@@ -302,6 +302,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "阁楼 AP"
+      ids:
+        - "192.168.12.245"
+        - "74:83:c2:02:d5:f2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Unifi Network Appliance"
       ids:
         - "192.168.12.60"
@@ -585,6 +613,34 @@ clients:
       ids:
         - "192.168.90.101"
         - "a8:16:9d:ff:a6:7c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "大餐厅 AP"
+      ids:
+        - "192.168.12.248"
+        - "74:83:c2:c6:5e:44"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -973,6 +1029,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "Lean Openwrt Compiler"
+      ids:
+        - "192.168.12.70"
+        - "00:0c:29:16:c4:2f"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "H3C-10G-Switch"
       ids:
         - "192.168.12.253"
@@ -1089,34 +1173,6 @@ clients:
       ids:
         - "192.168.50.113"
         - "50:ec:50:74:0e:57"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "花园西北角 AP"
-      ids:
-        - "192.168.12.241"
-        - "f0:9f:c2:a3:55:5b"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
