@@ -498,33 +498,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00"
-      ids:
-        - "10.10.10.2"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "WIN11-VM-R730xd"
       ids:
         - "192.168.12.110"
@@ -861,34 +834,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Synology DS411+"
-      ids:
-        - "192.168.12.100"
-        - "00:11:32:08:93:b6"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Beverly Oasis`s iMac"
       ids:
         - "192.168.12.2"
@@ -1029,34 +974,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Lean Openwrt Compiler"
-      ids:
-        - "192.168.12.70"
-        - "00:0c:29:16:c4:2f"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "H3C-10G-Switch"
       ids:
         - "192.168.12.253"
@@ -1173,6 +1090,34 @@ clients:
       ids:
         - "192.168.50.113"
         - "50:ec:50:74:0e:57"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "花园西北角 AP"
+      ids:
+        - "192.168.12.241"
+        - "f0:9f:c2:a3:55:5b"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
