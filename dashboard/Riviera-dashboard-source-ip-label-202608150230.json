@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-13T18:30:00.",
-  "count": 26,
+  "exportedAt": "2026-08-14T18:30:00.",
+  "count": 29,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -20,6 +20,10 @@
       "tagName": "Y5000FVXU_BH1096326_EZVIZ"
     },
     {
+      "sourceIP": "10.29.50.106",
+      "tagName": "CozyLife_0VQD"
+    },
+    {
       "sourceIP": "10.29.50.107",
       "tagName": "Device-98:17:1a:ee:7c:e2"
     },
@@ -32,10 +36,6 @@
       "tagName": "Riviera One`s iMac"
     },
     {
-      "sourceIP": "10.29.90.103",
-      "tagName": "iPhone"
-    },
-    {
       "sourceIP": "10.29.2.30",
       "tagName": "ESXi-Riviera"
     },
@@ -44,16 +44,24 @@
       "tagName": "小度智能屏"
     },
     {
-      "sourceIP": "10.29.80.101",
-      "tagName": "Device-c6:10:dc:07:7b:1b"
-    },
-    {
       "sourceIP": "10.29.50.108",
       "tagName": "Device-34:fa:1c:b6:49:4e"
     },
     {
       "sourceIP": "10.29.50.101",
       "tagName": "ChinaGateway"
+    },
+    {
+      "sourceIP": "10.29.2.200",
+      "tagName": "XPEnology-VM-1"
+    },
+    {
+      "sourceIP": "10.29.80.200",
+      "tagName": "XPEnology-VM-2"
+    },
+    {
+      "sourceIP": "10.29.60.200",
+      "tagName": "XPEnology-VM-3"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -72,6 +80,10 @@
       "tagName": "Unifi-Network-Application"
     },
     {
+      "sourceIP": "10.29.2.103",
+      "tagName": "北客房-AP"
+    },
+    {
       "sourceIP": "10.29.60.205",
       "tagName": "Device-c4:aa:c4:bc:da:57"
     },
@@ -80,20 +92,16 @@
       "tagName": "Device-98:e0:81:df:91:da"
     },
     {
+      "sourceIP": "10.29.50.200",
+      "tagName": "XPEnology-VM-4"
+    },
+    {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
     },
     {
-      "sourceIP": "10.29.90.108",
-      "tagName": "Andy Da`s iPhone 17 Pro"
-    },
-    {
-      "sourceIP": "10.29.2.102",
-      "tagName": "大客厅-AP"
-    },
-    {
-      "sourceIP": "10.29.90.105",
-      "tagName": "MacBook-Air"
+      "sourceIP": "10.29.70.200",
+      "tagName": "XPEnology-VM-5"
     },
     {
       "sourceIP": "10.29.2.111",
@@ -102,6 +110,10 @@
     {
       "sourceIP": "10.29.50.103",
       "tagName": "扫地机器人"
+    },
+    {
+      "sourceIP": "10.29.90.200",
+      "tagName": "XPEnology-VM-6"
     },
     {
       "sourceIP": "10.29.2.253",
