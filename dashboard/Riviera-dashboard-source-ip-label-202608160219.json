@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T18:15:50.",
-  "count": 31,
+  "exportedAt": "2026-08-15T18:19:25.",
+  "count": 30,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -13,7 +13,7 @@
     },
     {
       "sourceIP": "10.29.50.105",
-      "tagName": "HoneyWell 家庭控制屏"
+      "tagName": "HoneyWell-家庭控制屏"
     },
     {
       "sourceIP": "10.29.50.104",
@@ -125,11 +125,7 @@
     },
     {
       "sourceIP": "10.29.2.102",
-      "tagName": "大客厅-AP-1"
-    },
-    {
-      "sourceIP": "10.29.70.102",
-      "tagName": "大客厅-AP-2"
+      "tagName": "大客厅-AP"
     }
   ]
 }
