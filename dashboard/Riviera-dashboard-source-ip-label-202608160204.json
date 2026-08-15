@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-14T18:30:00.",
-  "count": 29,
+  "exportedAt": "2026-08-15T18:04:04.",
+  "count": 31,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -122,6 +122,14 @@
     {
       "sourceIP": "10.29.60.203",
       "tagName": "Device-c4:aa:c4:75:a6:ae"
+    },
+    {
+      "sourceIP": "10.29.60.206",
+      "tagName": "连廊监控"
+    },
+    {
+      "sourceIP": "10.29.2.101",
+      "tagName": "主卧室-AP"
     }
   ]
 }
