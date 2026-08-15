@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T16:33:41.",
-  "count": 46,
+  "exportedAt": "2026-08-15T16:35:45.",
+  "count": 47,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -185,11 +185,15 @@
     },
     {
       "sourceIP": "192.168.60.30",
-      "tagName": "Device-18:68:cb:f0:26:2e"
+      "tagName": "门禁"
     },
     {
       "sourceIP": "192.168.70.105",
       "tagName": "Auntie`s Phone-2"
+    },
+    {
+      "sourceIP": "192.168.12.30",
+      "tagName": "ESXi-R230"
     }
   ]
 }
