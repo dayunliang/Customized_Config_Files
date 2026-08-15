@@ -4,9 +4,17 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-13T18:00:00.",
-  "count": 36,
+  "exportedAt": "2026-08-15T07:10:46.",
+  "count": 42,
   "normalizedData": [
+    {
+      "sourceIP": "192.168.90.105",
+      "tagName": "Andy Da`s iPhone 12 Mini"
+    },
+    {
+      "sourceIP": "192.168.70.102",
+      "tagName": "Auntie`s Phone-1"
+    },
     {
       "sourceIP": "192.168.12.252",
       "tagName": "H3C-1G-Switch"
@@ -22,6 +30,10 @@
     {
       "sourceIP": "192.168.12.250",
       "tagName": "儿童房 AP"
+    },
+    {
+      "sourceIP": "192.168.90.109",
+      "tagName": "Justin Da`s MacBook Air M5"
     },
     {
       "sourceIP": "192.168.12.245",
@@ -44,6 +56,10 @@
       "tagName": "主卧室 AP"
     },
     {
+      "sourceIP": "192.168.90.108",
+      "tagName": "Andy Da`s iPhone 17 Pro"
+    },
+    {
       "sourceIP": "192.168.12.246",
       "tagName": "小餐厅 AP"
     },
@@ -56,6 +72,10 @@
       "tagName": "WIN11-VM-R730xd"
     },
     {
+      "sourceIP": "192.168.90.106",
+      "tagName": "Justin Da`s Huawei Phone"
+    },
+    {
       "sourceIP": "192.168.12.200",
       "tagName": "XPEnology-VM"
     },
@@ -66,10 +86,6 @@
     {
       "sourceIP": "192.168.90.101",
       "tagName": "TCL 65C845"
-    },
-    {
-      "sourceIP": "192.168.12.248",
-      "tagName": "大餐厅 AP"
     },
     {
       "sourceIP": "192.168.12.10",
@@ -100,6 +116,10 @@
       "tagName": "书房 AP"
     },
     {
+      "sourceIP": "192.168.12.100",
+      "tagName": "Synology DS411+"
+    },
+    {
       "sourceIP": "192.168.12.2",
       "tagName": "Beverly Oasis`s iMac"
     },
@@ -120,6 +140,14 @@
       "tagName": "nwt-derh-312en_mibt561F"
     },
     {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
+    },
+    {
+      "sourceIP": "192.168.70.105",
+      "tagName": "Auntie`s Phone-2"
+    },
+    {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
     },
@@ -138,10 +166,6 @@
     {
       "sourceIP": "192.168.50.113",
       "tagName": "米家闹钟"
-    },
-    {
-      "sourceIP": "192.168.12.241",
-      "tagName": "花园西北角 AP"
     },
     {
       "sourceIP": "192.168.50.109",
