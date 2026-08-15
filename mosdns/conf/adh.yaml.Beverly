@@ -1422,7 +1422,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-18:68:cb:f0:26:2e"
+      name: "门禁"
       ids:
         - "192.168.60.30"
         - "18:68:cb:f0:26:2e"
