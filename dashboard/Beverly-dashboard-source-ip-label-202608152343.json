@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T15:35:44.",
-  "count": 43,
+  "exportedAt": "2026-08-15T15:43:24.",
+  "count": 42,
   "normalizedData": [
     {
       "sourceIP": "192.168.90.105",
@@ -30,10 +30,6 @@
     {
       "sourceIP": "192.168.12.250",
       "tagName": "儿童房 AP"
-    },
-    {
-      "sourceIP": "192.168.12.245",
-      "tagName": "阁楼 AP"
     },
     {
       "sourceIP": "192.168.12.60",
@@ -61,7 +57,7 @@
     },
     {
       "sourceIP": "192.168.60.32",
-      "tagName": "Device-04:03:12:09:a1:52"
+      "tagName": "门禁-应答机 2"
     },
     {
       "sourceIP": "192.168.12.110",
@@ -124,6 +120,10 @@
       "tagName": "Beverly.2nd.Router"
     },
     {
+      "sourceIP": "192.168.12.251",
+      "tagName": "Device-f0:9f:c2:61:c3:3e"
+    },
+    {
       "sourceIP": "192.168.50.101",
       "tagName": "小爱音箱"
     },
@@ -133,11 +133,7 @@
     },
     {
       "sourceIP": "192.168.50.105",
-      "tagName": "nwt-derh-312en_mibt561F"
-    },
-    {
-      "sourceIP": "192.168.70.105",
-      "tagName": "Auntie`s Phone"
+      "tagName": "小米除湿机"
     },
     {
       "sourceIP": "192.168.12.253",

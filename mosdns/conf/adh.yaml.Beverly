@@ -358,34 +358,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "阁楼 AP"
-      ids:
-        - "192.168.12.245"
-        - "74:83:c2:02:d5:f2"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "Unifi Network Appliance"
       ids:
         - "192.168.12.60"
@@ -554,7 +526,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-04:03:12:09:a1:52"
+      name: "门禁-应答机 2"
       ids:
         - "192.168.60.32"
         - "04:03:12:09:a1:52"
@@ -1002,6 +974,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "Device-f0:9f:c2:61:c3:3e"
+      ids:
+        - "192.168.12.251"
+        - "f0:9f:c2:61:c3:3e"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "小爱音箱"
       ids:
         - "192.168.50.101"
@@ -1058,38 +1058,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "nwt-derh-312en_mibt561F"
+      name: "小米除湿机"
       ids:
         - "192.168.50.105"
         - "54:48:e6:5d:56:1f"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "Auntie`s Phone"
-      ids:
-        - "192.168.70.105"
-        - "a2:e8:8f:dd:db:30"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
