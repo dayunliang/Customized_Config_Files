@@ -190,6 +190,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "iKuai-Beverly"
+      ids:
+        - "192.168.122.254"
+        - "00:0c:29:06:f5:1c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Andy Da`s iPhone 12 Mini"
       ids:
         - "192.168.90.105"
