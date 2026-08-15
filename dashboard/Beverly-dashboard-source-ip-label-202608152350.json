@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T15:43:24.",
-  "count": 42,
+  "exportedAt": "2026-08-15T15:50:12.",
+  "count": 40,
   "normalizedData": [
     {
       "sourceIP": "192.168.90.105",
@@ -120,10 +120,6 @@
       "tagName": "Beverly.2nd.Router"
     },
     {
-      "sourceIP": "192.168.12.251",
-      "tagName": "Device-f0:9f:c2:61:c3:3e"
-    },
-    {
       "sourceIP": "192.168.50.101",
       "tagName": "小爱音箱"
     },
@@ -138,10 +134,6 @@
     {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
-    },
-    {
-      "sourceIP": "192.168.12.30",
-      "tagName": "ESXi-R230"
     },
     {
       "sourceIP": "192.168.50.102",
