@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T09:48:43.",
-  "count": 41,
+  "exportedAt": "2026-08-15T09:55:24.",
+  "count": 43,
   "normalizedData": [
     {
       "sourceIP": "192.168.90.105",
@@ -32,16 +32,20 @@
       "tagName": "儿童房 AP"
     },
     {
+      "sourceIP": "192.168.12.245",
+      "tagName": "阁楼 AP"
+    },
+    {
       "sourceIP": "192.168.12.60",
       "tagName": "Unifi Network Appliance"
     },
     {
-      "sourceIP": "192.168.90.103",
-      "tagName": "Panasonic 43LX800"
+      "sourceIP": "192.168.12.249",
+      "tagName": "地下室 AP"
     },
     {
-      "sourceIP": "192.168.12.243",
-      "tagName": "主卧室 AP"
+      "sourceIP": "192.168.90.103",
+      "tagName": "Panasonic 43LX800"
     },
     {
       "sourceIP": "192.168.90.108",
@@ -80,6 +84,10 @@
       "tagName": "TCL 65C845"
     },
     {
+      "sourceIP": "192.168.12.248",
+      "tagName": "大餐厅 AP"
+    },
+    {
       "sourceIP": "192.168.12.10",
       "tagName": "MosDNS-1"
     },
@@ -104,6 +112,10 @@
       "tagName": "地下室除湿机"
     },
     {
+      "sourceIP": "192.168.12.244",
+      "tagName": "书房 AP"
+    },
+    {
       "sourceIP": "192.168.12.100",
       "tagName": "Synology DS411+"
     },
@@ -116,10 +128,6 @@
       "tagName": "Beverly.2nd.Router"
     },
     {
-      "sourceIP": "192.168.12.251",
-      "tagName": "Device-f0:9f:c2:61:c3:3e"
-    },
-    {
       "sourceIP": "192.168.50.101",
       "tagName": "小爱音箱"
     },
@@ -130,6 +138,10 @@
     {
       "sourceIP": "192.168.50.105",
       "tagName": "nwt-derh-312en_mibt561F"
+    },
+    {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
     },
     {
       "sourceIP": "192.168.70.105",
@@ -158,10 +170,6 @@
     {
       "sourceIP": "192.168.50.113",
       "tagName": "米家闹钟"
-    },
-    {
-      "sourceIP": "192.168.12.241",
-      "tagName": "花园西北角 AP"
     },
     {
       "sourceIP": "192.168.50.109",
