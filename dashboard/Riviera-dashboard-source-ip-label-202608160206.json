@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T18:04:04.",
-  "count": 31,
+  "exportedAt": "2026-08-15T18:06:38.",
+  "count": 29,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -53,7 +53,7 @@
     },
     {
       "sourceIP": "10.29.2.200",
-      "tagName": "XPEnology-VM-1"
+      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "10.29.80.200",
@@ -105,7 +105,7 @@
     },
     {
       "sourceIP": "10.29.2.111",
-      "tagName": "Device-00:0c:29:59:e5:74"
+      "tagName": "Riviera-2nd-Router"
     },
     {
       "sourceIP": "10.29.50.103",
@@ -122,14 +122,6 @@
     {
       "sourceIP": "10.29.60.203",
       "tagName": "Device-c4:aa:c4:75:a6:ae"
-    },
-    {
-      "sourceIP": "10.29.60.206",
-      "tagName": "连廊监控"
-    },
-    {
-      "sourceIP": "10.29.2.101",
-      "tagName": "主卧室-AP"
     }
   ]
 }

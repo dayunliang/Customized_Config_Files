@@ -498,7 +498,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-1"
+      name: "XPEnology-VM"
       ids:
         - "10.29.2.200"
         - "00:0c:29:fa:47:a9"
@@ -862,7 +862,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:0c:29:59:e5:74"
+      name: "Riviera-2nd-Router"
       ids:
         - "10.29.2.111"
         - "00:0c:29:59:e5:74"
@@ -978,62 +978,6 @@ clients:
       ids:
         - "10.29.60.203"
         - "c4:aa:c4:75:a6:ae"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "连廊监控"
-      ids:
-        - "10.29.60.206"
-        - "78:be:81:c7:91:aa"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "主卧室-AP"
-      ids:
-        - "10.29.2.101"
-        - "8c:30:66:3c:90:b6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
