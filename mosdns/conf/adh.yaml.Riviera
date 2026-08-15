@@ -498,7 +498,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-1"
+      name: "XPEnology-VM"
       ids:
         - "10.29.2.200"
         - "00:0c:29:fa:47:a9"
@@ -978,6 +978,34 @@ clients:
       ids:
         - "10.29.60.203"
         - "c4:aa:c4:75:a6:ae"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "大客厅-AP"
+      ids:
+        - "10.29.2.102"
+        - "8c:30:66:80:05:4c"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
