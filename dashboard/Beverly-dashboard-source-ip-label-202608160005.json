@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T15:56:01.",
+  "exportedAt": "2026-08-15T16:05:19.",
   "count": 40,
   "normalizedData": [
     {
@@ -26,10 +26,6 @@
     {
       "sourceIP": "192.168.50.107",
       "tagName": "小米风扇-1"
-    },
-    {
-      "sourceIP": "192.168.12.250",
-      "tagName": "儿童房 AP"
     },
     {
       "sourceIP": "192.168.12.245",
@@ -78,6 +74,10 @@
     {
       "sourceIP": "192.168.90.101",
       "tagName": "TCL 65C845"
+    },
+    {
+      "sourceIP": "192.168.12.248",
+      "tagName": "大餐厅 AP"
     },
     {
       "sourceIP": "192.168.12.10",
