@@ -4,9 +4,13 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T16:16:05.",
-  "count": 41,
+  "exportedAt": "2026-08-15T16:22:12.",
+  "count": 45,
   "normalizedData": [
+    {
+      "sourceIP": "192.168.122.254",
+      "tagName": "iKUai-Beverly"
+    },
     {
       "sourceIP": "192.168.90.105",
       "tagName": "Andy Da`s iPhone 12 Mini"
@@ -170,6 +174,18 @@
     {
       "sourceIP": "192.168.12.31",
       "tagName": "R230-iDrac"
+    },
+    {
+      "sourceIP": "192.168.12.247",
+      "tagName": "大客厅 AP"
+    },
+    {
+      "sourceIP": "192.168.12.244",
+      "tagName": "书房 AP"
+    },
+    {
+      "sourceIP": "192.168.60.30",
+      "tagName": "Device-18:68:cb:f0:26:2e"
     }
   ]
 }
