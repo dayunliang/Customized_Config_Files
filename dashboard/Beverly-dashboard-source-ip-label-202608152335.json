@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T09:55:24.",
+  "exportedAt": "2026-08-15T15:35:44.",
   "count": 43,
   "normalizedData": [
     {
@@ -12,8 +12,8 @@
       "tagName": "Andy Da`s iPhone 12 Mini"
     },
     {
-      "sourceIP": "192.168.70.102",
-      "tagName": "Auntie`s Phone-1"
+      "sourceIP": "192.168.50.112",
+      "tagName": "Tesla Model YL"
     },
     {
       "sourceIP": "192.168.12.252",
@@ -48,6 +48,10 @@
       "tagName": "Panasonic 43LX800"
     },
     {
+      "sourceIP": "192.168.12.243",
+      "tagName": "主卧室 AP"
+    },
+    {
       "sourceIP": "192.168.90.108",
       "tagName": "Andy Da`s iPhone 17 Pro"
     },
@@ -60,16 +64,8 @@
       "tagName": "Device-04:03:12:09:a1:52"
     },
     {
-      "sourceIP": "192.168.90.109",
-      "tagName": "Justin Da`s MacBook Air M5"
-    },
-    {
       "sourceIP": "192.168.12.110",
       "tagName": "WIN11-VM-R730xd"
-    },
-    {
-      "sourceIP": "192.168.90.106",
-      "tagName": "Justin Da`s Huawei Phone"
     },
     {
       "sourceIP": "192.168.12.200",
@@ -140,16 +136,16 @@
       "tagName": "nwt-derh-312en_mibt561F"
     },
     {
-      "sourceIP": "192.168.12.70",
-      "tagName": "Lean Openwrt Compiler"
-    },
-    {
       "sourceIP": "192.168.70.105",
-      "tagName": "Auntie`s Phone-2"
+      "tagName": "Auntie`s Phone"
     },
     {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
+    },
+    {
+      "sourceIP": "192.168.12.30",
+      "tagName": "ESXi-R230"
     },
     {
       "sourceIP": "192.168.50.102",
@@ -172,12 +168,16 @@
       "tagName": "米家闹钟"
     },
     {
+      "sourceIP": "192.168.12.241",
+      "tagName": "花园西北角 AP"
+    },
+    {
       "sourceIP": "192.168.50.109",
       "tagName": "海尔冰箱"
     },
     {
       "sourceIP": "192.168.12.31",
-      "tagName": "idrac-DDBJJK2"
+      "tagName": "R230-iDrac"
     }
   ]
 }
