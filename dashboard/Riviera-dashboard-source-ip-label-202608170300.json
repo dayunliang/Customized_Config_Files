@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T13:15:52.",
+  "exportedAt": "2026-08-16T19:00:02.",
   "count": 41,
   "normalizedData": [
     {
@@ -17,7 +17,7 @@
     },
     {
       "sourceIP": "10.29.50.104",
-      "tagName": "Device-ac:1c:26:d2:03:ed"
+      "tagName": "Y5000FVXU_BH1096326_EZVIZ"
     },
     {
       "sourceIP": "10.29.50.106",
@@ -45,7 +45,7 @@
     },
     {
       "sourceIP": "10.29.50.101",
-      "tagName": "Device-b4:3a:45:dd:a7:b0"
+      "tagName": "ChinaGateway"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -57,7 +57,7 @@
     },
     {
       "sourceIP": "10.29.50.102",
-      "tagName": "Device-d4:27:87:e2:33:d0"
+      "tagName": "Bouffalolab_tg7100c-e233d0"
     },
     {
       "sourceIP": "10.29.2.60",

@@ -246,7 +246,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-ac:1c:26:d2:03:ed"
+      name: "Y5000FVXU_BH1096326_EZVIZ"
       ids:
         - "10.29.50.104"
         - "ac:1c:26:d2:03:ed"
@@ -442,7 +442,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-b4:3a:45:dd:a7:b0"
+      name: "ChinaGateway"
       ids:
         - "10.29.50.101"
         - "b4:3a:45:dd:a7:b0"
@@ -526,7 +526,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-d4:27:87:e2:33:d0"
+      name: "Bouffalolab_tg7100c-e233d0"
       ids:
         - "10.29.50.102"
         - "d4:27:87:e2:33:d0"
