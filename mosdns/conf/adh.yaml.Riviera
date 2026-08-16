@@ -246,7 +246,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Y5000FVXU_BH1096326_EZVIZ"
+      name: "Device-ac:1c:26:d2:03:ed"
       ids:
         - "10.29.50.104"
         - "ac:1c:26:d2:03:ed"
@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "CozyLife_0VQD"
+      name: "Device-70:4b:ca:c0:34:b0"
       ids:
         - "10.29.50.106"
         - "70:4b:ca:c0:34:b0"
@@ -470,7 +470,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "ChinaGateway"
+      name: "Device-b4:3a:45:dd:a7:b0"
       ids:
         - "10.29.50.101"
         - "b4:3a:45:dd:a7:b0"
@@ -498,7 +498,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-1"
+      name: "XPEnology-VM"
       ids:
         - "10.29.2.200"
         - "00:0c:29:fa:47:a9"
@@ -638,7 +638,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Bouffalolab_tg7100c-e233d0"
+      name: "Device-d4:27:87:e2:33:d0"
       ids:
         - "10.29.50.102"
         - "d4:27:87:e2:33:d0"
@@ -1114,7 +1114,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "主卧室-AP-2"
+      name: "主卧室-AP"
       ids:
         - "10.29.2.101"
         - "8c:30:66:3c:90:b6"
@@ -1170,7 +1170,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Box R 4K Plus"
+      name: "Device-70:f7:54:5b:e8:a2"
       ids:
         - "10.29.90.103"
         - "70:f7:54:5b:e8:a2"
@@ -1226,7 +1226,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Mac"
+      name: "Device-3a:d7:22:b1:ef:70"
       ids:
         - "10.29.90.109"
         - "3a:d7:22:b1:ef:70"

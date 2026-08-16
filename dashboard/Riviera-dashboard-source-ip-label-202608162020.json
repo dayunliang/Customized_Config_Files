@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T11:50:37.",
+  "exportedAt": "2026-08-16T12:20:50.",
   "count": 41,
   "normalizedData": [
     {
@@ -17,11 +17,11 @@
     },
     {
       "sourceIP": "10.29.50.104",
-      "tagName": "Y5000FVXU_BH1096326_EZVIZ"
+      "tagName": "Device-ac:1c:26:d2:03:ed"
     },
     {
       "sourceIP": "10.29.50.106",
-      "tagName": "CozyLife_0VQD"
+      "tagName": "Device-70:4b:ca:c0:34:b0"
     },
     {
       "sourceIP": "10.29.50.107",
@@ -49,11 +49,11 @@
     },
     {
       "sourceIP": "10.29.50.101",
-      "tagName": "ChinaGateway"
+      "tagName": "Device-b4:3a:45:dd:a7:b0"
     },
     {
       "sourceIP": "10.29.2.200",
-      "tagName": "XPEnology-VM-1"
+      "tagName": "XPEnology-VM"
     },
     {
       "sourceIP": "10.29.80.200",
@@ -73,7 +73,7 @@
     },
     {
       "sourceIP": "10.29.50.102",
-      "tagName": "Bouffalolab_tg7100c-e233d0"
+      "tagName": "Device-d4:27:87:e2:33:d0"
     },
     {
       "sourceIP": "10.29.2.60",
@@ -141,7 +141,7 @@
     },
     {
       "sourceIP": "10.29.2.101",
-      "tagName": "主卧室-AP-2"
+      "tagName": "主卧室-AP"
     },
     {
       "sourceIP": "10.29.70.105",
@@ -149,7 +149,7 @@
     },
     {
       "sourceIP": "10.29.90.103",
-      "tagName": "Box R 4K Plus"
+      "tagName": "Device-70:f7:54:5b:e8:a2"
     },
     {
       "sourceIP": "10.29.90.107",
@@ -157,7 +157,7 @@
     },
     {
       "sourceIP": "10.29.90.109",
-      "tagName": "Mac"
+      "tagName": "Device-3a:d7:22:b1:ef:70"
     },
     {
       "sourceIP": "10.29.90.102",
