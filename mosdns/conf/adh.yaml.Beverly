@@ -862,34 +862,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米风扇-2"
-      ids:
-        - "192.168.50.110"
-        - "40:31:3c:b0:ad:4b"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "WIN11-LOFT"
       ids:
         - "192.168.12.3"
@@ -1058,7 +1030,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米风扇-3"
+      name: "小米风扇-2"
       ids:
         - "192.168.50.104"
         - "7c:49:eb:46:a1:ee"
@@ -1118,34 +1090,6 @@ clients:
       ids:
         - "192.168.12.253"
         - "74:1f:4a:46:6c:44"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "小米风扇-4"
-      ids:
-        - "192.168.50.102"
-        - "78:11:dc:bc:14:c2"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1506,34 +1450,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justin Da`s MacBook Air M5"
-      ids:
-        - "192.168.90.104"
-        - "3a:d7:22:b1:ef:70"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "CFST IPs"
       ids:
         - "192.168.12.44"
@@ -1622,6 +1538,90 @@ clients:
       ids:
         - "192.168.90.106"
         - "62:f8:72:6c:45:eb"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Justin Da`s MacBook Air M5"
+      ids:
+        - "192.168.90.109"
+        - "3a:d7:22:b1:ef:70"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米风扇-3"
+      ids:
+        - "192.168.50.106"
+        - "40:31:3c:b0:ad:4b"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米风扇-4"
+      ids:
+        - "192.168.50.103"
+        - "78:11:dc:bc:14:c2"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
