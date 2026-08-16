@@ -190,7 +190,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "iKUai-Beverly"
+      name: "iKuai-Beverly"
       ids:
         - "192.168.122.254"
         - "00:0c:29:06:f5:1c"
