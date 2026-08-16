@@ -4,12 +4,12 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T04:53:14.",
+  "exportedAt": "2026-08-16T04:54:54.",
   "count": 52,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
-      "tagName": "iKUai-Beverly"
+      "tagName": "iKuai-Beverly"
     },
     {
       "sourceIP": "192.168.90.105",
@@ -128,10 +128,6 @@
       "tagName": "小爱音箱"
     },
     {
-      "sourceIP": "192.168.50.104",
-      "tagName": "小米风扇-2"
-    },
-    {
       "sourceIP": "192.168.50.105",
       "tagName": "小米除湿机"
     },
@@ -209,10 +205,14 @@
     },
     {
       "sourceIP": "192.168.50.106",
-      "tagName": "小米风扇-3"
+      "tagName": "小米风扇-2"
     },
     {
       "sourceIP": "192.168.50.103",
+      "tagName": "小米风扇-3"
+    },
+    {
+      "sourceIP": "192.168.50.102",
       "tagName": "小米风扇-4"
     }
   ]
