@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-15T18:14:11.",
-  "count": 47,
+  "exportedAt": "2026-08-16T01:10:02.",
+  "count": 49,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -194,6 +194,14 @@
     {
       "sourceIP": "192.168.12.30",
       "tagName": "ESXi-R230"
+    },
+    {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
+    },
+    {
+      "sourceIP": "192.168.12.44",
+      "tagName": "Device-02:42:c0:a8:88:88"
     }
   ]
 }
