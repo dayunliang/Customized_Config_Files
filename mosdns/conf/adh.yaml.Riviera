@@ -526,7 +526,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-2"
+      name: "XPEnology-VM-1"
       ids:
         - "10.29.80.200"
         - "00:0c:29:fa:47:d1"
@@ -554,7 +554,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-3"
+      name: "XPEnology-VM-2"
       ids:
         - "10.29.60.200"
         - "00:0c:29:fa:47:bd"
@@ -778,7 +778,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-4"
+      name: "XPEnology-VM-3"
       ids:
         - "10.29.50.200"
         - "00:0c:29:fa:47:b3"
@@ -834,7 +834,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-5"
+      name: "XPEnology-VM-4"
       ids:
         - "10.29.70.200"
         - "00:0c:29:fa:47:c7"
@@ -918,7 +918,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM-6"
+      name: "XPEnology-VM-5"
       ids:
         - "10.29.90.200"
         - "00:0c:29:fa:47:db"

@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T12:44:15.",
-  "count": 41,
+  "exportedAt": "2026-08-16T12:48:37.",
+  "count": 40,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -57,11 +57,11 @@
     },
     {
       "sourceIP": "10.29.80.200",
-      "tagName": "XPEnology-VM-2"
+      "tagName": "XPEnology-VM-1"
     },
     {
       "sourceIP": "10.29.60.200",
-      "tagName": "XPEnology-VM-3"
+      "tagName": "XPEnology-VM-2"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -93,7 +93,7 @@
     },
     {
       "sourceIP": "10.29.50.200",
-      "tagName": "XPEnology-VM-4"
+      "tagName": "XPEnology-VM-3"
     },
     {
       "sourceIP": "10.29.2.10",
@@ -101,7 +101,7 @@
     },
     {
       "sourceIP": "10.29.70.200",
-      "tagName": "XPEnology-VM-5"
+      "tagName": "XPEnology-VM-4"
     },
     {
       "sourceIP": "10.29.2.111",
@@ -113,7 +113,7 @@
     },
     {
       "sourceIP": "10.29.90.200",
-      "tagName": "XPEnology-VM-6"
+      "tagName": "XPEnology-VM-5"
     },
     {
       "sourceIP": "10.29.2.253",
@@ -134,10 +134,6 @@
     {
       "sourceIP": "10.29.60.206",
       "tagName": "连廊监控"
-    },
-    {
-      "sourceIP": "10.29.70.101",
-      "tagName": "主卧室-AP-1"
     },
     {
       "sourceIP": "10.29.2.101",
