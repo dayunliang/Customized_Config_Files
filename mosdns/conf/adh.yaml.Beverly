@@ -1002,7 +1002,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Beverly.2nd.Router"
+      name: "Device-00:0c:29:7c:37:6d"
       ids:
         - "192.168.12.1"
         - "00:0c:29:7c:37:6d"
@@ -1506,10 +1506,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Lean Openwrt Compiler"
+      name: "Justin Da`s MacBook Air M5"
       ids:
-        - "192.168.12.70"
-        - "00:0c:29:16:c4:2f"
+        - "192.168.90.104"
+        - "3a:d7:22:b1:ef:70"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1534,7 +1534,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-02:42:c0:a8:88:88"
+      name: "CFST IPs"
       ids:
         - "192.168.12.44"
         - "02:42:c0:a8:88:88"

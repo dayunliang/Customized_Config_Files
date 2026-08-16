@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T01:10:02.",
+  "exportedAt": "2026-08-16T01:13:44.",
   "count": 49,
   "normalizedData": [
     {
@@ -125,7 +125,7 @@
     },
     {
       "sourceIP": "192.168.12.1",
-      "tagName": "Beverly.2nd.Router"
+      "tagName": "Device-00:0c:29:7c:37:6d"
     },
     {
       "sourceIP": "192.168.50.101",
@@ -196,12 +196,12 @@
       "tagName": "ESXi-R230"
     },
     {
-      "sourceIP": "192.168.12.70",
-      "tagName": "Lean Openwrt Compiler"
+      "sourceIP": "192.168.90.104",
+      "tagName": "Justin Da`s MacBook Air M5"
     },
     {
       "sourceIP": "192.168.12.44",
-      "tagName": "Device-02:42:c0:a8:88:88"
+      "tagName": "CFST IPs"
     }
   ]
 }
