@@ -1002,7 +1002,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:0c:29:7c:37:6d"
+      name: "Beverly.2nd.Router"
       ids:
         - "192.168.12.1"
         - "00:0c:29:7c:37:6d"
@@ -1506,7 +1506,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justin Da`s MacBook Air M5-1"
+      name: "Justin Da`s MacBook Air M5"
       ids:
         - "192.168.90.104"
         - "3a:d7:22:b1:ef:70"
@@ -1538,34 +1538,6 @@ clients:
       ids:
         - "192.168.12.44"
         - "02:42:c0:a8:88:88"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "Justin Da`s MacBook Air M5-2"
-      ids:
-        - "192.168.90.109"
-        - "3a:d7:22:b1:ef:70"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1622,6 +1594,34 @@ clients:
       ids:
         - "192.168.12.70"
         - "00:0c:29:16:c4:2f"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Justin Da`s Huawei Phone"
+      ids:
+        - "192.168.90.106"
+        - "62:f8:72:6c:45:eb"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

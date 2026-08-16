@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T04:35:42.",
+  "exportedAt": "2026-08-16T04:42:19.",
   "count": 52,
   "normalizedData": [
     {
@@ -125,7 +125,7 @@
     },
     {
       "sourceIP": "192.168.12.1",
-      "tagName": "Device-00:0c:29:7c:37:6d"
+      "tagName": "Beverly.2nd.Router"
     },
     {
       "sourceIP": "192.168.50.101",
@@ -197,15 +197,11 @@
     },
     {
       "sourceIP": "192.168.90.104",
-      "tagName": "Justin Da`s MacBook Air M5-1"
+      "tagName": "Justin Da`s MacBook Air M5"
     },
     {
       "sourceIP": "192.168.12.44",
       "tagName": "CFST IPs"
-    },
-    {
-      "sourceIP": "192.168.90.109",
-      "tagName": "Justin Da`s MacBook Air M5-2"
     },
     {
       "sourceIP": "192.168.12.251",
@@ -214,6 +210,10 @@
     {
       "sourceIP": "192.168.12.70",
       "tagName": "Lean Openwrt Compiler"
+    },
+    {
+      "sourceIP": "192.168.90.106",
+      "tagName": "Justin Da`s Huawei Phone"
     }
   ]
 }
