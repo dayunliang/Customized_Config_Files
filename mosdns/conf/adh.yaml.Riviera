@@ -1017,6 +1017,34 @@ clients:
       use_global_blocked_services: true
       ignore_querylog: false
       ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Honeywell 智能设备网关"
+      ids:
+        - "10.29.50.100"
+        - "d0:76:50:30:08:6a"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
 log:
   enabled: true
   file: ""
