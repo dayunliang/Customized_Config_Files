@@ -128,7 +128,7 @@ echo
 # ==============================================================================
 
 # 1. 大陆 IP、GFW 列表、苹果及谷歌厂商清单等常态化大文件矩阵 (对应存放至 ~/mosdns/rules-dat)
-RULES_DAT_URL_FILE_LIST=$(cat << 'EOF_RULES_DAT'
+RULES_DAT_URL_FILE_LIST=$(cat << EOF_RULES_DAT
 https://raw.githubusercontent.com/17mon/china_ip_list/refs/heads/master/china_ip_list.txt geoip_cn.txt
 https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/reject-list.txt geosite_category-ads-all.txt
 https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt geosite_geolocation-!cn.txt
@@ -137,7 +137,7 @@ https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt g
 https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/china-list.txt geosite_cn_extra.txt
 https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/apple-cn.txt geosite_cn_apple.txt
 https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/google-cn.txt geosite_cn_google.txt
-https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/hosts.txt hosts.txt
+https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/hosts.txt.${CURRENT_SITE} hosts.txt
 https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/geoip_private.txt geoip_private.txt
 EOF_RULES_DAT
 )
