@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T04:49:45.",
-  "count": 31,
+  "exportedAt": "2026-08-16T05:03:09.",
+  "count": 34,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -130,6 +130,18 @@
     {
       "sourceIP": "10.29.50.100",
       "tagName": "Honeywell 智能设备网关"
+    },
+    {
+      "sourceIP": "10.29.60.206",
+      "tagName": "连廊监控"
+    },
+    {
+      "sourceIP": "10.29.70.101",
+      "tagName": "主卧室-AP-1"
+    },
+    {
+      "sourceIP": "10.29.2.101",
+      "tagName": "主卧室-AP-2"
     }
   ]
 }
