@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T01:13:44.",
-  "count": 49,
+  "exportedAt": "2026-08-16T04:35:42.",
+  "count": 52,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -197,11 +197,23 @@
     },
     {
       "sourceIP": "192.168.90.104",
-      "tagName": "Justin Da`s MacBook Air M5"
+      "tagName": "Justin Da`s MacBook Air M5-1"
     },
     {
       "sourceIP": "192.168.12.44",
       "tagName": "CFST IPs"
+    },
+    {
+      "sourceIP": "192.168.90.109",
+      "tagName": "Justin Da`s MacBook Air M5-2"
+    },
+    {
+      "sourceIP": "192.168.12.251",
+      "tagName": "Unifi 24 PoE Switch"
+    },
+    {
+      "sourceIP": "192.168.12.70",
+      "tagName": "Lean Openwrt Compiler"
     }
   ]
 }
