@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-70:4b:ca:c0:34:b0"
+      name: "CozyLife_0VQD"
       ids:
         - "10.29.50.106"
         - "70:4b:ca:c0:34:b0"
@@ -498,7 +498,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XPEnology-VM"
+      name: "XPEnology-VM-1"
       ids:
         - "10.29.2.200"
         - "00:0c:29:fa:47:a9"

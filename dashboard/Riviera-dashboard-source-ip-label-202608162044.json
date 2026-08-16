@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T12:20:50.",
+  "exportedAt": "2026-08-16T12:44:15.",
   "count": 41,
   "normalizedData": [
     {
@@ -21,7 +21,7 @@
     },
     {
       "sourceIP": "10.29.50.106",
-      "tagName": "Device-70:4b:ca:c0:34:b0"
+      "tagName": "CozyLife_0VQD"
     },
     {
       "sourceIP": "10.29.50.107",
@@ -53,7 +53,7 @@
     },
     {
       "sourceIP": "10.29.2.200",
-      "tagName": "XPEnology-VM"
+      "tagName": "XPEnology-VM-1"
     },
     {
       "sourceIP": "10.29.80.200",
