@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T04:59:25.",
-  "count": 51,
+  "exportedAt": "2026-08-16T11:40:47.",
+  "count": 52,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -210,6 +210,10 @@
     {
       "sourceIP": "192.168.50.104",
       "tagName": "小米空气净化器"
+    },
+    {
+      "sourceIP": "192.168.50.108",
+      "tagName": "海尔冰箱"
     }
   ]
 }
