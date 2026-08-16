@@ -110,11 +110,12 @@ fi
 # ===========================================================================
 # [3] 全局变量初始化与清理机制
 # ===========================================================================
-REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git" # 配置文件仓库
-SPARSE_DIR="Lean"                                                    # 仅需拉取的子目录
-TMP_DIR=$(mktemp -d)                                                 # 创建随机临时目录，避免 tmux 多开碰撞
-TS=$(date +%Y%m%d-%H%M%S)                                            # 全局时间戳，用于文件备份命名
-declare -a BACKUP_LIST                                               # 全局数组，负责收集备份文件路径
+REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"        # 公开配置仓库（保持 https 即可）
+PRIVATE_REPO_URL="git@github.com:dayunliang/private_config.git"             # 私有配置仓库（改用 SSH）
+SPARSE_DIR="Lean"                                                           # 仅需拉取的子目录
+TMP_DIR=$(mktemp -d)                                                        # 创建随机临时目录，避免 tmux 多开碰撞
+TS=$(date +%Y%m%d-%H%M%S)                                                   # 全局时间戳，用于文件备份命名
+declare -a BACKUP_LIST                                                      # 全局数组，负责收集备份文件路径
 
 # Trap 垃圾回收机制：不论脚本是顺利完成还是报错崩溃，退出时必定清理本次创建的临时目录
 cleanup() {
@@ -126,15 +127,11 @@ cleanup() {
 trap cleanup EXIT
 
 # ===========================================================================
-# [4] 远程配置仓库克隆 (Sparse Checkout 提速)
+# [4] 双仓库全量克隆与“私人库优先”合并 (基于 ed25519 免密通道)
 # ===========================================================================
-echo "➡️ [Step 1] 克隆定制配置仓库到临时目录 $TMP_DIR ..."
-echo "   仓库地址：$REPO_URL"
-echo "   拉取目录：$SPARSE_DIR"
-
-# --depth=1 浅克隆，--filter=blob:none 忽略历史文件对象，--sparse 开启稀疏检出
+echo "➡️ [Step 1] 正在克隆公开配置仓库到临时目录 $TMP_DIR ..."
 if ! git clone --depth=1 --filter=blob:none --sparse "$REPO_URL" "$TMP_DIR"; then
-    echo "❌ 克隆仓库失败：$REPO_URL"
+    echo "❌ 克隆公开仓库失败：$REPO_URL"
     exit 1
 fi
 
@@ -143,8 +140,25 @@ if ! git sparse-checkout set "$SPARSE_DIR"; then
     echo "❌ sparse-checkout 设置失败：$SPARSE_DIR"
     exit 1
 fi
-cd - >/dev/null || { echo "❌ 无法返回原目录"; exit 1; }
-echo "✅ 仓库配置拉取完成！"
+cd - >/dev/null
+
+echo "➡️ [Step 1.5] 正在通过 SSH (ed25519) 克隆私有配置仓库 (private_config)..."
+mkdir -p "${TMP_DIR}/private_clone"
+if git clone --depth=1 "$PRIVATE_REPO_URL" "${TMP_DIR}/private_clone" 2>/dev/null; then
+    echo "  ✅ 私有仓库拉取成功！正在执行高优先级覆盖合并..."
+    
+    # 核心覆盖逻辑：
+    # 如果私有库里有 Lean 目录，就将它完整覆盖到主临时目录中
+    # 这样同名文件（私人库）会直接覆盖公开库的默认文件！
+    if [ -d "${TMP_DIR}/private_clone/Lean" ]; then
+        cp -rf "${TMP_DIR}/private_clone/Lean/"* "${TMP_DIR}/Lean/"
+        echo "  ✅ 私有库配置已成功覆盖公开库（同名文件以私有为准）！"
+    fi
+else
+    echo "  ⚠️ 警告: 私有仓库拉取失败，将仅使用公开仓库运行。"
+fi
+
+echo "✅ 仓库全量配置与合并完成！"
 
 # ===========================================================================
 # [5] 目标编译版本选择
@@ -168,6 +182,8 @@ echo
 # ===========================================================================
 # [6] 核心部署与统计函数声明
 # ===========================================================================
+# 核心功能：统一文件部署函数
+# 参数: $1=源路径(相对 Lean 目录), $2=目标路径, $3=权限(默认644)
 __DEPLOY_HITS=""
 __DEPLOY_SKIPS=""
 __hit()  { __DEPLOY_HITS="${__DEPLOY_HITS}${1}\n"; }
@@ -175,10 +191,10 @@ __skip() { __DEPLOY_SKIPS="${__DEPLOY_SKIPS}${1}\n"; }
 
 # 核心功能：安全复制 (带备份)
 safe_cp() {
-  src="$1"
-  dst="$2"
+  local src="$1"
+  local dst="$2"
   if [ -f "$dst" ]; then
-    backup_name="$dst.bak.$TS"
+    local backup_name="$dst.bak.$TS"
     cp -v "$dst" "$backup_name"
     BACKUP_LIST+=("$backup_name")
   fi
@@ -186,55 +202,29 @@ safe_cp() {
   cp -vf "$src" "$dst"
 }
 
-SRC_ROOT="${TMP_DIR}/Lean/files"   # 你的自定义 Overlay 目录
-DST_ROOT="./files"                 # OpenWrt 原生 Overlay 目录
-
-# 核心功能：常规文件部署 (带站点兜底逻辑)
+# 核心功能：统一文件部署函数
+# 参数: $1=源路径(相对 Lean 目录), $2=目标路径, $3=权限(默认644)
 deploy_file() {
-  rel="$1"
-  mode="${2:-644}"
-  site_src="${SRC_ROOT}/${rel}.${COMPILE_NAME}"
-  def_src="${SRC_ROOT}/${rel}"
-  dst="${DST_ROOT}/${rel}"
-
-  if [ -f "${site_src}" ]; then
-    echo "  [DEPLOY] ${site_src} -> ${dst}"
-    safe_cp "${site_src}" "${dst}"
-    chmod "${mode}" "${dst}" || true   # 权限赋予失败不阻断流程
-    __hit "${rel} (site=${COMPILE_NAME})"
-  elif [ -f "${def_src}" ]; then
-    echo "  [DEPLOY] ${def_src} -> ${dst}"
-    safe_cp "${def_src}" "${dst}"
-    chmod "${mode}" "${dst}" || true
-    __hit "${rel} (default)"
-  else
-    echo "  [SKIP_OK] ${rel} (未提供配置，安全跳过)"
-    __skip "${rel}"
-  fi
-  return 0
-}
-
-# 核心功能：根级文件部署 (针对 feeds.conf, .config 等特殊位置)
-deploy_root() {
-  name="$1"
-  dst="$2"
-  mode="${3:-644}"
-  site_src="${TMP_DIR}/Lean/${name}.${COMPILE_NAME}"
-  def_src="${TMP_DIR}/Lean/${name}"
+  local src_rel="$1"
+  local dst="$2"
+  local mode="${3:-644}"
+  
+  local site_src="${TMP_DIR}/Lean/${src_rel}.${COMPILE_NAME}"
+  local def_src="${TMP_DIR}/Lean/${src_rel}"
 
   if [ -f "${site_src}" ]; then
     echo "  [DEPLOY] ${site_src} -> ${dst}"
     safe_cp "${site_src}" "${dst}"
     chmod "${mode}" "${dst}" || true
-    __hit "${name} (site=${COMPILE_NAME})"
+    __hit "${src_rel} (site=${COMPILE_NAME})"
   elif [ -f "${def_src}" ]; then
     echo "  [DEPLOY] ${def_src} -> ${dst}"
     safe_cp "${def_src}" "${dst}"
     chmod "${mode}" "${dst}" || true
-    __hit "${name} (default)"
+    __hit "${src_rel} (default)"
   else
-    echo "  [SKIP_OK] root ${name} (未提供配置，安全跳过)"
-    __skip "${name}"
+    echo "  [SKIP_OK] ${src_rel} (未提供配置，安全跳过)"
+    __skip "${src_rel}"
   fi
   return 0
 }
@@ -291,7 +281,8 @@ clean_advancedplus_zsh_autostart() {
 # [8] 检查与安装基础 feeds (luci-base)
 # ===========================================================================
 
-deploy_root "feeds.conf.default"     "./feeds.conf.default"                               "644"
+#deploy_root "feeds.conf.default"     "./feeds.conf.default"                               "644"
+deploy_file "feeds.conf.default" "./feeds.conf.default" "644"
 
 echo "➡️ [Step 3] 验证环境依赖与 Feeds..."
 if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
@@ -335,38 +326,46 @@ echo
 echo "➡️ [Step 4] 开始向源码树投递 [$COMPILE_NAME] 的所有配置文件..."
 
 # 11.1 部署代码仓库根级配置文件
-deploy_root "config"                 "./.config"                                          "644"
 
 # ⚠️ 注意：处于灰度测试状态，强制将 .test 文件部署为正式环境的默认设置！
 # echo "  [INFO] 正在将测试版 zzz-default-settings 强制覆盖落盘..."
 # cp ${TMP_DIR}/Lean/zzz-default-settings.test ./package/lean/default-settings/files/zzz-default-settings
 # chmod 755 ./package/lean/default-settings/files/zzz-default-settings
 # 待测试稳定后，请删掉上面两行，并取消下面这一行的注释恢复正式匹配流：
-deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
 
-deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                               "755"
+#deploy_root "config"                 "./.config"                                          "644"
+#deploy_root "zzz-default-settings"   "./package/lean/default-settings/files/zzz-default-settings" "755"
+#deploy_root "remove_conflict.sh"     "./remove_conflict.sh"                               "755"
+deploy_file "config"               "./.config"                                                  "644"
+deploy_file "zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings" "755"
+deploy_file "remove_conflict.sh"   "./remove_conflict.sh"                                       "755"
 
 # 11.2 部署 Overlay 文件系统 (路由/VPN/Clash)
-deploy_file "usr/bin/back-route-checkenv.sh"                          "755"
-deploy_file "usr/bin/back-route-complete.sh"                          "755"
-deploy_file "usr/bin/back-route-cron.sh"                              "755"
-deploy_file "etc/config/openclash"                                    "644"
-deploy_file "etc/openclash/custom/openclash_custom_rules.list"        "644"
-deploy_file "usr/share/openclash/res/rule_providers.list"             "644"
-deploy_file "etc/openclash/dns_enable_false.sh"                       "755"
-deploy_file "usr/share/openclash/yml_proxys_set.sh"                   "755"
+deploy_file "files/usr/bin/back-route-checkenv.sh"                      "./files/usr/bin/back-route-checkenv.sh"                    "755"
+deploy_file "files/usr/bin/back-route-complete.sh"                      "./files/usr/bin/back-route-complete.sh"                    "755"
+deploy_file "files/usr/bin/back-route-cron.sh"                          "./files/usr/bin/back-route-cron.sh"                        "755"
+deploy_file "files/etc/config/openclash"                                "./files/etc/config/openclash"                              "644"
+deploy_file "files/etc/openclash/custom/openclash_custom_rules.list"    "./files/etc/openclash/custom/openclash_custom_rules.list"  "644"
+deploy_file "files/usr/share/openclash/res/rule_providers.list"         "./files/usr/share/openclash/res/rule_providers.list"       "644"
+deploy_file "files/etc/openclash/dns_enable_false.sh"                   "./files/etc/openclash/dns_enable_false.sh"                 "755"
+deploy_file "files/usr/share/openclash/yml_proxys_set.sh"               "./files/usr/share/openclash/yml_proxys_set.sh"             "755"
+
+deploy_file "files/etc/config/passwall2"                                "./files/etc/config/passwall2"                              "644"
+#deploy_file "files/usr/bin/wireguard_refresh.sh"                        "./files/usr/bin/wireguard_refresh.sh"                      "755"
+deploy_file "files/etc/dbus-1/system.d/avahi-dbus.conf"                 "./files/etc/dbus-1/system.d/avahi-dbus.conf"               "644"
+deploy_file "files/etc/avahi/avahi-daemon.conf"                         "./files/etc/avahi/avahi-daemon.conf"                       "644"
+deploy_file "files/etc/config/turboacc"                                 "./files/etc/config/turboacc"                               "644"
+deploy_file "files/etc/crontabs/root"                                   "./files/etc/crontabs/root"                                 "600"
+
+deploy_file "files/etc/init.d/wstunnel-server"                          "./files/etc/init.d/wstunnel-server"                        "755"
+deploy_file "files/etc/init.d/wstunnel-client"                          "./files/etc/init.d/wstunnel-client"                        "755"
+deploy_file "files/usr/bin/wstunnel"                                    "./files/usr/bin/wstunnel"                                  "755"
+deploy_file "files/usr/bin/wstunnel_watchdog.sh"                        "./files/usr/bin/wstunnel_watchdog.sh"                      "755"
 
 # 独立处理 ACL4SSR 配置文件目录创建与部署
 mkdir -p ./files/etc/openclash/config
-cp ${TMP_DIR}/Lean/files/etc/openclash/config/OpenClash_ACL4SSR_Full_AJ_Home.yaml ./files/etc/openclash/config/OpenClash_ACL4SSR_Full_AJ_Home.yaml
-chmod 644 ./files/etc/openclash/config/OpenClash_ACL4SSR_Full_AJ_Home.yaml
-
-deploy_file "etc/config/passwall2"                                    "644"
-deploy_file "usr/bin/wireguard_refresh.sh"                            "755"
-deploy_file "etc/dbus-1/system.d/avahi-dbus.conf"                     "644"
-deploy_file "etc/avahi/avahi-daemon.conf"                             "644"
-deploy_file "etc/config/turboacc"                                     "644"
-deploy_file "etc/crontabs/root"                                       "600"
+cp ${TMP_DIR}/Lean/files/etc/openclash/config/Personal_Use_ALL.yaml ./files/etc/openclash/config/Personal_Use_ALL.yaml
+chmod 644 ./files/etc/openclash/config/Personal_Use_ALL.yaml
 
 # ===========================================================================
 # [12] WireGuard 私钥就地注入 (精准打击模式)
