@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T05:03:09.",
-  "count": 34,
+  "exportedAt": "2026-08-16T11:50:37.",
+  "count": 41,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -142,6 +142,34 @@
     {
       "sourceIP": "10.29.2.101",
       "tagName": "主卧室-AP-2"
+    },
+    {
+      "sourceIP": "10.29.70.105",
+      "tagName": "CET-AL00"
+    },
+    {
+      "sourceIP": "10.29.90.103",
+      "tagName": "Box R 4K Plus"
+    },
+    {
+      "sourceIP": "10.29.90.107",
+      "tagName": "客厅电视机"
+    },
+    {
+      "sourceIP": "10.29.90.109",
+      "tagName": "Mac"
+    },
+    {
+      "sourceIP": "10.29.90.102",
+      "tagName": "北客房电视机"
+    },
+    {
+      "sourceIP": "10.29.90.108",
+      "tagName": "Andy Da`s iPhone 17 Pro"
+    },
+    {
+      "sourceIP": "10.29.80.108",
+      "tagName": "Julie Wu`s iPhone 16 Pro"
     }
   ]
 }
