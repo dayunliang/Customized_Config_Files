@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T04:54:54.",
-  "count": 52,
+  "exportedAt": "2026-08-16T04:59:25.",
+  "count": 51,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -100,10 +100,6 @@
       "tagName": "R730xd-iDrac"
     },
     {
-      "sourceIP": "192.168.50.108",
-      "tagName": "小米空气净化器"
-    },
-    {
       "sourceIP": "192.168.12.3",
       "tagName": "WIN11-LOFT"
     },
@@ -154,10 +150,6 @@
     {
       "sourceIP": "192.168.12.241",
       "tagName": "花园西北角 AP"
-    },
-    {
-      "sourceIP": "192.168.50.109",
-      "tagName": "海尔冰箱"
     },
     {
       "sourceIP": "192.168.12.31",
@@ -214,6 +206,10 @@
     {
       "sourceIP": "192.168.50.102",
       "tagName": "小米风扇-4"
+    },
+    {
+      "sourceIP": "192.168.50.104",
+      "tagName": "小米空气净化器"
     }
   ]
 }

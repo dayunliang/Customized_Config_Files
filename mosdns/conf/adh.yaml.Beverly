@@ -834,34 +834,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米空气净化器"
-      ids:
-        - "192.168.50.108"
-        - "04:cf:8c:2b:35:6e"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "WIN11-LOFT"
       ids:
         - "192.168.12.3"
@@ -1202,34 +1174,6 @@ clients:
       ids:
         - "192.168.12.241"
         - "f0:9f:c2:a3:55:5b"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "海尔冰箱"
-      ids:
-        - "192.168.50.109"
-        - "ac:82:26:71:16:20"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1622,6 +1566,34 @@ clients:
       ids:
         - "192.168.50.102"
         - "7c:49:eb:46:a1:ee"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "小米空气净化器"
+      ids:
+        - "192.168.50.104"
+        - "04:cf:8c:2b:35:6e"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
