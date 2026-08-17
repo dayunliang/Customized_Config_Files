@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-16T19:00:02.",
-  "count": 41,
+  "exportedAt": "2026-08-17T19:00:08.",
+  "count": 42,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -170,6 +170,10 @@
     {
       "sourceIP": "10.29.90.200",
       "tagName": "XPEnology-VM-5"
+    },
+    {
+      "sourceIP": "10.10.20.2",
+      "tagName": "Device-00:00:00:00:00:00"
     }
   ]
 }
