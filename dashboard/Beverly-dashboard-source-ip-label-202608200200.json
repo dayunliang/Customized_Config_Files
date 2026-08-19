@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-18T18:00:02.",
-  "count": 52,
+  "exportedAt": "2026-08-19T18:00:02.",
+  "count": 53,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -214,6 +214,10 @@
     {
       "sourceIP": "192.168.50.108",
       "tagName": "海尔冰箱"
+    },
+    {
+      "sourceIP": "10.10.10.2",
+      "tagName": "Device-00:00:00:00:00:00"
     }
   ]
 }
