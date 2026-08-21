@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone-1"
+      name: "Auntie`s Phone"
       ids:
         - "192.168.70.102"
         - "52:23:28:02:53:ed"
@@ -1478,7 +1478,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justin Da`s MacBook Air M5"
+      name: "Justin Da`s MacBook Air M5-1"
       ids:
         - "192.168.90.109"
         - "3a:d7:22:b1:ef:70"
@@ -1649,6 +1649,34 @@ clients:
       name: "Device-00:00:00:00:00:00"
       ids:
         - "10.10.10.2"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Justin Da`s MacBook Air M5-2"
+      ids:
+        - "192.168.90.104"
+        - "fc:b2:14:4d:bf:74"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
