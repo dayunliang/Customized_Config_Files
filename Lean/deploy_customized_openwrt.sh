@@ -349,6 +349,7 @@ deploy_file "files/etc/openclash/custom/openclash_custom_rules.list"    "./files
 deploy_file "files/usr/share/openclash/res/rule_providers.list"         "./files/usr/share/openclash/res/rule_providers.list"       "644"
 deploy_file "files/etc/openclash/dns_enable_false.sh"                   "./files/etc/openclash/dns_enable_false.sh"                 "755"
 deploy_file "files/usr/share/openclash/yml_proxys_set.sh"               "./files/usr/share/openclash/yml_proxys_set.sh"             "755"
+deploy_file "files/etc/openclash/config/Personal_Use_ALL.yaml"          "./files/etc/openclash/config/Personal_Use_ALL.yaml"        "644"
 
 deploy_file "files/etc/config/passwall2"                                "./files/etc/config/passwall2"                              "644"
 #deploy_file "files/usr/bin/wireguard_refresh.sh"                        "./files/usr/bin/wireguard_refresh.sh"                      "755"
