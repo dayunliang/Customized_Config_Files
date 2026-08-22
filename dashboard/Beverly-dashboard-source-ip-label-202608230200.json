@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-21T18:00:02.",
-  "count": 54,
+  "exportedAt": "2026-08-22T18:00:01.",
+  "count": 56,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -117,7 +117,7 @@
     },
     {
       "sourceIP": "192.168.12.1",
-      "tagName": "Beverly.2nd.Router"
+      "tagName": "Device-00:0c:29:78:56:85"
     },
     {
       "sourceIP": "192.168.50.101",
@@ -222,6 +222,14 @@
     {
       "sourceIP": "192.168.90.104",
       "tagName": "Justin Da`s MacBook Air M5-2"
+    },
+    {
+      "sourceIP": "192.168.70.103",
+      "tagName": "2023P168"
+    },
+    {
+      "sourceIP": "192.168.50.109",
+      "tagName": "NPIFCAAE4"
     }
   ]
 }

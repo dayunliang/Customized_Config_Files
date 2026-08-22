@@ -946,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Beverly.2nd.Router"
+      name: "Device-00:0c:29:78:56:85"
       ids:
         - "192.168.12.1"
-        - "00:0c:29:7c:37:6d"
+        - "00:0c:29:78:56:85"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1677,6 +1677,62 @@ clients:
       ids:
         - "192.168.90.104"
         - "fc:b2:14:4d:bf:74"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "2023P168"
+      ids:
+        - "192.168.70.103"
+        - "a6:1e:cd:d6:1b:ad"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "NPIFCAAE4"
+      ids:
+        - "192.168.50.109"
+        - "4c:d5:77:69:c2:c6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
