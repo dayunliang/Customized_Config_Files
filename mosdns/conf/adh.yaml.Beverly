@@ -946,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:0c:29:78:56:85"
+      name: "Beverly.2nd.Router"
       ids:
         - "192.168.12.1"
-        - "00:0c:29:78:56:85"
+        - "00:0c:29:7c:37:6d"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-22T18:00:01.",
+  "exportedAt": "2026-08-24T18:00:01.",
   "count": 56,
   "normalizedData": [
     {
@@ -117,7 +117,7 @@
     },
     {
       "sourceIP": "192.168.12.1",
-      "tagName": "Device-00:0c:29:78:56:85"
+      "tagName": "Beverly.2nd.Router"
     },
     {
       "sourceIP": "192.168.50.101",
