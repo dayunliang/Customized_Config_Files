@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-23T19:00:05.",
-  "count": 43,
+  "exportedAt": "2026-08-24T19:00:01.",
+  "count": 44,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -178,6 +178,10 @@
     {
       "sourceIP": "10.29.90.110",
       "tagName": "MacBook-Air-7"
+    },
+    {
+      "sourceIP": "10.29.90.106",
+      "tagName": "CLS-AL30"
     }
   ]
 }
