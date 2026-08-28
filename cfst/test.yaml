@@ -19,7 +19,7 @@
 proxy-providers:
 
   CFST:
-    url: https://raw.githubusercontent.com/dayunliang/private_config/refs/heads/main/Lean/files/etc/openclash/config/Personal_Use_ALL.yaml?token=GHSAT0AAAAAAEF4HAELRAGZZOZERO32PNUI2UQ3PWQ
+    url: https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/cfst/test.yaml
     type: http
     interval: 86400
     health-check:
