@@ -1,760 +1,870 @@
-# Generated for OpenClash from config.yaml + ACL4SSR_Online_Full_AJ_Home.ini
-# 说明：保留原 config.yaml 的基础设置、proxy-providers、proxies；按 ACL.ini 重建 proxy-groups、rule-providers、rules。
 
-# 机场订阅
+################################################################
+# 新加坡优选 (Singapore)
+################################################################
 
-#proxy-providers:
-
-  # Cloudflare-VPS:
-  #   url: https://cfbgfw.pages.dev/sub?token=c8c798ee6503afd432356f7ca81a6b69
-  #   type: http
-  #   interval: 86400
-  #   health-check:
-  #     enable: true
-  #     url: https://www.gstatic.com/generate_204
-  #     interval: 300
-  #   proxy: DIRECT
-  #   filter: "^(?!.*(流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅)).*"  
-
-proxy-providers:
-
-  CFST:
-    url: https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/cfst/test.yaml
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: DIRECT
-    filter: "^(?!.*(流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅|GB)).*"
-
-proxy-providers:
-
-  Kuromis:
-    url: https://resourcemap.lol/sub?token=EcegWoNfLIcWIR_sex1KXUcy52oIy3BOXHCmHnIQSQE&type=clash&protocol=anytls&use=domestic&rule=nodelist
-    type: http
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-    proxy: DIRECT
-    filter: "^(?!.*(流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅|GB)).*"
-
-################################################################################################################
-
-# 节点信息
-
-proxies:
-- name: ALI-HK VLESS
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=18.84 MB/s; latency=0.20 ms; code=SIN; status=new
+- name: CF-优选-新加坡 01
   type: vless
-  server: 47.242.93.89
-  port: 45465
-  uuid: 44515b60-600a-4d4d-a739-8fcda20d6491
-  udp: true
+  server: 172.64.144.207
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
   tls: true
-  flow: xtls-rprx-vision
-  servername: www.mongodb.com
-  network: tcp
-  reality-opts:
-    public-key: izQeGk1tIkzJlFYNQSwmGqX0ImBQdY99nEDRt3hSyTg
-    short-id: 6ba85179e30d4fc2
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
   client-fingerprint: chrome
 
-- name: ALI-HK HY2
-  type: hysteria2
-  server: ali-hk.b-gfw.cfd
-  port: 40359
-  password: "44515b60-600a-4d4d-a739-8fcda20d6491"
-  sni: ali-hk.b-gfw.cfd
-  skip-cert-verify: false
-  alpn:
-    - h3
-  up: "150 Mbps"    # 建议填入你宽带上传速度的 80%
-  down: "1500 Mbps" # 建议填入你宽带下载速度的 80%
-
-- name: ALI-SG VLESS
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=16.53 MB/s; latency=0.21 ms; code=SIN; status=new
+- name: CF-优选-新加坡 02
   type: vless
-  server: 43.106.69.213
-  port: 18147
-  uuid: bc4bc132-f6df-4919-abe5-33088652d62e
-  udp: true
+  server: 172.64.32.110
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
   tls: true
-  flow: xtls-rprx-vision
-  servername: www.swift.com
-  network: tcp
-  reality-opts:
-    public-key: ApxBN66NDXyOGiu31axFBtXaf3Ki7u-eo33WcFbDMQI
-    short-id: 6ba85179e30d4fc2
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
   client-fingerprint: chrome
 
-- name: ALI-SG HY2
-  type: hysteria2
-  server: 43.106.69.213
-  port: 33575
-  password: "bc4bc132-f6df-4919-abe5-33088652d62e"
-  sni: ali-sg.b-gfw.cfd
-  skip-cert-verify: false
-  alpn:
-    - h3
-  up: "150 Mbps"    # 建议填入你宽带上传速度的 80%
-  down: "1500 Mbps" # 建议填入你宽带下载速度的 80%
-
-proxy-groups:
-
-#- name: 🚀 节点选择
-#  type: select
-#  proxies:
-#  - ♻️ 自动选择
-#  - 🚂 手动切换
-#  - 🇸🇬 狮城节点
-#  - 🇯🇵 日本节点
-#  - 🇺🇲 美国节点
-#  - 🇪🇺 欧洲节点
-#  - DIRECT
- 
-- name: 🚀 节点选择
-  type: fallback
-  url: http://www.msftconnecttest.com/connecttest.txt
-  # url: http://www.gstatic.com/generate_204
-  interval: 60
-  proxies:
-    - ♻️ 自动选择
-    - 🌐 ALI-SG
-    - 🌐 ALI-HK
-    - DIRECT
-  
-- name: 🚂 手动切换
-  type: select
-  include-all: true
-  use:
-    - Kuromi  # 显式把 Kuromi 订阅里的节点全拉进来
-
-- name: ♻️ 自动选择
-  type: url-test
-  include-all: true
-  exclude-filter: '^(DIRECT|REJECT|流量|时间|官网|剩余|过期|到期|套餐|重置|Expire|Traffic|Reset|订阅|ALI-HK|ALI-SG).*'
-  #url: http://www.msftconnecttest.com/connecttest.txt
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-#- name: 👹 Launcher
-#  type: select
-#  proxies:
-#  - 🇺🇲 美国节点
-#  - 🇸🇬 狮城节点
-#  - 🇯🇵 日本节点
-
-- name: 👹 Launcher
-  type: fallback
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  proxies:
-  - 🇺🇲 美国节点
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🌐 ALI-SG
-
-- name: 📹 油管视频
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - ♻️ 自动选择
-  - 🚂 手动切换
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-
-- name: 🎥 奈飞视频
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - ♻️ 自动选择
-  - 🚂 手动切换
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-
-#- name: 🤖 ChatGPT
-#  type: url-test
-#  proxies:
-#  - 🇸🇬 狮城节点
-#  - 🇯🇵 日本节点
-#  - 🇺🇲 美国节点
-#  - 🇪🇺 欧洲节点
-#  - ♻️ 自动选择
-#  - 🚂 手动切换
-#  - 🚀 节点选择
-#  url: http://www.gstatic.com/generate_204
-#  interval: 60
-#  tolerance: 5
-
-- name: 🤖 ChatGPT
-  type: fallback
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  proxies:
-    - 🇯🇵 日本节点
-    - 🇸🇬 狮城节点
-    - 🇺🇲 美国节点
-    - 🇪🇺 欧洲节点
-    - 🌐 ALI-SG
-
-#- name: 🤖 Gemini
-#  type: url-test
-#  proxies:
-#  - 🇭🇰 香港节点
-#  - 🇸🇬 狮城节点
-#  - 🇯🇵 日本节点
-#  - 🇰🇷 韩国节点
-#  - 🇹🇼 台湾节点
-#  - 🇺🇲 美国节点
-#  - 🇪🇺 欧洲节点
-#  - ♻️ 自动选择
-#  - 🚂 手动切换
-#  - 🚀 节点选择
-#  url: http://www.gstatic.com/generate_204
-#  interval: 60
-#  tolerance: 5
-
-- name: 🤖 Gemini
-  type: fallback
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  proxies:
-    - 🇯🇵 日本节点
-    - 🇸🇬 狮城节点
-    - 🇺🇲 美国节点
-    - 🇪🇺 欧洲节点
-    - 🌐 ALI-HK
-    - 🌐 ALI-SG
-
-- name: 📲 电报消息
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - ♻️ 自动选择
-  - 🚂 手动切换
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-
-- name: 📺 哔哩哔哩
-  type: select
-  proxies:
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🎯 全球直连
-
-- name: 🌍 国外媒体
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - ♻️ 自动选择
-  - 🚂 手动切换
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🎯 全球直连
-
-- name: 🌏 国内媒体
-  type: select
-  proxies:
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🚂 手动切换
-  - 🎯 全球直连
-
-- name: Ⓜ️ 微软云盘
-  type: select
-  proxies:
-  - 🎯 全球直连
-  - 🚀 节点选择
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🚂 手动切换
-
-- name: Ⓜ️ 微软服务
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🚂 手动切换
-  - 🎯 全球直连
-
-- name: 🍎 苹果服务
-  type: select
-  proxies:
-  - 🎯 全球直连
-  - 🚀 节点选择
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🚂 手动切换
-
-- name: 📢 谷歌FCM
-  type: select
-  proxies:
-  - 🎯 全球直连
-  - 🚀 节点选择
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🚂 手动切换
-
-- name: 🎶 网易音乐
-  type: select
-  proxies:
-  - 🎯 全球直连
-  - 🚀 节点选择
-  - ♻️ 自动选择
-  include-all: true
-  filter: (网易|音乐|解锁|Music|NetEase)
-
-- name: ㊙️ HDAV
-  type: select
-  proxies:
-  - 🇯🇵 日本节点
-  - 🇸🇬 狮城节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - ♻️ 自动选择
-  - 🚂 手动切换
-
-- name: 🧀 起司外卖
-  type: select
-  proxies:
-  - 🚂 手动切换
-  - 🎯 全球直连
-  include-all: true
-  filter: (IPLC|QAT)
-
-- name: ⚒ 矿池服务
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - 🚂 手动切换
-  - 🎯 全球直连
-  - REJECT
-
-- name: 🎃 我的世界
-  type: select
-  proxies:
-  - 🚀 节点选择
-  - 🚂 手动切换
-  - 🎯 全球直连
-
-- name: 🎮 游戏平台
-  type: select
-  proxies:
-  - 🎯 全球直连
-  - 🚀 节点选择
-  - 🇸🇬 狮城节点
-  - 🇯🇵 日本节点
-  - 🇺🇲 美国节点
-  - 🇪🇺 欧洲节点
-  - 🚂 手动切换
-
-- name: 🎯 全球直连
-  type: select
-  proxies:
-  - DIRECT
-  - 🚀 节点选择
-  - ♻️ 自动选择
-
-- name: 🐟 漏网之鱼
-  type: select
-  proxies:
-  - 🎯 全球直连
-  - 🚀 节点选择
-  - ♻️ 自动选择
-  - 🚂 手动切换
-
-#- name: 🇭🇰 香港节点
-#  type: url-test
-#  include-all: true
-#  filter: (港|HK|Hong Kong|HKG)
-#  # 去掉了 ^，只要名字里有这两个词就会被排除
-#  exclude-filter: "ALI-HK"
-#  url: http://www.gstatic.com/generate_204
-#  interval: 60
-#  tolerance: 5
-
-- name: 🇯🇵 日本节点
-  type: url-test
-  include-all: true
-  filter: (日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|JPN)
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-- name: 🇸🇬 狮城节点
-  type: url-test
-  include-all: true
-  filter: (新加坡|坡|狮城|SG|Singapore|SGP)
-  exclude-filter: "ALI-SG"
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-#- name: 🇰🇷 韩国节点
-#  type: url-test
-#  include-all: true
-#  filter: (KR|Korea|KOR|首尔|韩|韓)
-#  url: http://www.gstatic.com/generate_204
-#  interval: 60
-#  tolerance: 5
-
-#- name: 🇹🇼 台湾节点
-#  type: url-test
-#  include-all: true
-#  filter: (台|新北|彰化|TW|Taiwan|TWN)
-#  url: http://www.gstatic.com/generate_204
-#  interval: 60
-#  tolerance: 5
-
-- name: 🇺🇲 美国节点
-  type: url-test
-  include-all: true
-  filter: (美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States|USA)
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-- name: 🇪🇺 欧洲节点
-  type: url-test
-  include-all: true
-  filter: (EU|NL|DE|德国|荷兰)
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-- name: 🌐 ALI-HK
-  type: url-test
-  include-all: true
-  filter: (ALI-HK)
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-- name: 🌐 ALI-SG
-  type: url-test
-  include-all: true
-  filter: (ALI-SG)
-  url: http://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 5
-
-#################################################################################################################
-
-# 规则集
-## type：可选http/file/inline  behavior：可选domain/ipcidr/classical format：可选yaml/text/mrs
-
-rule-providers:
-
-  Launcher:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Launcher.yaml
-    interval: 86400
-
-  ChatGPT:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/ChatGPT.yaml
-    interval: 86400
-
-  Gemini:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/SkywalkerJi/Clash-Rules/refs/heads/master/AI/Gemini.yaml
-    interval: 86400
-
-  ESPN:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/ESPN.yaml
-    interval: 86400
-
-  HDAV:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/HDAV.yaml
-    interval: 86400
-
-  Minecraft:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Minecraft.yaml
-    interval: 86400
-
-  Mining_Pool:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Mining_Pool.yaml
-    interval: 86400
-
-  GFWlist_Added:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/GFWlist_Added.yaml
-    interval: 86400
-
-  Unban_Added:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Unban_Added.yaml
-    interval: 86400
-
-  LAN:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list
-
-  Unban:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list
-
-  Google FCM:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/GoogleFCM.list
-
-  Google CN:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/GoogleCN.list
-
-  Steam CN:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/SteamCN.list
-
-  One Drive:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/OneDrive.list
-
-  Microsoft:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Microsoft.list
-
-  Apple:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Apple.list
-
-  Telegram:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Telegram.list
-
-  Netease Music:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/NetEaseMusic.list
-
-  Epic:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Epic.list
-
-  Sony PSN:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Sony.list
-
-  Steam International:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Steam.list
-
-  Youtube:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/YouTube.list
-
-  Netflix:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Netflix.list
-
-  Encrypted DNS:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/dayunliang/OpenClash/refs/heads/main/Encrypted_DNS.yaml
-
-  Bahamut:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bahamut.list
-
-  Bilibili HMT:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/BilibiliHMT.list
-
-  Bilibili:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bilibili.list
-
-  China Media:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaMedia.list
-
-  Proxy GFW:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list
-
-  China IP:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaIp.list
-
-  China Domain:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list
-
-  China Company IP:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaCompanyIp.list
-
-  Download:
-    type: http
-    interval: 86400
-    behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Download.list
-
-################################################################################################################
-
-# 规则匹配
-
-rules:
-
-- SRC-IP-CIDR,192.168.12.70/32,🚂 手动切换
-- DOMAIN-SUFFIX,alpinelinux.org,🇸🇬 狮城节点
-
-# 直接在这里写入您发现的漏网域名，指向 🤖 Gemini 策略组
-- DOMAIN,robinfrontend-pa.googleapis.com,🤖 Gemini
-- DOMAIN,signaler-pa.googleapis.com,🤖 Gemini
-- DOMAIN,subscriptionsfirstparty-pa.googleapis.com,🤖 Gemini
-- DOMAIN,oauth2.googleapis.com,🤖 Gemini
-- DOMAIN,notifications-pa.googleapis.com,🤖 Gemini
-
-- RULE-SET,Launcher,👹 Launcher
-- RULE-SET,ChatGPT,🤖 ChatGPT
-- RULE-SET,Gemini,🤖 Gemini
-- RULE-SET,HDAV,㊙️ HDAV
-- RULE-SET,Minecraft,🎃 我的世界
-- RULE-SET,Mining_Pool,⚒ 矿池服务
-- RULE-SET,GFWlist_Added,🚀 节点选择
-- RULE-SET,Unban_Added,🎯 全球直连
-
-- RULE-SET,LAN,🎯 全球直连
-- RULE-SET,Unban,🎯 全球直连
-- RULE-SET,Google FCM,📢 谷歌FCM
-- RULE-SET,Google CN,🎯 全球直连
-- RULE-SET,Steam CN,🎯 全球直连
-- RULE-SET,One Drive,Ⓜ️ 微软云盘
-- RULE-SET,Microsoft,Ⓜ️ 微软服务
-- RULE-SET,Apple,🍎 苹果服务
-- RULE-SET,Telegram,📲 电报消息
-- RULE-SET,Netease Music,🎶 网易音乐
-- RULE-SET,Epic,🎮 游戏平台
-- RULE-SET,Sony PSN,🎮 游戏平台
-- RULE-SET,Steam International,🎮 游戏平台
-- RULE-SET,Youtube,📹 油管视频
-- RULE-SET,Netflix,🎥 奈飞视频
-- RULE-SET,Encrypted DNS,🚀 节点选择
-- RULE-SET,Bilibili HMT,📺 哔哩哔哩
-- RULE-SET,Bilibili,📺 哔哩哔哩
-- RULE-SET,China Media,🌏 国内媒体
-- RULE-SET,Proxy GFW,🚀 节点选择
-- RULE-SET,China IP,🎯 全球直连
-- RULE-SET,China Domain,🎯 全球直连
-- RULE-SET,China Company IP,🎯 全球直连
-- RULE-SET,Download,🎯 全球直连
-- GEOIP,CN,🎯 全球直连,no-resolve
-- MATCH,🐟 漏网之鱼
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=15.64 MB/s; latency=0.21 ms; code=SIN; status=new
+- name: CF-优选-新加坡 03
+  type: vless
+  server: 172.64.144.99
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=14.20 MB/s; latency=0.21 ms; code=SIN; status=new
+- name: CF-优选-新加坡 04
+  type: vless
+  server: 172.64.32.63
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=7.12 MB/s; latency=0.20 ms; code=SIN; status=new
+- name: CF-优选-新加坡 05
+  type: vless
+  server: 172.64.32.64
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=6.70 MB/s; latency=0.20 ms; code=SIN; status=new
+- name: CF-优选-新加坡 06
+  type: vless
+  server: 172.64.32.74
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=6.28 MB/s; latency=0.20 ms; code=SIN; status=new
+- name: CF-优选-新加坡 07
+  type: vless
+  server: 172.64.32.62
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=2.19 MB/s; latency=0.21 ms; code=SIN; status=new
+- name: CF-优选-新加坡 08
+  type: vless
+  server: 172.64.32.108
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=1.85 MB/s; latency=0.20 ms; code=SIN; status=new
+- name: CF-优选-新加坡 09
+  type: vless
+  server: 172.64.32.60
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-19 09:00; last_seen=2026-08-19 09:00; speed=12.13 MB/s; latency=0.26 ms; code=SIN; status=old
+- name: CF-优选-新加坡 10
+  type: vless
+  server: 172.64.38.65
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+################################################################
+# 日本优选 (Japan)
+################################################################
+
+# CFST-META: first_seen=2026-08-19 09:00; last_seen=2026-08-19 09:00; speed=4.07 MB/s; latency=0.22 ms; code=NRT; status=old
+- name: CF-优选-日本 01
+  type: vless
+  server: 172.64.229.94
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-19 09:00; last_seen=2026-08-19 09:00; speed=3.49 MB/s; latency=0.22 ms; code=NRT; status=old
+- name: CF-优选-日本 02
+  type: vless
+  server: 172.64.229.95
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=19.27 MB/s; latency=0.27 ms; code=NRT; status=old
+- name: CF-优选-日本 03
+  type: vless
+  server: 172.64.53.75
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=19.25 MB/s; latency=0.26 ms; code=NRT; status=old
+- name: CF-优选-日本 04
+  type: vless
+  server: 172.64.53.155
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=19.19 MB/s; latency=0.26 ms; code=NRT; status=old
+- name: CF-优选-日本 05
+  type: vless
+  server: 172.64.53.93
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=8.07 MB/s; latency=0.27 ms; code=NRT; status=old
+- name: CF-优选-日本 06
+  type: vless
+  server: 172.64.53.74
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=7.73 MB/s; latency=0.26 ms; code=NRT; status=old
+- name: CF-优选-日本 07
+  type: vless
+  server: 172.64.53.69
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=7.73 MB/s; latency=0.25 ms; code=NRT; status=old
+- name: CF-优选-日本 08
+  type: vless
+  server: 172.64.53.94
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-13 09:00; last_seen=2026-08-13 09:00; speed=4.83 MB/s; latency=0.26 ms; code=NRT; status=old
+- name: CF-优选-日本 09
+  type: vless
+  server: 172.64.53.73
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-10 09:00; last_seen=2026-08-10 09:00; speed=8.78 MB/s; latency=0.27 ms; code=NRT; status=old
+- name: CF-优选-日本 10
+  type: vless
+  server: 172.64.229.157
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+################################################################
+# 美国优选 (United States)
+################################################################
+
+# CFST-META: first_seen=2026-08-24 09:00; last_seen=2026-08-24 09:00; speed=1.08 MB/s; latency=0.19 ms; code=LAX; status=new
+- name: CF-优选-美国 01
+  type: vless
+  server: 104.17.104.170
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-19 09:00; last_seen=2026-08-19 09:00; speed=1.53 MB/s; latency=0.26 ms; code=LAX; status=old
+- name: CF-优选-美国 02
+  type: vless
+  server: 104.19.8.172
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-19 09:00; last_seen=2026-08-19 09:00; speed=1.00 MB/s; latency=0.22 ms; code=LAX; status=old
+- name: CF-优选-美国 03
+  type: vless
+  server: 104.18.161.197
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-17 09:00; last_seen=2026-08-17 09:00; speed=1.09 MB/s; latency=0.21 ms; code=LAX; status=old
+- name: CF-优选-美国 04
+  type: vless
+  server: 104.16.165.233
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-16 09:00; last_seen=2026-08-16 09:00; speed=1.56 MB/s; latency=0.28 ms; code=LAX; status=old
+- name: CF-优选-美国 05
+  type: vless
+  server: 104.16.241.103
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-16 09:00; last_seen=2026-08-16 09:00; speed=1.50 MB/s; latency=0.28 ms; code=LAX; status=old
+- name: CF-优选-美国 06
+  type: vless
+  server: 104.16.78.57
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-16 09:00; last_seen=2026-08-16 09:00; speed=1.02 MB/s; latency=0.28 ms; code=LAX; status=old
+- name: CF-优选-美国 07
+  type: vless
+  server: 104.16.172.68
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-15 09:00; last_seen=2026-08-15 09:00; speed=2.49 MB/s; latency=0.22 ms; code=LAX; status=old
+- name: CF-优选-美国 08
+  type: vless
+  server: 104.16.31.34
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-15 09:00; last_seen=2026-08-15 09:00; speed=2.32 MB/s; latency=0.21 ms; code=LAX; status=old
+- name: CF-优选-美国 09
+  type: vless
+  server: 104.17.136.194
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-15 09:00; last_seen=2026-08-15 09:00; speed=2.12 MB/s; latency=0.21 ms; code=LAX; status=old
+- name: CF-优选-美国 10
+  type: vless
+  server: 104.19.214.173
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+################################################################
+# 德国优选 (Germany)
+################################################################
+
+# CFST-META: first_seen=2026-08-19 09:00; last_seen=2026-08-19 09:00; speed=1.47 MB/s; latency=0.27 ms; code=FRA; status=old
+- name: CF-优选-德国 01
+  type: vless
+  server: 104.27.120.10
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-08-15 09:00; last_seen=2026-08-15 09:00; speed=1.45 MB/s; latency=0.21 ms; code=FRA; status=old
+- name: CF-优选-德国 02
+  type: vless
+  server: 104.25.82.222
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-28 09:00; last_seen=2026-07-28 09:00; speed=1.51 MB/s; latency=0.22 ms; code=FRA; status=old
+- name: CF-优选-德国 03
+  type: vless
+  server: 172.66.171.0
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-28 09:00; last_seen=2026-07-28 09:00; speed=1.23 MB/s; latency=0.21 ms; code=FRA; status=old
+- name: CF-优选-德国 04
+  type: vless
+  server: 104.25.132.206
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-26 09:00; last_seen=2026-07-26 09:00; speed=1.19 MB/s; latency=0.22 ms; code=FRA; status=old
+- name: CF-优选-德国 05
+  type: vless
+  server: 104.25.47.15
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-26 09:00; last_seen=2026-07-26 09:00; speed=1.03 MB/s; latency=0.22 ms; code=FRA; status=old
+- name: CF-优选-德国 06
+  type: vless
+  server: 172.67.118.158
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-25 09:00; last_seen=2026-07-25 09:00; speed=1.49 MB/s; latency=0.19 ms; code=FRA; status=old
+- name: CF-优选-德国 07
+  type: vless
+  server: 104.27.25.145
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-23 09:00; last_seen=2026-07-23 09:00; speed=1.44 MB/s; latency=0.22 ms; code=FRA; status=old
+- name: CF-优选-德国 08
+  type: vless
+  server: 104.24.34.227
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-23 09:00; last_seen=2026-07-23 09:00; speed=1.16 MB/s; latency=0.23 ms; code=FRA; status=old
+- name: CF-优选-德国 09
+  type: vless
+  server: 104.27.16.237
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-23 09:00; last_seen=2026-07-23 09:00; speed=1.04 MB/s; latency=0.22 ms; code=FRA; status=old
+- name: CF-优选-德国 10
+  type: vless
+  server: 172.67.95.122
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+################################################################
+# 荷兰优选 (Netherlands)
+################################################################
+
+# CFST-META: first_seen=2026-07-28 09:00; last_seen=2026-07-28 09:00; speed=1.02 MB/s; latency=0.22 ms; code=AMS; status=old
+- name: CF-优选-荷兰 01
+  type: vless
+  server: 104.21.50.126
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-22 09:00; last_seen=2026-07-22 09:00; speed=2.47 MB/s; latency=0.23 ms; code=AMS; status=old
+- name: CF-优选-荷兰 02
+  type: vless
+  server: 104.21.26.101
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-22 09:00; last_seen=2026-07-22 09:00; speed=1.13 MB/s; latency=0.23 ms; code=AMS; status=old
+- name: CF-优选-荷兰 03
+  type: vless
+  server: 172.67.167.246
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-21 09:00; last_seen=2026-07-21 09:00; speed=2.38 MB/s; latency=0.21 ms; code=AMS; status=old
+- name: CF-优选-荷兰 04
+  type: vless
+  server: 172.67.144.90
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-21 09:00; last_seen=2026-07-21 09:00; speed=2.12 MB/s; latency=0.22 ms; code=AMS; status=old
+- name: CF-优选-荷兰 05
+  type: vless
+  server: 104.21.90.226
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-21 09:00; last_seen=2026-07-21 09:00; speed=2.08 MB/s; latency=0.21 ms; code=AMS; status=old
+- name: CF-优选-荷兰 06
+  type: vless
+  server: 172.67.144.162
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-21 09:00; last_seen=2026-07-21 09:00; speed=1.10 MB/s; latency=0.22 ms; code=AMS; status=old
+- name: CF-优选-荷兰 07
+  type: vless
+  server: 104.21.91.168
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-18 09:00; last_seen=2026-07-18 09:00; speed=2.13 MB/s; latency=0.19 ms; code=AMS; status=old
+- name: CF-优选-荷兰 08
+  type: vless
+  server: 172.67.213.222
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-14 09:00; last_seen=2026-07-14 09:00; speed=1.84 MB/s; latency=0.21 ms; code=AMS; status=old
+- name: CF-优选-荷兰 09
+  type: vless
+  server: 104.21.79.133
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
+
+# CFST-META: first_seen=2026-07-10 09:00; last_seen=2026-07-10 09:00; speed=1.27 MB/s; latency=0.19 ms; code=AMS; status=old
+- name: CF-优选-荷兰 10
+  type: vless
+  server: 104.21.72.222
+  port: 443
+  uuid: bc398b21-15f3-484e-83c1-d99f16dc6c4a
+  cipher: none
+  tls: true
+  udp: true
+  servername: b-gfw.cf-ip.cfd
+  network: ws
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: b-gfw.cf-ip.cfd
+  client-fingerprint: chrome
