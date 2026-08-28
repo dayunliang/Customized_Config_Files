@@ -1646,37 +1646,9 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00"
+      name: "Device-00:00:00:00:00:00-1"
       ids:
         - "10.10.10.2"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "Justin Da`s MacBook Air M5-2"
-      ids:
-        - "192.168.90.104"
-        - "fc:b2:14:4d:bf:74"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1733,6 +1705,61 @@ clients:
       ids:
         - "192.168.50.109"
         - "4c:d5:77:69:c2:c6"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Justin Da`s MacBook Air M5"
+      ids:
+        - "192.168.90.110"
+        - "fc:b2:14:4d:bf:74"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-00:00:00:00:00:00-2"
+      ids:
+        - "10.10.10.4"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
