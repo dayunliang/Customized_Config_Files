@@ -167,13 +167,13 @@ echo
 echo "➡️ [Step 2] 请选择本次要部署的编译配置站点："
 echo " 1) Beverly"
 echo " 2) Riviera"
-echo " 3) DOITCHINA"
+echo " 3) DOIT"
 read -p "请输入数字 (1-3): " compile_choice
 
 case "$compile_choice" in
   1) COMPILE_NAME="Beverly" ;;
   2) COMPILE_NAME="Riviera" ;;
-  3) COMPILE_NAME="DOITCHINA" ;;
+  3) COMPILE_NAME="DOIT" ;;
   *) echo "❌ 无效选择：$compile_choice"; exit 1 ;;
 esac
 echo "✅ 已锁定编译目标站：$COMPILE_NAME"
