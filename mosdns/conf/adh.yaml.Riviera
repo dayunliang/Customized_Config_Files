@@ -694,10 +694,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Riviera-2nd-Router"
+      name: "Device-00:0c:29:ef:24:26"
       ids:
         - "10.29.2.111"
-        - "00:0c:29:59:e5:74"
+        - "00:0c:29:ef:24:26"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

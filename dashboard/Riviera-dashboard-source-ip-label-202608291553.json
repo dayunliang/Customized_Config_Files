@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-28T19:00:02.",
+  "exportedAt": "2026-08-29T07:53:55.",
   "count": 44,
   "normalizedData": [
     {
@@ -81,7 +81,7 @@
     },
     {
       "sourceIP": "10.29.2.111",
-      "tagName": "Riviera-2nd-Router"
+      "tagName": "Device-00:0c:29:ef:24:26"
     },
     {
       "sourceIP": "10.29.50.103",
