@@ -358,7 +358,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米风扇-1"
+      name: "小米风扇"
       ids:
         - "192.168.50.107"
         - "44:23:7c:ac:3b:91"
@@ -1450,7 +1450,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米风扇-2"
+      name: "小米风扇-1"
       ids:
         - "192.168.50.106"
         - "40:31:3c:b0:ad:4b"
@@ -1478,7 +1478,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米风扇-3"
+      name: "小米风扇-2"
       ids:
         - "192.168.50.103"
         - "78:11:dc:bc:14:c2"
@@ -1506,7 +1506,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小米风扇-4"
+      name: "小米风扇-3"
       ids:
         - "192.168.50.102"
         - "7c:49:eb:46:a1:ee"
@@ -1700,7 +1700,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone-2"
+      name: "Auntie`s Phone"
       ids:
         - "192.168.70.108"
         - "a2:e8:8f:dd:db:30"

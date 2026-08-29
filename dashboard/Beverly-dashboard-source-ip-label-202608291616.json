@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-29T06:39:05.",
+  "exportedAt": "2026-08-29T08:16:57.",
   "count": 56,
   "normalizedData": [
     {
@@ -33,7 +33,7 @@
     },
     {
       "sourceIP": "192.168.50.107",
-      "tagName": "小米风扇-1"
+      "tagName": "小米风扇"
     },
     {
       "sourceIP": "192.168.12.250",
@@ -189,15 +189,15 @@
     },
     {
       "sourceIP": "192.168.50.106",
-      "tagName": "小米风扇-2"
+      "tagName": "小米风扇-1"
     },
     {
       "sourceIP": "192.168.50.103",
-      "tagName": "小米风扇-3"
+      "tagName": "小米风扇-2"
     },
     {
       "sourceIP": "192.168.50.102",
-      "tagName": "小米风扇-4"
+      "tagName": "小米风扇-3"
     },
     {
       "sourceIP": "192.168.50.104",
@@ -225,7 +225,7 @@
     },
     {
       "sourceIP": "192.168.70.108",
-      "tagName": "Auntie`s Phone-2"
+      "tagName": "Auntie`s Phone"
     },
     {
       "sourceIP": "192.168.12.253",
