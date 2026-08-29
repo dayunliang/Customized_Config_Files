@@ -1338,7 +1338,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00"
+      name: "dayunliang"
       ids:
         - "10.10.20.2"
       tags: []

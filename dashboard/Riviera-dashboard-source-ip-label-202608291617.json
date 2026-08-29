@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-29T07:53:55.",
+  "exportedAt": "2026-08-29T08:17:38.",
   "count": 44,
   "normalizedData": [
     {
@@ -173,7 +173,7 @@
     },
     {
       "sourceIP": "10.10.20.2",
-      "tagName": "Device-00:00:00:00:00:00"
+      "tagName": "dayunliang"
     },
     {
       "sourceIP": "10.29.90.110",
