@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone"
+      name: "Auntie`s Phone-1"
       ids:
         - "192.168.70.102"
         - "52:23:28:02:53:ed"
@@ -946,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Beverly.2nd.Router"
+      name: "Device-00:0c:29:a3:46:ab"
       ids:
         - "192.168.12.1"
-        - "00:0c:29:7c:37:6d"
+        - "00:0c:29:a3:46:ab"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1006,34 +1006,6 @@ clients:
       ids:
         - "192.168.50.105"
         - "54:48:e6:5d:56:1f"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "H3C-10G-Switch"
-      ids:
-        - "192.168.12.253"
-        - "74:1f:4a:46:6c:44"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1310,34 +1282,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone-2"
-      ids:
-        - "192.168.70.105"
-        - "a2:e8:8f:dd:db:30"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "ESXi-R230"
       ids:
         - "192.168.12.30"
@@ -1478,10 +1422,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justin Da`s MacBook Air M5-1"
+      name: "Justin Da`s MacBook Air M5"
       ids:
         - "192.168.90.109"
-        - "3a:d7:22:b1:ef:70"
+        - "fc:b2:14:4d:bf:74"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1729,10 +1673,9 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justin Da`s MacBook Air M5"
+      name: "Device-00:00:00:00:00:00"
       ids:
-        - "192.168.90.110"
-        - "fc:b2:14:4d:bf:74"
+        - "10.10.10.4"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1757,9 +1700,38 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00-2"
+      name: "Auntie`s Phone-2"
       ids:
-        - "10.10.10.4"
+        - "192.168.70.108"
+        - "a2:e8:8f:dd:db:30"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "H3C-10G-Switch"
+      ids:
+        - "192.168.12.144"
+        - "74:1f:4a:46:6c:44"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

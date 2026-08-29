@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-28T18:00:01.",
-  "count": 57,
+  "exportedAt": "2026-08-29T04:49:50.",
+  "count": 56,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -21,7 +21,7 @@
     },
     {
       "sourceIP": "192.168.70.102",
-      "tagName": "Auntie`s Phone"
+      "tagName": "Auntie`s Phone-1"
     },
     {
       "sourceIP": "192.168.12.252",
@@ -117,7 +117,7 @@
     },
     {
       "sourceIP": "192.168.12.1",
-      "tagName": "Beverly.2nd.Router"
+      "tagName": "Device-00:0c:29:a3:46:ab"
     },
     {
       "sourceIP": "192.168.50.101",
@@ -126,10 +126,6 @@
     {
       "sourceIP": "192.168.50.105",
       "tagName": "小米除湿机"
-    },
-    {
-      "sourceIP": "192.168.12.253",
-      "tagName": "H3C-10G-Switch"
     },
     {
       "sourceIP": "192.168.12.242",
@@ -168,10 +164,6 @@
       "tagName": "门禁"
     },
     {
-      "sourceIP": "192.168.70.105",
-      "tagName": "Auntie`s Phone-2"
-    },
-    {
       "sourceIP": "192.168.12.30",
       "tagName": "ESXi-R230"
     },
@@ -193,7 +185,7 @@
     },
     {
       "sourceIP": "192.168.90.109",
-      "tagName": "Justin Da`s MacBook Air M5-1"
+      "tagName": "Justin Da`s MacBook Air M5"
     },
     {
       "sourceIP": "192.168.50.106",
@@ -228,12 +220,16 @@
       "tagName": "NPIFCAAE4"
     },
     {
-      "sourceIP": "192.168.90.110",
-      "tagName": "Justin Da`s MacBook Air M5"
+      "sourceIP": "10.10.10.4",
+      "tagName": "Device-00:00:00:00:00:00"
     },
     {
-      "sourceIP": "10.10.10.4",
-      "tagName": "Device-00:00:00:00:00:00-2"
+      "sourceIP": "192.168.70.108",
+      "tagName": "Auntie`s Phone-2"
+    },
+    {
+      "sourceIP": "192.168.12.144",
+      "tagName": "H3C-10G-Switch"
     }
   ]
 }
