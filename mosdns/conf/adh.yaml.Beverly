@@ -1673,7 +1673,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00"
+      name: "VPN: Andy Da"
       ids:
         - "10.10.10.4"
       tags: []
@@ -1730,7 +1730,7 @@ clients:
         ids: []
       name: "H3C-10G-Switch"
       ids:
-        - "192.168.12.144"
+        - "192.168.12.253"
         - "74:1f:4a:46:6c:44"
       tags: []
       upstreams: []
