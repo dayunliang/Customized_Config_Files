@@ -2,3 +2,4 @@
 #0 5 * * * /usr/share/openclash/openclash.sh
 #* * * * * /usr/bin/wireguard_refresh.sh
 * * * * * /usr/bin/wstunnel_watchdog.sh
+0 8 * * * /etc/init.d/openclash restart
