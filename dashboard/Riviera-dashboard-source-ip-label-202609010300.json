@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-30T19:00:02.",
-  "count": 44,
+  "exportedAt": "2026-08-31T19:00:02.",
+  "count": 43,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -112,10 +112,6 @@
       "tagName": "主卧室-AP"
     },
     {
-      "sourceIP": "10.29.70.105",
-      "tagName": "CET-AL00"
-    },
-    {
       "sourceIP": "10.29.90.103",
       "tagName": "Box R 4K Plus"
     },
@@ -165,7 +161,7 @@
     },
     {
       "sourceIP": "10.29.70.102",
-      "tagName": "OPPO-A55-5G"
+      "tagName": "CET-AL00"
     },
     {
       "sourceIP": "10.29.90.200",
