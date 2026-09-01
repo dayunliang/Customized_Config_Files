@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-31T19:00:02.",
-  "count": 43,
+  "exportedAt": "2026-09-01T19:00:02.",
+  "count": 44,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -178,6 +178,10 @@
     {
       "sourceIP": "10.29.90.106",
       "tagName": "CLS-AL30"
+    },
+    {
+      "sourceIP": "10.29.70.104",
+      "tagName": "OPPO-A55-5G"
     }
   ]
 }
