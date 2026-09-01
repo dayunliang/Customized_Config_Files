@@ -1590,7 +1590,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:00:00:00:00:00-1"
+      name: "VPN: Andy Da"
       ids:
         - "10.10.10.2"
       tags: []
@@ -1673,7 +1673,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "VPN: Andy Da"
+      name: "VPN: Andy Da-1"
       ids:
         - "10.10.10.4"
       tags: []

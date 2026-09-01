@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-08-30T18:00:02.",
+  "exportedAt": "2026-09-01T18:00:01.",
   "count": 56,
   "normalizedData": [
     {
@@ -209,7 +209,7 @@
     },
     {
       "sourceIP": "10.10.10.2",
-      "tagName": "Device-00:00:00:00:00:00-1"
+      "tagName": "VPN: Andy Da"
     },
     {
       "sourceIP": "192.168.70.103",
@@ -221,7 +221,7 @@
     },
     {
       "sourceIP": "10.10.10.4",
-      "tagName": "VPN: Andy Da"
+      "tagName": "VPN: Andy Da-1"
     },
     {
       "sourceIP": "192.168.70.108",
