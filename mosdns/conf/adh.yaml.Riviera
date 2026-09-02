@@ -1337,7 +1337,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "MacBook-Air-8"
+      name: "Macbook-Air"
       ids:
         - "10.29.90.110"
         - "fc:b2:14:4d:bf:74"
