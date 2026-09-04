@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone-1"
+      name: "Auntie`s Phone"
       ids:
         - "192.168.70.102"
         - "52:23:28:02:53:ed"
@@ -1700,7 +1700,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Auntie`s Phone"
+      name: "Auntie`s Phone-1"
       ids:
         - "192.168.70.108"
         - "a2:e8:8f:dd:db:30"
