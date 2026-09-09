@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-08T19:00:01.",
-  "count": 45,
+  "exportedAt": "2026-09-09T19:00:04.",
+  "count": 44,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -172,10 +172,6 @@
       "tagName": "VPN: Andy Da"
     },
     {
-      "sourceIP": "10.29.90.110",
-      "tagName": "Macbook-Air"
-    },
-    {
       "sourceIP": "10.29.90.106",
       "tagName": "CLS-AL30"
     },
@@ -185,7 +181,7 @@
     },
     {
       "sourceIP": "10.29.90.111",
-      "tagName": "iPhone"
+      "tagName": "Macbook-Air"
     }
   ]
 }
