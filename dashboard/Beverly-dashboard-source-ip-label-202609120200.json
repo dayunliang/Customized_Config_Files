@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-10T18:00:01.",
-  "count": 56,
+  "exportedAt": "2026-09-11T18:00:02.",
+  "count": 57,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -230,6 +230,10 @@
     {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
+    },
+    {
+      "sourceIP": "10.10.10.3",
+      "tagName": "VPN: Andy Da-2"
     }
   ]
 }
