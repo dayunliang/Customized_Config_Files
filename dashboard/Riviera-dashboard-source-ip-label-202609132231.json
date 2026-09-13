@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-12T19:00:02.",
+  "exportedAt": "2026-09-13T14:32:05.",
   "count": 45,
   "normalizedData": [
     {
@@ -17,11 +17,11 @@
     },
     {
       "sourceIP": "10.29.50.104",
-      "tagName": "Y5000FVXU_BH1096326_EZVIZ"
+      "tagName": "Device-ac:1c:26:d2:03:ed"
     },
     {
       "sourceIP": "10.29.50.106",
-      "tagName": "CozyLife_0VQD"
+      "tagName": "Device-70:4b:ca:c0:34:b0"
     },
     {
       "sourceIP": "10.29.50.107",
@@ -45,7 +45,7 @@
     },
     {
       "sourceIP": "10.29.50.101",
-      "tagName": "ChinaGateway"
+      "tagName": "Device-b4:3a:45:dd:a7:b0"
     },
     {
       "sourceIP": "10.29.60.204",
@@ -57,7 +57,7 @@
     },
     {
       "sourceIP": "10.29.50.102",
-      "tagName": "Bouffalolab_tg7100c-e233d0"
+      "tagName": "Device-d4:27:87:e2:33:d0"
     },
     {
       "sourceIP": "10.29.2.60",
@@ -81,11 +81,11 @@
     },
     {
       "sourceIP": "10.29.2.111",
-      "tagName": "Device-00:0c:29:ef:24:26"
+      "tagName": "Device-00:0c:29:eb:e5:22"
     },
     {
       "sourceIP": "10.29.50.103",
-      "tagName": "扫地机器人"
+      "tagName": "Device-c8:26:e2:f4:ae:07"
     },
     {
       "sourceIP": "10.29.2.253",
@@ -97,7 +97,7 @@
     },
     {
       "sourceIP": "10.29.2.102",
-      "tagName": "大客厅-AP"
+      "tagName": "Device-8c:30:66:80:05:4c"
     },
     {
       "sourceIP": "10.29.50.100",
@@ -109,11 +109,11 @@
     },
     {
       "sourceIP": "10.29.2.101",
-      "tagName": "主卧室-AP"
+      "tagName": "Device-8c:30:66:3c:90:b6"
     },
     {
       "sourceIP": "10.29.90.103",
-      "tagName": "Box R 4K Plus"
+      "tagName": "Device-70:f7:54:5b:e8:a2"
     },
     {
       "sourceIP": "10.29.90.107",
@@ -121,7 +121,7 @@
     },
     {
       "sourceIP": "10.29.90.109",
-      "tagName": "Mac"
+      "tagName": "Device-fc:b2:14:4d:bf:74"
     },
     {
       "sourceIP": "10.29.90.102",
@@ -161,7 +161,7 @@
     },
     {
       "sourceIP": "10.29.70.102",
-      "tagName": "CET-AL00"
+      "tagName": "Device-a2:e8:8f:dd:db:30"
     },
     {
       "sourceIP": "10.29.90.200",
@@ -177,15 +177,15 @@
     },
     {
       "sourceIP": "10.29.70.104",
-      "tagName": "OPPO-A55-5G"
-    },
-    {
-      "sourceIP": "10.29.90.111",
-      "tagName": "MacBook-Air"
+      "tagName": "Device-52:23:28:02:53:ed"
     },
     {
       "sourceIP": "10.29.90.110",
       "tagName": "iPhone"
+    },
+    {
+      "sourceIP": "10.29.90.105",
+      "tagName": "Device-1a:41:99:50:4f:0f"
     }
   ]
 }

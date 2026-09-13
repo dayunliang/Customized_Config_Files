@@ -246,7 +246,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Y5000FVXU_BH1096326_EZVIZ"
+      name: "Device-ac:1c:26:d2:03:ed"
       ids:
         - "10.29.50.104"
         - "ac:1c:26:d2:03:ed"
@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "CozyLife_0VQD"
+      name: "Device-70:4b:ca:c0:34:b0"
       ids:
         - "10.29.50.106"
         - "70:4b:ca:c0:34:b0"
@@ -442,7 +442,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "ChinaGateway"
+      name: "Device-b4:3a:45:dd:a7:b0"
       ids:
         - "10.29.50.101"
         - "b4:3a:45:dd:a7:b0"
@@ -526,7 +526,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Bouffalolab_tg7100c-e233d0"
+      name: "Device-d4:27:87:e2:33:d0"
       ids:
         - "10.29.50.102"
         - "d4:27:87:e2:33:d0"
@@ -694,10 +694,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:0c:29:ef:24:26"
+      name: "Device-00:0c:29:eb:e5:22"
       ids:
         - "10.29.2.111"
-        - "00:0c:29:ef:24:26"
+        - "00:0c:29:eb:e5:22"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -722,7 +722,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "扫地机器人"
+      name: "Device-c8:26:e2:f4:ae:07"
       ids:
         - "10.29.50.103"
         - "c8:26:e2:f4:ae:07"
@@ -806,7 +806,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "大客厅-AP"
+      name: "Device-8c:30:66:80:05:4c"
       ids:
         - "10.29.2.102"
         - "8c:30:66:80:05:4c"
@@ -890,7 +890,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "主卧室-AP"
+      name: "Device-8c:30:66:3c:90:b6"
       ids:
         - "10.29.2.101"
         - "8c:30:66:3c:90:b6"
@@ -918,7 +918,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Box R 4K Plus"
+      name: "Device-70:f7:54:5b:e8:a2"
       ids:
         - "10.29.90.103"
         - "70:f7:54:5b:e8:a2"
@@ -974,10 +974,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Mac"
+      name: "Device-fc:b2:14:4d:bf:74"
       ids:
         - "10.29.90.109"
-        - "3a:d7:22:b1:ef:70"
+        - "fc:b2:14:4d:bf:74"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1254,7 +1254,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "CET-AL00"
+      name: "Device-a2:e8:8f:dd:db:30"
       ids:
         - "10.29.70.102"
         - "a2:e8:8f:dd:db:30"
@@ -1365,38 +1365,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "OPPO-A55-5G"
+      name: "Device-52:23:28:02:53:ed"
       ids:
         - "10.29.70.104"
         - "52:23:28:02:53:ed"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "MacBook-Air"
-      ids:
-        - "10.29.90.111"
-        - "fc:b2:14:4d:bf:74"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1425,6 +1397,34 @@ clients:
       ids:
         - "10.29.90.110"
         - "d6:26:c0:8e:63:cf"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "Device-1a:41:99:50:4f:0f"
+      ids:
+        - "10.29.90.105"
+        - "1a:41:99:50:4f:0f"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
