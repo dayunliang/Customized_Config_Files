@@ -442,7 +442,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-b4:3a:45:dd:a7:b0"
+      name: "ChinaGateway"
       ids:
         - "10.29.50.101"
         - "b4:3a:45:dd:a7:b0"
@@ -526,7 +526,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-d4:27:87:e2:33:d0"
+      name: "Bouffalolab_tg7100c-e233d0"
       ids:
         - "10.29.50.102"
         - "d4:27:87:e2:33:d0"
@@ -694,7 +694,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c8:26:e2:f4:ae:07"
+      name: "NarwalRobotics"
       ids:
         - "10.29.50.103"
         - "c8:26:e2:f4:ae:07"
@@ -1368,7 +1368,7 @@ clients:
       name: "iPhone"
       ids:
         - "10.29.90.110"
-        - "d6:26:c0:8e:63:cf"
+        - "da:28:a4:c1:98:ec"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
