@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-13T14:49:52.",
+  "exportedAt": "2026-09-13T14:56:33.",
   "count": 45,
   "normalizedData": [
     {
@@ -109,7 +109,7 @@
     },
     {
       "sourceIP": "10.29.90.103",
-      "tagName": "Device-70:f7:54:5b:e8:a2"
+      "tagName": "Homatics_Box"
     },
     {
       "sourceIP": "10.29.90.107",
@@ -117,7 +117,7 @@
     },
     {
       "sourceIP": "10.29.90.109",
-      "tagName": "Device-fc:b2:14:4d:bf:74"
+      "tagName": "龙龙笔记本电脑"
     },
     {
       "sourceIP": "10.29.90.102",
@@ -157,7 +157,7 @@
     },
     {
       "sourceIP": "10.29.70.102",
-      "tagName": "Device-a2:e8:8f:dd:db:30"
+      "tagName": "阿姨手机"
     },
     {
       "sourceIP": "10.29.90.200",
@@ -181,7 +181,7 @@
     },
     {
       "sourceIP": "10.29.90.105",
-      "tagName": "Device-1a:41:99:50:4f:0f"
+      "tagName": "坚果投影仪"
     },
     {
       "sourceIP": "10.29.90.111",

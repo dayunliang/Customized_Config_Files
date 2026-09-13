@@ -890,7 +890,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-70:f7:54:5b:e8:a2"
+      name: "Homatics_Box"
       ids:
         - "10.29.90.103"
         - "70:f7:54:5b:e8:a2"
@@ -946,7 +946,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-fc:b2:14:4d:bf:74"
+      name: "龙龙笔记本电脑"
       ids:
         - "10.29.90.109"
         - "fc:b2:14:4d:bf:74"
@@ -1226,7 +1226,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-a2:e8:8f:dd:db:30"
+      name: "阿姨手机"
       ids:
         - "10.29.70.102"
         - "a2:e8:8f:dd:db:30"
@@ -1393,7 +1393,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-1a:41:99:50:4f:0f"
+      name: "坚果投影仪"
       ids:
         - "10.29.90.105"
         - "1a:41:99:50:4f:0f"
