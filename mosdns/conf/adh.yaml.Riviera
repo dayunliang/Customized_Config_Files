@@ -246,7 +246,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-ac:1c:26:d2:03:ed"
+      name: "智能门锁"
       ids:
         - "10.29.50.104"
         - "ac:1c:26:d2:03:ed"
@@ -274,7 +274,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-70:4b:ca:c0:34:b0"
+      name: "客厅立灯智能插座"
       ids:
         - "10.29.50.106"
         - "70:4b:ca:c0:34:b0"

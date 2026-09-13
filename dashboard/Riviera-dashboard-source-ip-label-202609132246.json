@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-13T14:42:34.",
+  "exportedAt": "2026-09-13T14:46:16.",
   "count": 45,
   "normalizedData": [
     {
@@ -17,11 +17,11 @@
     },
     {
       "sourceIP": "10.29.50.104",
-      "tagName": "Device-ac:1c:26:d2:03:ed"
+      "tagName": "智能门锁"
     },
     {
       "sourceIP": "10.29.50.106",
-      "tagName": "Device-70:4b:ca:c0:34:b0"
+      "tagName": "客厅立灯智能插座"
     },
     {
       "sourceIP": "10.29.50.107",
