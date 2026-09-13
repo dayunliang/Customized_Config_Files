@@ -582,7 +582,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "北客房-AP"
+      name: "Device-a8:9c:6c:d6:a0:56"
       ids:
         - "10.29.2.103"
         - "a8:9c:6c:d6:a0:56"
