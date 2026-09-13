@@ -302,7 +302,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-98:17:1a:ee:7c:e2"
+      name: "小米智能循环风扇"
       ids:
         - "10.29.50.107"
         - "98:17:1a:ee:7c:e2"
@@ -330,7 +330,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c4:aa:c4:bc:67:06"
+      name: "厨房监控"
       ids:
         - "10.29.60.201"
         - "c4:aa:c4:bc:67:06"
@@ -498,7 +498,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c4:aa:c4:bc:66:f8"
+      name: "客厅监控"
       ids:
         - "10.29.60.202"
         - "c4:aa:c4:bc:66:f8"

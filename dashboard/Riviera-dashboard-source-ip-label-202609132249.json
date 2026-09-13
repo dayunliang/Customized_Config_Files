@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-13T14:46:16.",
+  "exportedAt": "2026-09-13T14:49:52.",
   "count": 45,
   "normalizedData": [
     {
@@ -25,11 +25,11 @@
     },
     {
       "sourceIP": "10.29.50.107",
-      "tagName": "Device-98:17:1a:ee:7c:e2"
+      "tagName": "小米智能循环风扇"
     },
     {
       "sourceIP": "10.29.60.201",
-      "tagName": "Device-c4:aa:c4:bc:67:06"
+      "tagName": "厨房监控"
     },
     {
       "sourceIP": "10.29.90.2",
@@ -53,7 +53,7 @@
     },
     {
       "sourceIP": "10.29.60.202",
-      "tagName": "Device-c4:aa:c4:bc:66:f8"
+      "tagName": "客厅监控"
     },
     {
       "sourceIP": "10.29.50.102",
