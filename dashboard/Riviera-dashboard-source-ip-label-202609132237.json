@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-13T14:32:05.",
+  "exportedAt": "2026-09-13T14:37:22.",
   "count": 45,
   "normalizedData": [
     {
@@ -78,10 +78,6 @@
     {
       "sourceIP": "10.29.2.10",
       "tagName": "MosDNS"
-    },
-    {
-      "sourceIP": "10.29.2.111",
-      "tagName": "Device-00:0c:29:eb:e5:22"
     },
     {
       "sourceIP": "10.29.50.103",
@@ -186,6 +182,10 @@
     {
       "sourceIP": "10.29.90.105",
       "tagName": "Device-1a:41:99:50:4f:0f"
+    },
+    {
+      "sourceIP": "10.29.90.111",
+      "tagName": "Device-00:0c:29:eb:e5:22"
     }
   ]
 }
