@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-13T14:38:43.",
+  "exportedAt": "2026-09-13T14:40:00.",
   "count": 45,
   "normalizedData": [
     {
@@ -65,7 +65,7 @@
     },
     {
       "sourceIP": "10.29.2.103",
-      "tagName": "Device-a8:9c:6c:d6:a0:56"
+      "tagName": "北客房-AP"
     },
     {
       "sourceIP": "10.29.60.205",
@@ -93,7 +93,7 @@
     },
     {
       "sourceIP": "10.29.2.102",
-      "tagName": "Device-8c:30:66:80:05:4c"
+      "tagName": "大客厅-AP"
     },
     {
       "sourceIP": "10.29.50.100",

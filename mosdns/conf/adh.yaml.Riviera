@@ -582,7 +582,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-a8:9c:6c:d6:a0:56"
+      name: "北客房-AP"
       ids:
         - "10.29.2.103"
         - "a8:9c:6c:d6:a0:56"
@@ -778,7 +778,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-8c:30:66:80:05:4c"
+      name: "大客厅-AP"
       ids:
         - "10.29.2.102"
         - "8c:30:66:80:05:4c"
