@@ -1337,7 +1337,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-52:23:28:02:53:ed"
+      name: "OPPO-A55-5G"
       ids:
         - "10.29.70.104"
         - "52:23:28:02:53:ed"
