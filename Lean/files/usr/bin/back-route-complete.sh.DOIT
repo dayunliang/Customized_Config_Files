@@ -17,10 +17,10 @@
 
 ### —— 可按需调整 —— ###
 LAN_NET=10.140.166.0/24     # 旁路由 LAN 侧网段
-ROUTE_TABLE=100            # 回程路由表编号
-GW=10.140.6.1               # 主路由（iKuai LAN）网关
-WAN_IF=eth1                # 旁路由到主路由 LAN 的接口
-CLASH_MARK=0x162           # OpenClash 默认打标
+ROUTE_TABLE=100             # 回程路由表编号
+GW=10.140.6.254             # 主路由（iKuai LAN）网关
+WAN_IF=eth1                 # 旁路由到主路由 LAN 的接口
+CLASH_MARK=0x162            # OpenClash 默认打标
 
 ### 1. 清理 OpenClash 默认回程策略路由 —— ###
 #ip rule del fwmark ${CLASH_MARK} ipproto icmp lookup main 2>/dev/null
