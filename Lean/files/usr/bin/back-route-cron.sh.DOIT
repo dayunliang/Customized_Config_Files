@@ -6,7 +6,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 NET_CIDR="10.140.166.0/24"
 TABLE_NAME="backroute"
 TABLE_ID="100"
-GATEWAY="10.140.6.1"
+GATEWAY="10.140.6.254"
 IFACE="eth1"
 
 # 日志输出当前环境
