@@ -862,7 +862,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-8c:30:66:3c:90:b6"
+      name: "U7-Lite"
       ids:
         - "10.29.2.101"
         - "8c:30:66:3c:90:b6"

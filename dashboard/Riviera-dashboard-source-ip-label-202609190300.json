@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-17T19:00:02.",
+  "exportedAt": "2026-09-18T19:00:05.",
   "count": 45,
   "normalizedData": [
     {
@@ -105,7 +105,7 @@
     },
     {
       "sourceIP": "10.29.2.101",
-      "tagName": "Device-8c:30:66:3c:90:b6"
+      "tagName": "U7-Lite"
     },
     {
       "sourceIP": "10.29.90.103",
