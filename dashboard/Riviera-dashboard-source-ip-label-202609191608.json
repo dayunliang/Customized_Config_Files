@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T07:57:28.",
+  "exportedAt": "2026-09-19T08:08:33.",
   "count": 47,
   "normalizedData": [
     {
@@ -45,11 +45,11 @@
     },
     {
       "sourceIP": "10.29.50.101",
-      "tagName": "ChinaGateway"
+      "tagName": "威能网关"
     },
     {
       "sourceIP": "10.29.60.204",
-      "tagName": "Device-c4:aa:c4:75:a6:84"
+      "tagName": "餐厅监控"
     },
     {
       "sourceIP": "10.29.60.202",
@@ -57,7 +57,7 @@
     },
     {
       "sourceIP": "10.29.50.102",
-      "tagName": "Bouffalolab_tg7100c-e233d0"
+      "tagName": "威乐变频增压泵"
     },
     {
       "sourceIP": "10.29.2.60",
@@ -65,11 +65,11 @@
     },
     {
       "sourceIP": "10.29.2.103",
-      "tagName": "U7-LR"
+      "tagName": "北客房-AP"
     },
     {
       "sourceIP": "10.29.60.205",
-      "tagName": "Device-c4:aa:c4:bc:da:57"
+      "tagName": "阳台监控"
     },
     {
       "sourceIP": "10.29.50.109",

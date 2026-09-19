@@ -442,7 +442,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "ChinaGateway"
+      name: "威能网关"
       ids:
         - "10.29.50.101"
         - "b4:3a:45:dd:a7:b0"
@@ -470,7 +470,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c4:aa:c4:75:a6:84"
+      name: "餐厅监控"
       ids:
         - "10.29.60.204"
         - "c4:aa:c4:75:a6:84"
@@ -526,7 +526,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Bouffalolab_tg7100c-e233d0"
+      name: "威乐变频增压泵"
       ids:
         - "10.29.50.102"
         - "d4:27:87:e2:33:d0"
@@ -582,7 +582,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "U7-LR"
+      name: "北客房-AP"
       ids:
         - "10.29.2.103"
         - "a8:9c:6c:d6:a0:56"
@@ -610,7 +610,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c4:aa:c4:bc:da:57"
+      name: "阳台监控"
       ids:
         - "10.29.60.205"
         - "c4:aa:c4:bc:da:57"
