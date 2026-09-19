@@ -1058,10 +1058,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "小度智能屏"
+      name: "JulieWuone18Pro"
       ids:
         - "10.29.80.101"
-        - "d4:84:d0:24:b7:22"
+        - "50:3b:70:d9:80:cf"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

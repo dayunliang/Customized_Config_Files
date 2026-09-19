@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T08:22:48.",
+  "exportedAt": "2026-09-19T19:00:02.",
   "count": 47,
   "normalizedData": [
     {
@@ -133,7 +133,7 @@
     },
     {
       "sourceIP": "10.29.80.101",
-      "tagName": "小度智能屏"
+      "tagName": "JulieWuone18Pro"
     },
     {
       "sourceIP": "10.29.2.200",
