@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-18T19:00:05.",
-  "count": 45,
+  "exportedAt": "2026-09-19T05:10:39.",
+  "count": 48,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -92,20 +92,12 @@
       "tagName": "Device-c4:aa:c4:75:a6:ae"
     },
     {
-      "sourceIP": "10.29.2.102",
-      "tagName": "U7-Pro-XG"
-    },
-    {
       "sourceIP": "10.29.50.100",
       "tagName": "Honeywell 智能设备网关"
     },
     {
       "sourceIP": "10.29.60.206",
       "tagName": "连廊监控"
-    },
-    {
-      "sourceIP": "10.29.2.101",
-      "tagName": "U7-Lite"
     },
     {
       "sourceIP": "10.29.90.103",
@@ -177,7 +169,7 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "iPhone"
+      "tagName": "Mac"
     },
     {
       "sourceIP": "10.29.90.105",
@@ -186,6 +178,26 @@
     {
       "sourceIP": "10.29.90.111",
       "tagName": "Riviera-2nd-Router"
+    },
+    {
+      "sourceIP": "10.29.50.110",
+      "tagName": "EPSON6B6C6F"
+    },
+    {
+      "sourceIP": "10.29.70.111",
+      "tagName": "vivo-Y52s"
+    },
+    {
+      "sourceIP": "10.29.70.105",
+      "tagName": "U7-Pro-XG"
+    },
+    {
+      "sourceIP": "10.29.70.109",
+      "tagName": "vivo-Y5s"
+    },
+    {
+      "sourceIP": "10.29.70.101",
+      "tagName": "U7-Lite"
     }
   ]
 }
