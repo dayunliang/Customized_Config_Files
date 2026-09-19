@@ -1449,9 +1449,37 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "EPSON-L3351"
+      ids:
+        - "10.29.50.110"
+        - "58:05:d9:6b:6c:6f"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Riviera-2nd-Router"
       ids:
-        - "10.29.50.111"
+        - "10.29.90.111"
         - "00:0c:29:eb:e5:22"
       tags: []
       upstreams: []

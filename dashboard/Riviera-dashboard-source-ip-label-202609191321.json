@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T05:12:38.",
-  "count": 46,
+  "exportedAt": "2026-09-19T05:21:57.",
+  "count": 47,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -188,7 +188,11 @@
       "tagName": "vivo-Y5s"
     },
     {
-      "sourceIP": "10.29.50.111",
+      "sourceIP": "10.29.50.110",
+      "tagName": "EPSON-L3351"
+    },
+    {
+      "sourceIP": "10.29.90.111",
       "tagName": "Riviera-2nd-Router"
     }
   ]
