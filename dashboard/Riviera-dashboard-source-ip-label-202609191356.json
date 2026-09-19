@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T05:55:55.",
+  "exportedAt": "2026-09-19T05:56:49.",
   "count": 47,
   "normalizedData": [
     {
@@ -41,7 +41,7 @@
     },
     {
       "sourceIP": "10.29.50.108",
-      "tagName": "Device-34:fa:1c:b6:49:4e"
+      "tagName": "小米智能插座"
     },
     {
       "sourceIP": "10.29.50.101",
@@ -73,7 +73,7 @@
     },
     {
       "sourceIP": "10.29.50.109",
-      "tagName": "Device-98:e0:81:df:91:da"
+      "tagName": "小米智能插座-1"
     },
     {
       "sourceIP": "10.29.2.10",
@@ -92,12 +92,20 @@
       "tagName": "Device-c4:aa:c4:75:a6:ae"
     },
     {
+      "sourceIP": "10.29.2.102",
+      "tagName": "U7-Pro-XG"
+    },
+    {
       "sourceIP": "10.29.50.100",
       "tagName": "Honeywell 智能设备网关"
     },
     {
       "sourceIP": "10.29.60.206",
       "tagName": "连廊监控"
+    },
+    {
+      "sourceIP": "10.29.2.101",
+      "tagName": "U7-Lite"
     },
     {
       "sourceIP": "10.29.90.103",
@@ -186,14 +194,6 @@
     {
       "sourceIP": "10.29.90.111",
       "tagName": "Riviera-2nd-Router"
-    },
-    {
-      "sourceIP": "10.29.70.105",
-      "tagName": "U7-Pro-XG"
-    },
-    {
-      "sourceIP": "10.29.70.101",
-      "tagName": "U7-Lite"
     }
   ]
 }
