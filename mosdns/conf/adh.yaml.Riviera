@@ -722,7 +722,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-24:5a:5f:f0:e5:ac"
+      name: "TP-Link-Switch"
       ids:
         - "10.29.2.253"
         - "24:5a:5f:f0:e5:ac"
@@ -750,7 +750,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-c4:aa:c4:75:a6:ae"
+      name: "电梯间监控"
       ids:
         - "10.29.60.203"
         - "c4:aa:c4:75:a6:ae"
@@ -778,7 +778,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "U7-Pro-XG"
+      name: "大客厅-AP"
       ids:
         - "10.29.2.102"
         - "8c:30:66:80:05:4c"

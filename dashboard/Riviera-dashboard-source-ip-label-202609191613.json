@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T08:08:33.",
+  "exportedAt": "2026-09-19T08:13:42.",
   "count": 47,
   "normalizedData": [
     {
@@ -85,15 +85,15 @@
     },
     {
       "sourceIP": "10.29.2.253",
-      "tagName": "Device-24:5a:5f:f0:e5:ac"
+      "tagName": "TP-Link-Switch"
     },
     {
       "sourceIP": "10.29.60.203",
-      "tagName": "Device-c4:aa:c4:75:a6:ae"
+      "tagName": "电梯间监控"
     },
     {
       "sourceIP": "10.29.2.102",
-      "tagName": "U7-Pro-XG"
+      "tagName": "大客厅-AP"
     },
     {
       "sourceIP": "10.29.50.100",
