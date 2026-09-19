@@ -694,7 +694,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "NarwalRobotics"
+      name: "扫地机器人"
       ids:
         - "10.29.50.103"
         - "c8:26:e2:f4:ae:07"

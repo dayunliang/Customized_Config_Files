@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T08:13:42.",
+  "exportedAt": "2026-09-19T08:14:27.",
   "count": 47,
   "normalizedData": [
     {
@@ -81,7 +81,7 @@
     },
     {
       "sourceIP": "10.29.50.103",
-      "tagName": "NarwalRobotics"
+      "tagName": "扫地机器人"
     },
     {
       "sourceIP": "10.29.2.253",
