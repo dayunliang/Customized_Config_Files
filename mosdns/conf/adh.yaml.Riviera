@@ -1365,7 +1365,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Mac"
+      name: "Riviera-One-iMac"
       ids:
         - "10.29.90.110"
         - "02:c3:6f:3b:e4:97"

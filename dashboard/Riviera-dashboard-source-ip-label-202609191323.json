@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T05:21:57.",
+  "exportedAt": "2026-09-19T05:23:05.",
   "count": 47,
   "normalizedData": [
     {
@@ -177,7 +177,7 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "Mac"
+      "tagName": "Riviera-One-iMac"
     },
     {
       "sourceIP": "10.29.90.105",
