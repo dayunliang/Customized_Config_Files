@@ -946,7 +946,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Justin Da`s MacBook Air M5"
+      name: "龙龙笔记本电脑"
       ids:
         - "10.29.90.109"
         - "fc:b2:14:4d:bf:74"
