@@ -778,6 +778,34 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
+      name: "U7-Pro-XG"
+      ids:
+        - "10.29.2.102"
+        - "8c:30:66:80:05:4c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
       name: "Honeywell 智能设备网关"
       ids:
         - "10.29.50.100"
@@ -810,6 +838,34 @@ clients:
       ids:
         - "10.29.60.206"
         - "78:be:81:c7:91:aa"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "U7-Lite"
+      ids:
+        - "10.29.2.101"
+        - "8c:30:66:3c:90:b6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1365,118 +1421,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Riviera-2nd-Router"
-      ids:
-        - "10.29.90.111"
-        - "00:0c:29:eb:e5:22"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "EPSON6B6C6F"
-      ids:
-        - "10.29.50.110"
-        - "58:05:d9:6b:6c:6f"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "vivo-Y52s"
-      ids:
-        - "10.29.70.111"
-        - "7a:ed:81:36:d1:d5"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "U7-Pro-XG"
-      ids:
-        - "10.29.70.105"
-        - "8c:30:66:80:05:4c"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "vivo-Y5s"
       ids:
         - "10.29.70.109"
@@ -1505,10 +1449,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "U7-Lite"
+      name: "Riviera-2nd-Router"
       ids:
-        - "10.29.70.101"
-        - "8c:30:66:3c:90:b6"
+        - "10.29.50.111"
+        - "00:0c:29:eb:e5:22"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
