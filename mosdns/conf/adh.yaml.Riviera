@@ -1365,10 +1365,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Riviera-One-iMac"
+      name: "Device-82:21:bf:9f:d9:29"
       ids:
         - "10.29.90.110"
-        - "02:c3:6f:3b:e4:97"
+        - "82:21:bf:9f:d9:29"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1481,6 +1481,34 @@ clients:
       ids:
         - "10.29.90.111"
         - "00:0c:29:eb:e5:22"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "ShadowtkiiPhone"
+      ids:
+        - "10.29.90.112"
+        - "b0:8c:75:01:2c:45"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

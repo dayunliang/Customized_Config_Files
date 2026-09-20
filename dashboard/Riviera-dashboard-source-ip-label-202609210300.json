@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-19T19:00:02.",
-  "count": 47,
+  "exportedAt": "2026-09-20T19:00:03.",
+  "count": 48,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -177,7 +177,7 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "Riviera-One-iMac"
+      "tagName": "Device-82:21:bf:9f:d9:29"
     },
     {
       "sourceIP": "10.29.90.105",
@@ -194,6 +194,10 @@
     {
       "sourceIP": "10.29.90.111",
       "tagName": "Riviera-2nd-Router"
+    },
+    {
+      "sourceIP": "10.29.90.112",
+      "tagName": "ShadowtkiiPhone"
     }
   ]
 }
