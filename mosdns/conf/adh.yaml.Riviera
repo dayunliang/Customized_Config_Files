@@ -1365,7 +1365,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-82:21:bf:9f:d9:29"
+      name: "Mac"
       ids:
         - "10.29.90.110"
         - "82:21:bf:9f:d9:29"

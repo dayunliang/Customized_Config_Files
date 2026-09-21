@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-09-20T19:00:03.",
+  "exportedAt": "2026-09-21T19:00:02.",
   "count": 48,
   "normalizedData": [
     {
@@ -177,7 +177,7 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "Device-82:21:bf:9f:d9:29"
+      "tagName": "Mac"
     },
     {
       "sourceIP": "10.29.90.105",
