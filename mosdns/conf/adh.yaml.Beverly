@@ -1425,7 +1425,7 @@ clients:
       name: "Justin Da`s MacBook Air M5"
       ids:
         - "192.168.90.109"
-        - "fc:b2:14:4d:bf:74"
+        - "82:21:bf:9f:d9:29"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1783,10 +1783,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Mac"
+      name: "JulieWuone18Pro"
       ids:
-        - "192.168.90.110"
-        - "82:21:bf:9f:d9:29"
+        - "192.168.80.101"
+        - "50:3b:70:d9:80:cf"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
