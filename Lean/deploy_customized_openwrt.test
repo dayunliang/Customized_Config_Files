@@ -1,74 +1,91 @@
 #!/bin/bash
 # ===========================================================================
-# Lean OpenWrt 定制文件一键部署脚本 【调试版 / 完美注释版 - 日志增强】
+# Lean OpenWrt 定制文件一键部署脚本 【高级测试版 / 完美注释版】
+# 编辑时间戳：2026-09-26 14:35:00
 # ---------------------------------------------------------------------------
 # 本脚本旨在实现 OpenWrt 源码树的“非侵入式、自动化、幂等性”配置部署。
 # 
 # 核心工作流：
-#   [1-2] 前置检查：验证 Bash 环境，并在缺失源码时提供交互式自动 Clone。
-#   [3-5] 环境准备：创建防碰撞临时目录，配置日志，使用 Sparse Checkout 提取。
-#   [6-7] 核心函数：声明自动备份、站点匹配部署及详细日志输出。
-#   [8-10] 依赖补齐：补充缺失的 Luci 源，编译 po2lmo，拉取第三方插件。
-#   [11] 文件部署：将配置写入源码树，并记录每一项的部署状态。
-#   [12] 私钥注入：就地精准替换 WireGuard 私钥。
-#   [13-15] 收尾固化：冲突清理、固化 .config，并输出带日志的最终部署摘要。
-#
+#   [1] 基础环境校验：确保运行在 Bash 环境下。
+#   [2] 源码目录检测与克隆：交互式拉取 OpenWrt 源码并处理空/非空目录。
+#   [3] 全局变量与日志配置：定义防碰撞临时目录、时间戳备份及日志落盘机制。
+#   [4] 远程配置库双重拉取：Sparse Checkout 提取公开库，SSH 高优先级覆盖私有库。
+#   [5] 目标站点选择：交互式锁定当前要编译的设备/场景配置。
+#   [6] 核心部署机制声明：定义智能备份、差分覆盖及统计输出函数。
+#   [7] 环境净化函数：斩断第三方插件（AdvancedPlus）的恶意 Zsh 注入。
+#   [8-9] 依赖更新与预编译：补充 Luci 源，编译 po2lmo 并全量拉取第三方插件。
+#   [10] 核心配置投递：将定制配置、脚本、计划任务等精准部署进源码树。
+#   [11] WireGuard 极速注入：基于正则与占位符的私钥安全替换。
+#   [12] 离线依赖更新：强制锁定 Xray-core 为 26.7.11 以兼容 PassWall2。
+#   [13] 构建预备与收尾：执行依赖预下载，输出带日志的最终部署摘要。
 # ===========================================================================
 
 set -e  # 【安全护栏】任何命令出错立即退出（避免错误链式传播）
 
 # ===========================================================================
-# [1] 环境与前置检查
+# [1] 基础环境校验
 # ===========================================================================
+# 检查当前环境是否为 Bash，部分高级语法（如数组、正则）在普通 sh 下会报错
 if [ -z "$BASH_VERSION" ]; then
     echo "❗ 必须在 bash 环境下执行此脚本，sh 环境不支持！"
     exit 1
 fi
 
 # ===========================================================================
-# [2] OpenWrt 源码目录检测与克隆
+# [2] UI 交互与 OpenWrt 源码目录检测
 # ===========================================================================
+# 定义加载动画函数（用于耗时任务防卡死提示）
 show_spinner() {
-    local pid=$1
-    local delay=0.1
-    local spinstr='|/-+'
+    local pid=$1                      # 传入后台运行的任务进程 ID
+    local msg=${2:-"正在处理..."}       # 提示信息，默认值为“正在处理...”
+    local delay=0.1                   # 动画刷新间隔时间（秒）
+    local spinstr='|/-+'              # 动画旋转字符集
+    
+    # 当指定 PID 的进程还在运行时，循环播放加载动画
     while ps -p $pid > /dev/null 2>&1; do
         local temp=${spinstr#?}
-        printf " [%c] 正在清空目录..." "$spinstr"
+        printf " [%c] %s" "$spinstr" "$msg"
         local spinstr=$temp${spinstr%"$temp"}
         sleep $delay
-        printf "\r%-40s\r" " "
+        printf "\r%-60s\r" " "          # 清除当前行输出，保持动画在原地刷新
     done
 }
 
+# 检查当前目录是否为合法的 OpenWrt 源码根目录（依据 scripts/feeds 和 package 目录判定）
 if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
     echo "🔍 未检测到 OpenWrt 源码根目录。"
     read -p "是否自动 clone OpenWrt 仓库并进入？(y/N): " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        # 交互获取远程仓库地址，默认使用 coolsnowwolf/lede
         read -p "请输入 OpenWrt 仓库 URL (默认: https://github.com/coolsnowwolf/lede.git): " repo_url
         repo_url=${repo_url:-https://github.com/coolsnowwolf/lede.git}
 
+        # 交互获取本地克隆的目标文件夹名称，默认 lede
         read -p "请输入目标目录名 (默认: lede): " target_dir
         target_dir=${target_dir:-lede}
 
+        # 判断目标目录是否已经存在
         if [ -d "$target_dir" ]; then
             echo "⚠️ 目录 $target_dir 已存在，进入该目录..."
             cd "$target_dir"
 
+            # 检查目录内部是否为空
             if [ -z "$(ls -A .)" ]; then
                 echo "🌐 目录为空，正在克隆 $repo_url ..."
                 git clone --depth=1 "$repo_url" . || { echo "❌ 克隆失败"; exit 1; }
             else
                 read -p "⚠️ 当前目录非空，是否清空后再克隆？(y/N): " clear_confirm
                 if [[ "$clear_confirm" =~ ^[Yy]$ ]]; then
+                    # 后台异步清空目录中的所有文件及隐藏文件，并绑定动画
                     (rm -rf ./* ./.??* ) &
                     pid=$!
-                    show_spinner $pid
+                    show_spinner $pid "正在清空目录..."
                     wait $pid
                     echo "✅ 目录已清空"
                     echo "🌐 开始克隆 $repo_url ..."
                     git clone --depth=1 "$repo_url" . || { echo "❌ 克隆失败"; exit 1; }
                 else
+                    # 校验非空目录下是否含有 OpenWrt 必备特征
                     if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
                         echo "❌ 当前目录不是有效的 OpenWrt 源码目录，无法继续"
                         exit 1
@@ -77,7 +94,8 @@ if [ ! -f "./scripts/feeds" ] || [ ! -d "./package" ]; then
                 fi
             fi
         else
-            echo "🌐 正在克隆 $repo_url 到 $target_dir ..."
+            # 目录不存在时直接浅克隆（--depth=1 加快速度）到目标目录并进入
+            echo "🌐 正在克隆 $repo_url 到$target_dir ..."
             git clone --depth=1 "$repo_url" "$target_dir" || { echo "❌ 克隆失败"; exit 1; }
             cd "$target_dir"
         fi
@@ -91,19 +109,21 @@ fi
 # ===========================================================================
 # [3] 全局变量初始化、日志系统与清理机制
 # ===========================================================================
-REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git"
-PRIVATE_REPO_URL="git@github.com:dayunliang/private_config.git"
-SPARSE_DIR="Lean"
-TMP_DIR=$(mktemp -d)
-TS=$(date +%Y%m%d-%H%M%S)
-declare -a BACKUP_LIST
+REPO_URL="https://github.com/dayunliang/Customized_Config_Files.git" # 公开配置仓库
+PRIVATE_REPO_URL="git@github.com:dayunliang/private_config.git"      # 私有配置仓库（SSH 方式）
+SPARSE_DIR="Lean"                                                    # 稀疏检出（Sparse Checkout）的子目录
+TMP_DIR=$(mktemp -d)                                                 # 创建安全的随机临时目录，避免并发冲突
+TS=$(date +%Y%m%d-%H%M%S)                                            # 生成当前时间戳，用于日志和备份命名
+declare -a BACKUP_LIST                                               # 定义数组用于记录被备份的旧文件
 
-LOG_FILE="$(pwd)/deploy_openwrt_${TS}.log"
+LOG_FILE="$(pwd)/deploy_openwrt_${TS}.log"                           # 定义完整日志文件路径
 
+# 封装日志打印函数：同时输出到屏幕并追加写入日志文件
 log_info() {
     echo "$1" | tee -a "$LOG_FILE"
 }
 
+# 封装错误日志打印函数：输出到标准错误流并追加到日志文件
 log_error() {
     echo "❌ $1" | tee -a "$LOG_FILE" >&2
 }
@@ -111,35 +131,40 @@ log_error() {
 log_info "=== OpenWrt 定制部署任务启动 ==="
 log_info "本次部署日志将自动保存至: $LOG_FILE"
 
+# 定义退出清理函数：无论脚本正常结束还是异常崩溃，都会自动销毁临时目录
 cleanup() {
     if [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ]; then
         log_info "🧹 触发退出清理：销毁临时目录 $TMP_DIR"
         rm -rf "$TMP_DIR"
     fi
 }
-trap cleanup EXIT
+trap cleanup EXIT # 绑定 EXIT 信号，触发生命周期结束时的自动清理
 
 # ===========================================================================
-# [4] 双仓库全量克隆与“私人库优先”合并
+# [4] 双仓库全量克隆与“私人库优先”合并策略
 # ===========================================================================
 log_info "➡️ [Step 1] 正在克隆公开配置仓库到临时目录 $TMP_DIR ..."
+# 使用 --filter=blob:none 和 --sparse 开启稀疏克隆，只下载需要的文件或目录，极大提升拉取速度
 if ! git clone --depth=1 --filter=blob:none --sparse "$REPO_URL" "$TMP_DIR"; then
     log_error "克隆公开仓库失败：$REPO_URL"
     exit 1
 fi
 
+# 进入临时目录，设置稀疏检出指定子目录（Lean）
 cd "$TMP_DIR" || { log_error "无法进入临时目录：$TMP_DIR"; exit 1; }
 if ! git sparse-checkout set "$SPARSE_DIR"; then
     log_error "sparse-checkout 设置失败：$SPARSE_DIR"
     exit 1
 fi
-cd - >/dev/null
+cd - >/dev/null # 无声返回原目录
 
 log_info "➡️ [Step 1.5] 正在通过 SSH (ed25519) 克隆私有配置仓库 (private_config)..."
 mkdir -p "${TMP_DIR}/private_clone"
+# 尝试通过 SSH 拉取私有仓库，屏蔽错误输出防止在无权限环境下刷屏
 if git clone --depth=1 "$PRIVATE_REPO_URL" "${TMP_DIR}/private_clone" 2>/dev/null; then
     log_info "  ✅ 私有仓库拉取成功！正在执行高优先级覆盖合并..."
     
+    # 如果私有仓库中存在 Lean 目录，则将其递归强制覆盖到公开库的 Lean 目录中（实现私有覆盖公开）
     if [ -d "${TMP_DIR}/private_clone/Lean" ]; then
         cp -rf "${TMP_DIR}/private_clone/Lean/"* "${TMP_DIR}/Lean/"
         log_info "  ✅ 私有库配置已成功覆盖公开库（同名文件以私有为准）！"
@@ -155,9 +180,9 @@ log_info "✅ 仓库全量配置与合并完成！"
 # ===========================================================================
 echo
 echo "➡️ [Step 2] 请选择本次要部署的编译配置站点："
-echo " 1) Beverly"
-echo " 2) Riviera"
-echo " 3) DOIT"
+echo " 1) Beverly Oasis"
+echo " 2) Riviera One"
+echo " 3) DOIT CHINA"
 read -p "请输入数字 (1-3): " compile_choice
 
 case "$compile_choice" in
@@ -170,40 +195,43 @@ log_info "✅ 已锁定编译目标站：$COMPILE_NAME"
 echo
 
 # ===========================================================================
-# [6] 核心部署与统计函数声明 (接入日志)
+# [6] 核心部署引擎与统计函数声明 (接入日志记录)
 # ===========================================================================
-__DEPLOY_HITS=""
-__DEPLOY_SKIPS=""
+__DEPLOY_HITS=""   # 记录成功部署的文件清单
+__DEPLOY_SKIPS=""  # 记录因为缺失而跳过的文件清单
 __hit()  { __DEPLOY_HITS="${__DEPLOY_HITS}${1}\n"; }
 __skip() { __DEPLOY_SKIPS="${__DEPLOY_SKIPS}${1}\n"; }
 
+# 安全拷贝函数：如果目标文件已存在，先自动对其进行带时间戳的备份再覆盖
 safe_cp() {
   local src="$1"
   local dst="$2"
   if [ -f "$dst" ]; then
-    local backup_name="$dst.bak.$TS"
+    local backup_name; backup_name="$dst.bak."
+    backup_name="${backup_name}${TS}"
     cp -v "$dst" "$backup_name" | tee -a "$LOG_FILE"
-    BACKUP_LIST+=("$backup_name")
+    BACKUP_LIST+=("$backup_name") # 将备份路径存入全局数组
   fi
-  mkdir -p "$(dirname "$dst")"
+  mkdir -p "$(dirname "$dst")" # 确保目标上级目录存在
   cp -vf "$src" "$dst" | tee -a "$LOG_FILE"
 }
 
+# 核心部署逻辑：优先查找“文件.站点名”的专属配置，其次查找通用配置，若都无则安全跳过
 deploy_file() {
   local src_rel="$1"
   local dst="$2"
-  local mode="${3:-644}"
+  local mode="${3:-644}" # 默认文件权限为 644
   
-  local site_src="${TMP_DIR}/Lean/${src_rel}.${COMPILE_NAME}"
-  local def_src="${TMP_DIR}/Lean/${src_rel}"
+  local site_src="${TMP_DIR}/Lean/${src_rel}.${COMPILE_NAME}" # 站点专属配置路径
+  local def_src="${TMP_DIR}/Lean/${src_rel}"                   # 默认配置路径
 
   if [ -f "${site_src}" ]; then
-    log_info "  [DEPLOY] ${site_src} -> ${dst}"
+    log_info "  [DEPLOY] ${site_src} ->${dst}"
     safe_cp "${site_src}" "${dst}"
     chmod "${mode}" "${dst}" || true
     __hit "${src_rel} (site=${COMPILE_NAME})"
   elif [ -f "${def_src}" ]; then
-    log_info "  [DEPLOY] ${def_src} -> ${dst}"
+    log_info "  [DEPLOY] ${def_src} ->${dst}"
     safe_cp "${def_src}" "${dst}"
     chmod "${mode}" "${dst}" || true
     __hit "${src_rel} (default)"
@@ -214,6 +242,7 @@ deploy_file() {
   return 0
 }
 
+# 部署结果可视化汇总清单
 deploy_summary() {
   {
     printf '\n📊 [最终部署清单摘要] Profile = %s\n' "${COMPILE_NAME}"
@@ -232,7 +261,7 @@ deploy_summary() {
 }
 
 # ===========================================================================
-# [7] 编译前环境修补函数声明
+# [7] 编译前环境修补：斩断 Zsh 污染
 # ===========================================================================
 clean_advancedplus_zsh_autostart() {
     log_info "=== 🧹 [Clean] 开始清理 luci-app-advancedplus 的非法 zsh 写入逻辑 ==="
@@ -240,8 +269,10 @@ clean_advancedplus_zsh_autostart() {
     ADVANCEDPLUS_INIT_BAK="package/lean/luci-app-advancedplus/root/etc/init.d/advancedplus.bak"
 
     if [ -f "$ADVANCEDPLUS_INIT" ]; then
+        # 检查初始化脚本中是否包含向 /etc/profile 强制写入 /usr/bin/zsh 的流氓逻辑
         if grep -q "/usr/bin/zsh" "$ADVANCEDPLUS_INIT" 2>/dev/null; then
             log_info "  发现 zsh 污染代码，正在斩断：$ADVANCEDPLUS_INIT"
+            # 使用 sed 正则精准删除相关写入语句
             sed -i "\#echo '/usr/bin/zsh'[[:space:]]*>>[[:space:]]*/etc/profile#d" "$ADVANCEDPLUS_INIT"
             sed -i "\#/usr/bin/zsh.*>>[[:space:]]*/etc/profile#d" "$ADVANCEDPLUS_INIT"
         else
@@ -251,8 +282,8 @@ clean_advancedplus_zsh_autostart() {
         log_info "  未找到目标 init 脚本，跳过。"
     fi
 
+    # 清理备份残留及各类编译缓存中的污染文件，确保修补生效
     [ -f "$ADVANCEDPLUS_INIT_BAK" ] && rm -f "$ADVANCEDPLUS_INIT_BAK"
-
     rm -rf build_dir/target-x86_64_musl/luci-app-advancedplus 2>/dev/null || true
     rm -f build_dir/target-x86_64_musl/root-x86/etc/init.d/advancedplus 2>/dev/null || true
     rm -f build_dir/target-x86_64_musl/root-x86/etc/rc.d/*advancedplus 2>/dev/null || true
@@ -262,28 +293,29 @@ clean_advancedplus_zsh_autostart() {
 }
 
 # ===========================================================================
-# [8] 检查与安装基础 feeds (luci-base)
+# [8] Feeds 环境依赖验证与预热
 # ===========================================================================
+# 提前部署 feeds.conf.default，确立软件源基础
 deploy_file "feeds.conf.default" "./feeds.conf.default" "644"
 
 log_info "➡️ [Step 3] 验证环境依赖与 Feeds..."
+# 检查 feeds.conf.default 中是否含有 luci 官方源，没有则自动追加，防止后续依赖报错
 if ! grep -qE '^src-git[[:space:]]+luci[[:space:]]+' feeds.conf.default; then
     log_info "  ⚠️ feeds.conf.default 缺少 luci 源，自动追加..."
     echo "src-git luci https://github.com/coolsnowwolf/luci" >> feeds.conf.default
 fi
 
+# 仅更新并安装 Luci 基础包，为后续编译准备环境
 ./scripts/feeds update luci | tee -a "$LOG_FILE"
 ./scripts/feeds install luci-base | tee -a "$LOG_FILE"
 
 # ===========================================================================
-# [9] 编译基础工具 (po2lmo)
+# [9] 核心工具预编译与第三方插件集成
 # ===========================================================================
 log_info "🛠️ 正在预编译 po2lmo 翻译工具 (解决 UI 编译报错问题)..."
+# 提前编译 i18n 翻译工具，这是许多第三方 LuCI 插件构建时的前置死穴
 make package/feeds/luci/luci-base/host/compile V=s | tee -a "$LOG_FILE"
 
-# ===========================================================================
-# [10] 全量安装 feeds 与第三方插件拉取
-# ===========================================================================
 log_info "🛠️ 正在执行全量 feeds update & install..."
 ./scripts/feeds clean | tee -a "$LOG_FILE"
 ./scripts/feeds update -a | tee -a "$LOG_FILE"
@@ -291,25 +323,30 @@ log_info "🛠️ 正在执行全量 feeds update & install..."
 
 log_info "🌈 正在拉取第三方主题与应用库 (kucat / advancedplus)..."
 mkdir -p package/lean
+# 防重清理：先删除可能残留的旧插件目录
 rm -rf package/lean/luci-app-kucat-config 
 rm -rf package/lean/luci-theme-kucat  
 rm -rf package/lean/luci-app-advancedplus 
+# 从远端拉取特定 UI 框架及高级设置插件
 git clone https://github.com/sirpdboy/luci-theme-kucat.git package/lean/luci-theme-kucat | tee -a "$LOG_FILE"
 git clone https://github.com/sirpdboy/luci-app-kucat-config.git package/lean/luci-app-kucat-config | tee -a "$LOG_FILE"
 git clone https://github.com/sirpdboy/luci-app-advancedplus.git package/lean/luci-app-advancedplus | tee -a "$LOG_FILE"
 
+# 立即对此刻拉下来的 AdvancedPlus 插件进行 Zsh 免疫处理
 clean_advancedplus_zsh_autostart
 
 # ===========================================================================
-# [11] 执行配置文件部署
+# [10] 执行定制化配置文件的全面投递
 # ===========================================================================
 echo
 log_info "➡️ [Step 4] 开始向源码树投递 [$COMPILE_NAME] 的所有配置文件..."
 
+# 1. 基础系统层：编译配置、默认环境设置变量、去冲突脚本
 deploy_file "config"               "./.config"                                                  "644"
 deploy_file "zzz-default-settings" "./package/lean/default-settings/files/zzz-default-settings" "755"
 deploy_file "remove_conflict.sh"   "./remove_conflict.sh"                                       "755"
 
+# 2. 网络路由与 OpenClash 层：旁路由守护脚本及分流代理体系核心配置
 deploy_file "files/usr/bin/back-route-checkenv.sh"                      "./files/usr/bin/back-route-checkenv.sh"                    "755"
 deploy_file "files/usr/bin/back-route-complete.sh"                      "./files/usr/bin/back-route-complete.sh"                    "755"
 deploy_file "files/usr/bin/back-route-cron.sh"                          "./files/usr/bin/back-route-cron.sh"                        "755"
@@ -318,38 +355,42 @@ deploy_file "files/etc/openclash/custom/openclash_custom_rules.list"    "./files
 deploy_file "files/usr/share/openclash/res/rule_providers.list"         "./files/usr/share/openclash/res/rule_providers.list"       "644"
 deploy_file "files/etc/openclash/dns_enable_false.sh"                   "./files/etc/openclash/dns_enable_false.sh"                 "755"
 deploy_file "files/usr/share/openclash/yml_proxys_set.sh"               "./files/usr/share/openclash/yml_proxys_set.sh"             "755"
-deploy_file "files/etc/openclash/config/Personal_Use_ALL.yaml"          "./files/etc/openclash/config/Personal_Use_ALL.yaml"        "644"
+#deploy_file "files/etc/openclash/config/Personal_Use_ALL.yaml"          "./files/etc/openclash/config/Personal_Use_ALL.yaml"        "644"
 
+# 3. 边缘服务层：Passwall2、网络发现(Avahi)、网络加速(Turboacc)、全局定时任务(crontabs)
 deploy_file "files/etc/config/passwall2"                                "./files/etc/config/passwall2"                              "644"
 deploy_file "files/etc/dbus-1/system.d/avahi-dbus.conf"                 "./files/etc/dbus-1/system.d/avahi-dbus.conf"               "644"
 deploy_file "files/etc/avahi/avahi-daemon.conf"                         "./files/etc/avahi/avahi-daemon.conf"                       "644"
 deploy_file "files/etc/config/turboacc"                                 "./files/etc/config/turboacc"                               "644"
 deploy_file "files/etc/crontabs/root"                                   "./files/etc/crontabs/root"                                 "600"
 
+# 4. 隧道穿透层：wstunnel 客户端/服务端及守护程序
 deploy_file "files/etc/init.d/wstunnel-server"                          "./files/etc/init.d/wstunnel-server"                        "755"
 deploy_file "files/etc/init.d/wstunnel-client"                          "./files/etc/init.d/wstunnel-client"                        "755"
 deploy_file "files/usr/bin/wstunnel"                                    "./files/usr/bin/wstunnel"                                  "755"
 deploy_file "files/usr/bin/wstunnel_watchdog.sh"                        "./files/usr/bin/wstunnel_watchdog.sh"                      "755"
 
+# 5. ACL 规则特殊处理：单独建立目录防止缺失并强制拷贝分流 YAML
 mkdir -p ./files/etc/openclash/config
 cp ${TMP_DIR}/Lean/files/etc/openclash/config/Personal_Use_ALL.yaml ./files/etc/openclash/config/Personal_Use_ALL.yaml
 chmod 644 ./files/etc/openclash/config/Personal_Use_ALL.yaml
 log_info "  [DEPLOY] ACL4SSR 配置文件已单独建立并部署"
 
 # ===========================================================================
-# [12] WireGuard 私钥就地注入
+# [11] 敏感信息处理：WireGuard 私钥就地安全注入
 # ===========================================================================
 echo
 log_info "➡️ [Step 5] WireGuard 握手私钥配置..."
 read -p "是否为 ${COMPILE_NAME} 注入 WireGuard 私钥到目标文件？(y/N): " inject_wgkey
-if [[ "$inject_wgkey" =~ ^[Yy]$ ]]; then
+if [[ "$inject_wgkey" == "y" || "$inject_wgkey" == "Y" ]]; then
   while true; do
     read -p "请输入 ${COMPILE_NAME} 的 WireGuard 私钥（典型44字符，末尾=）： " WG_PRIVKEY
     echo
-    if [[ "$WG_PRIVKEY" =~ ^[A-Za-z0-9+/]{43}=$ ]]; then
+    # 正则校验：标准的 Base64 编码私钥，长度限制为43位字符 + 1个等号后缀
+    if echo "$WG_PRIVKEY" | grep -qE '^[A-Za-z0-9+/]{43}=$'; then
       break
     else
-      log_error "格式不符 Base64 标准，请重新粘贴。"
+        log_error "格式不符 Base64 标准，请重新粘贴。"
     fi
   done
 
@@ -357,8 +398,10 @@ if [[ "$inject_wgkey" =~ ^[Yy]$ ]]; then
 
   if [ -f "$TARGET_ZZZ" ]; then
     log_info "  🔎 正在扫描目标文件 $TARGET_ZZZ 中的占位符..."
+    # 检测文件中是否存在约定好的变量占位符 __WG_PRIVKEY__
     if grep -q '__WG_PRIVKEY__' "$TARGET_ZZZ"; then
       log_info "  ✏️ 锁定占位符！正在执行 sed 就地替换..."
+      # 使用 sed 进行原生流替换，精准将私钥写入系统默认配置文件中
       sed -i "s|__WG_PRIVKEY__|${WG_PRIVKEY}|g" "$TARGET_ZZZ"
       log_info "  ✅ 完美！私钥注入成功！"
     else
@@ -372,31 +415,66 @@ else
 fi
 
 # ===========================================================================
-# [13] 冲突清理与 .config 固化
+# [12] 冲突解除与 Xray-core 强制版本锁定 (适配 PassWall2)
 # ===========================================================================
 echo
 log_info "➡️ [Step 6] 依赖梳理与冲突项筛除..."
 ./remove_conflict.sh | tee -a "$LOG_FILE"
+
+log_info "➡️ 查找 Xray-core 源码路径并强制锁定版本..."
+
+# 1. 异步检索：后台在 feeds 中找出 xray-core 的真实 Makefile 路径
+( find ./feeds -name "xray-core" -type d | head -n 1 > /tmp/xray_path.tmp ) &
+search_pid=$!
+show_spinner $search_pid "正在全局检索 xray-core 路径，防止卡死假象..."
+wait $search_pid
+
+XRAY_PATH=$(cat /tmp/xray_path.tmp 2>/dev/null || true)
+rm -f /tmp/xray_path.tmp
+
+# 将路径校验拆分，避免同一行出现两个美元符号触发前端渲染错误
+CHECK_PATH=""
+if [ -n "$XRAY_PATH" ]; then
+    CHECK_PATH="${XRAY_PATH}/Makefile"
+fi
+
+if [ -f "$CHECK_PATH" ]; then
+    XRAY_MAKEFILE="$CHECK_PATH"
+    
+    # 2. 离线硬编码替换：强行锁定 26.7.11 预发布版，跳过哈希校验，不再依赖网络抓取
+    sed -i 's/PKG_VERSION:=.*/PKG_VERSION:=26.7.11/g' "$XRAY_MAKEFILE"
+    sed -i 's/PKG_HASH:=.*/PKG_HASH:=skip/g' "$XRAY_MAKEFILE"
+    
+    log_info "  ✅ Xray-core 已离线强制锁定为 PassWall2 所需的 26.7.11 版本"
+    log_info "  ✅ 已修改: $XRAY_MAKEFILE"
+else
+    log_error "  ❌ 未找到 xray-core 的 Makefile"
+fi
+
+# 基于传入的 .config 文件扩展生成默认配置树
 make defconfig | tee -a "$LOG_FILE"
+# 再次触发 Zsh 清理，防止 defconfig 后恢复初始态
 clean_advancedplus_zsh_autostart
 
 # ===========================================================================
-# [14] 首次构建依赖预下载
+# [13] 首次构建预热：依赖预下载
 # ===========================================================================
 echo
 log_info "➡️ [Step 7] 构建预备选项..."
 read -p "🧐 是否首次构建？需要为您自动预下载 dl 源码依赖包吗？(y/N): " is_first
-if [[ "$is_first" =~ ^[Yy]$ ]]; then
+if [[ "$is_first" == "y" || "$is_first" == "Y" ]]; then
     log_info "📥 开始预下载源码包 (可能需要较长时间)..."
     while true; do
+        # 多线程下载全量依赖
         make download -j8 V=s | tee -a "$LOG_FILE"
+        # 严格校验：查找 dl 目录中小于 1024 字节的文件（大概率为网络中断残留的下载错误碎片）
         broken=$(find dl -size -1024c)
         if [ -z "$broken" ]; then
             log_info "  ✅ 下载完成，未发现损坏的碎片文件。"
             break
         else
             log_info "  ⚠️ 检测到体积异常的损坏文件，正在清理并重试..."
-            find dl -size -1024c -exec rm -f {} \;
+            find dl -size -1024c -exec rm -f {} \; # 删除坏块，开启下一轮死循环重新下载
         fi
     done
 else
@@ -404,14 +482,16 @@ else
 fi
 
 # ===========================================================================
-# [15] 执行结果汇总与清理
+# [14] 执行结果汇总与报告输出
 # ===========================================================================
+# 打印命中与跳过的文件清单汇总
 deploy_summary
 
+# 打印安全备份覆盖明细列表
 if [ ${#BACKUP_LIST[@]} -gt 0 ]; then
     {
       echo "🗂️ 本次备份旧文件明细："
-      for f in "${BACKUP_LIST[@]}"; do echo "  - $f"; done
+      for f in "${BACKUP_LIST[@]}"; do echo "  -$f"; done
     } | tee -a "$LOG_FILE"
 else
     log_info "🗂️ 目标系统纯净，本次部署未产生任何冲突覆盖及备份。"
