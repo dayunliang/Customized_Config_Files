@@ -946,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "龙龙笔记本电脑"
+      name: "Mac"
       ids:
         - "10.29.90.109"
-        - "fc:b2:14:4d:bf:74"
+        - "82:21:bf:9f:d9:29"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1341,34 +1341,6 @@ clients:
       ids:
         - "10.29.70.104"
         - "52:23:28:02:53:ed"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "Mac"
-      ids:
-        - "10.29.90.110"
-        - "82:21:bf:9f:d9:29"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
