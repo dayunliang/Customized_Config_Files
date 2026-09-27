@@ -946,10 +946,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-00:0c:29:a3:46:ab"
+      name: "Device-00:0c:29:d0:6b:ef"
       ids:
         - "192.168.12.1"
-        - "00:0c:29:a3:46:ab"
+        - "00:0c:29:d0:6b:ef"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
