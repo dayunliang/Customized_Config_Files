@@ -197,6 +197,8 @@ if ip -4 addr show 2>/dev/null | grep -qE "inet 192\.168\.12\.[0-9]+"; then
   CURRENT_SITE="Beverly"
 elif ip -4 addr show 2>/dev/null | grep -qE "inet 10\.29\.2\.[0-9]+"; then
   CURRENT_SITE="Riviera"
+elif ip -4 addr show 2>/dev/null | grep -qE "inet 10\.140\.6\.[0-9]+"; then
+  CURRENT_SITE="DOITCHINA"
 else
   err "【系统错误】无法通过当前宿主机 IP 网段识别站点！脚本触发安全熔断，停止执行。"
   echo ""; exit 1
@@ -380,9 +382,12 @@ EOF_INIT_RULES
 done
 
 info "正在同步下发本地专属分流名单（geoip_private.txt、hosts.txt）..."
-for s in geoip_private.txt hosts.txt; do
-  curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/$s" -o "$MOSDNS_DIR/rules-dat/$s"
-done
+
+# 1. 拉取全局通用的 geoip_private.txt
+curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/geoip_private.txt" -o "$MOSDNS_DIR/rules-dat/geoip_private.txt"
+
+# 2. 动态拉取当前站点专属的 hosts.txt 并在本地重命名保存
+curl -fsSL "https://raw.githubusercontent.com/dayunliang/Customized_Config_Files/refs/heads/main/mosdns/rules-dat/hosts.txt.${CURRENT_SITE}" -o "$MOSDNS_DIR/rules-dat/hosts.txt"
 
 info "正在构建高精路由分流规则控制拓扑配置文件（config_custom.yaml、dns.yaml、dat_exec.yaml）..."
 for f in config_custom.yaml dns.yaml dat_exec.yaml; do
