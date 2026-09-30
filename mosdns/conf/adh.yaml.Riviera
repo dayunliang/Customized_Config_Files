@@ -1477,10 +1477,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "ShadowtkiiPhone"
+      name: "MacBookAir"
       ids:
         - "10.29.90.112"
-        - "b0:8c:75:01:2c:45"
+        - "62:65:e3:42:d6:4e"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
