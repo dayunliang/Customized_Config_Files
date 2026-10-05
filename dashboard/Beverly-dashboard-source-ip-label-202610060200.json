@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-04T18:00:02.",
-  "count": 58,
+  "exportedAt": "2026-10-05T18:00:02.",
+  "count": 59,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -224,10 +224,6 @@
       "tagName": "VPN: Andy Da-1"
     },
     {
-      "sourceIP": "192.168.70.108",
-      "tagName": "Auntie`s Phone-1"
-    },
-    {
       "sourceIP": "192.168.12.253",
       "tagName": "H3C-10G-Switch"
     },
@@ -238,6 +234,14 @@
     {
       "sourceIP": "192.168.80.101",
       "tagName": "JulieWuone18Pro"
+    },
+    {
+      "sourceIP": "192.168.70.112",
+      "tagName": "Auntie`s Phone-1"
+    },
+    {
+      "sourceIP": "192.168.90.104",
+      "tagName": "MacBookAir"
     }
   ]
 }
