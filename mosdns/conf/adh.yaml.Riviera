@@ -1477,10 +1477,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "MacBookAir"
+      name: "龙龙笔记本电脑"
       ids:
         - "10.29.90.110"
-        - "62:65:e3:42:d6:4e"
+        - "fc:b2:14:4d:bf:74"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
