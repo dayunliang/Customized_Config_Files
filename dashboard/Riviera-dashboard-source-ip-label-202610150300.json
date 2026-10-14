@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-13T19:00:01.",
-  "count": 49,
+  "exportedAt": "2026-10-14T19:00:01.",
+  "count": 47,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -180,10 +180,6 @@
       "tagName": "坚果投影仪"
     },
     {
-      "sourceIP": "10.29.70.109",
-      "tagName": "vivo-Y5s"
-    },
-    {
       "sourceIP": "10.29.50.110",
       "tagName": "EPSON-L3351"
     },
@@ -193,15 +189,11 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "龙龙笔记本电脑"
+      "tagName": "Mac-1"
     },
     {
       "sourceIP": "10.29.70.106",
-      "tagName": "2023P168"
-    },
-    {
-      "sourceIP": "10.29.90.112",
-      "tagName": "Mac-1"
+      "tagName": "vivo-Y5s"
     }
   ]
 }
