@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-16T18:00:02.",
-  "count": 60,
+  "exportedAt": "2026-10-17T18:00:01.",
+  "count": 62,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -246,6 +246,14 @@
     {
       "sourceIP": "192.168.90.110",
       "tagName": "Justin Da`s MacBook Air M5-1"
+    },
+    {
+      "sourceIP": "192.168.90.102",
+      "tagName": "Philips 77OLED808"
+    },
+    {
+      "sourceIP": "192.168.50.110",
+      "tagName": "Device-5c:c5:63:e3:2c:94"
     }
   ]
 }
