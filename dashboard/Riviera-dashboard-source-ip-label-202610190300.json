@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-17T19:00:01.",
-  "count": 48,
+  "exportedAt": "2026-10-18T19:00:01.",
+  "count": 47,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -189,15 +189,11 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "Mac-1"
+      "tagName": "龙龙笔记本电脑"
     },
     {
       "sourceIP": "10.29.70.106",
       "tagName": "vivo-Y5s"
-    },
-    {
-      "sourceIP": "10.29.90.112",
-      "tagName": "龙龙笔记本电脑"
     }
   ]
 }
