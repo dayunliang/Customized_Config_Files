@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-20T19:00:02.",
+  "exportedAt": "2026-10-21T19:00:01.",
   "count": 47,
   "normalizedData": [
     {
@@ -192,7 +192,7 @@
       "tagName": "vivo-Y5s"
     },
     {
-      "sourceIP": "10.29.50.111",
+      "sourceIP": "10.29.90.111",
       "tagName": "Riviera-2nd-Router"
     }
   ]
