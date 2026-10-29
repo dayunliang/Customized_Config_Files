@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-28T18:00:02.",
-  "count": 61,
+  "exportedAt": "2026-10-29T18:00:01.",
+  "count": 62,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -250,6 +250,10 @@
     {
       "sourceIP": "192.168.70.110",
       "tagName": "Auntie`s Phone-1"
+    },
+    {
+      "sourceIP": "192.168.12.5",
+      "tagName": "rea"
     }
   ]
 }
