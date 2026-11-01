@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-10-31T19:00:01.",
+  "exportedAt": "2026-11-01T19:00:01.",
   "count": 50,
   "normalizedData": [
     {
@@ -98,10 +98,6 @@
     {
       "sourceIP": "10.29.60.206",
       "tagName": "连廊监控"
-    },
-    {
-      "sourceIP": "10.29.2.101",
-      "tagName": "U7-Lite"
     },
     {
       "sourceIP": "10.29.90.103",
@@ -206,6 +202,10 @@
     {
       "sourceIP": "10.29.70.105",
       "tagName": "大客厅-AP"
+    },
+    {
+      "sourceIP": "10.29.70.101",
+      "tagName": "U7-Lite"
     }
   ]
 }
