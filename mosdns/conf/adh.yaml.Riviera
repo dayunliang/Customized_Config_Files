@@ -1563,7 +1563,7 @@ clients:
         ids: []
       name: "U7-Lite"
       ids:
-        - "10.29.70.101"
+        - "10.29.2.101"
         - "8c:30:66:3c:90:b6"
       tags: []
       upstreams: []
