@@ -1811,10 +1811,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "Device-5c:c5:63:e3:2c:94"
+      name: "zhimi-airpurifier-ma4_mibt3ABD"
       ids:
         - "192.168.50.110"
-        - "5c:c5:63:e3:2c:94"
+        - "04:cf:8c:22:3a:bd"
       tags: []
       upstreams: []
       upstreams_cache_size: 0

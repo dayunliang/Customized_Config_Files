@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-03T18:00:03.",
+  "exportedAt": "2026-11-04T18:00:01.",
   "count": 62,
   "normalizedData": [
     {
@@ -241,7 +241,7 @@
     },
     {
       "sourceIP": "192.168.50.110",
-      "tagName": "Device-5c:c5:63:e3:2c:94"
+      "tagName": "zhimi-airpurifier-ma4_mibt3ABD"
     },
     {
       "sourceIP": "192.168.12.5",
