@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-08T19:00:02.",
-  "count": 52,
+  "exportedAt": "2026-11-09T19:00:02.",
+  "count": 51,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -210,10 +210,6 @@
     {
       "sourceIP": "10.29.50.114",
       "tagName": "MiAiSoundbox-L16A"
-    },
-    {
-      "sourceIP": "10.29.50.111",
-      "tagName": "XiaoAiTongXueX8F"
     }
   ]
 }
