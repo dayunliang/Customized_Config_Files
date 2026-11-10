@@ -1561,10 +1561,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "U7-Lite"
+      name: "MiAiSoundbox-L16A"
       ids:
-        - "10.29.2.101"
-        - "8c:30:66:3c:90:b6"
+        - "10.29.50.114"
+        - "5c:02:14:28:a8:c5"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1589,10 +1589,38 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "MiAiSoundbox-L16A"
+      name: "XiaoAiTongXueX8F"
       ids:
-        - "10.29.50.114"
-        - "5c:02:14:28:a8:c5"
+        - "10.29.50.111"
+        - "4c:c6:4c:33:86:30"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "U7-Lite"
+      ids:
+        - "10.29.70.101"
+        - "8c:30:66:3c:90:b6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
