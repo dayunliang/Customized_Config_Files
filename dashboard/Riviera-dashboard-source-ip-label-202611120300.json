@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-10T19:00:01.",
+  "exportedAt": "2026-11-11T19:00:01.",
   "count": 52,
   "normalizedData": [
     {
@@ -124,10 +124,6 @@
       "tagName": "Julie Wu`s iPhone 16 Pro"
     },
     {
-      "sourceIP": "10.29.80.101",
-      "tagName": "JulieWuone18Pro"
-    },
-    {
       "sourceIP": "10.29.2.200",
       "tagName": "XPEnology-VM"
     },
@@ -189,7 +185,7 @@
     },
     {
       "sourceIP": "10.29.90.112",
-      "tagName": "AndyDasone18Duo"
+      "tagName": "AndyDasne17Pro3"
     },
     {
       "sourceIP": "10.29.50.113",
@@ -200,10 +196,6 @@
       "tagName": "lwip0"
     },
     {
-      "sourceIP": "10.29.70.105",
-      "tagName": "大客厅-AP"
-    },
-    {
       "sourceIP": "10.29.50.114",
       "tagName": "MiAiSoundbox-L16A"
     },
@@ -212,8 +204,16 @@
       "tagName": "XiaoAiTongXueX8F"
     },
     {
-      "sourceIP": "10.29.70.101",
+      "sourceIP": "10.29.80.102",
+      "tagName": "JulieWuone18Pro"
+    },
+    {
+      "sourceIP": "10.29.2.101",
       "tagName": "U7-Lite"
+    },
+    {
+      "sourceIP": "10.29.2.102",
+      "tagName": "大客厅-AP"
     }
   ]
 }
