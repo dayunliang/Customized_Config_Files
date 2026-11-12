@@ -1421,7 +1421,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "AndyDasne17Pro3"
+      name: "AndyDasne17Pro2"
       ids:
         - "10.29.90.112"
         - "5c:b8:b7:0c:4e:f9"
@@ -1533,62 +1533,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XiaoAiTongXueX8F"
-      ids:
-        - "10.29.50.111"
-        - "4c:c6:4c:33:86:30"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "JulieWuone18Pro"
-      ids:
-        - "10.29.80.102"
-        - "50:3b:70:d9:80:cf"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "U7-Lite"
       ids:
         - "10.29.2.101"
@@ -1621,6 +1565,34 @@ clients:
       ids:
         - "10.29.2.102"
         - "8c:30:66:80:05:4c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "JulieWuone18Pro"
+      ids:
+        - "10.29.80.101"
+        - "50:3b:70:d9:80:cf"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
