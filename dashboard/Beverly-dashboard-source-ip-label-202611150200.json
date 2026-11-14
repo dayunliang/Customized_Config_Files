@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-13T18:00:02.",
-  "count": 63,
+  "exportedAt": "2026-11-14T18:00:02.",
+  "count": 62,
   "normalizedData": [
     {
       "sourceIP": "192.168.122.254",
@@ -248,12 +248,8 @@
       "tagName": "rea"
     },
     {
-      "sourceIP": "192.168.70.107",
-      "tagName": "Auntie`s Phone-1"
-    },
-    {
       "sourceIP": "192.168.70.106",
-      "tagName": "vivo-Y52s"
+      "tagName": "Auntie`s Phone-1"
     },
     {
       "sourceIP": "192.168.90.110",
