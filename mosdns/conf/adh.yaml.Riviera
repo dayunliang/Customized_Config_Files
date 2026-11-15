@@ -1421,7 +1421,7 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "AndyDasne17Pro2"
+      name: "AndyDasne18Duo2"
       ids:
         - "10.29.90.112"
         - "5c:b8:b7:0c:4e:f9"
@@ -1617,10 +1617,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "XiaoAiTongXueX8F"
+      name: "AndyDasone18Duo"
       ids:
-        - "10.29.50.111"
-        - "4c:c6:4c:33:86:30"
+        - "10.29.90.113"
+        - "68:3b:09:a2:f3:f3"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
