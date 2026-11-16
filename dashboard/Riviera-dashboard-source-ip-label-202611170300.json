@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-15T19:00:02.",
-  "count": 52,
+  "exportedAt": "2026-11-16T19:00:02.",
+  "count": 53,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -185,7 +185,7 @@
     },
     {
       "sourceIP": "10.29.90.112",
-      "tagName": "AndyDasne18Duo2"
+      "tagName": "AndyDasone18Duo"
     },
     {
       "sourceIP": "10.29.50.113",
@@ -213,7 +213,11 @@
     },
     {
       "sourceIP": "10.29.90.113",
-      "tagName": "AndyDasone18Duo"
+      "tagName": "AndyDasone18Duo-1"
+    },
+    {
+      "sourceIP": "10.29.50.111",
+      "tagName": "XiaoAiTongXueX8F"
     }
   ]
 }
