@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-16T19:00:02.",
+  "exportedAt": "2026-11-17T19:00:01.",
   "count": 53,
   "normalizedData": [
     {
@@ -200,24 +200,24 @@
       "tagName": "MiAiSoundbox-L16A"
     },
     {
-      "sourceIP": "10.29.2.101",
-      "tagName": "U7-Lite"
-    },
-    {
-      "sourceIP": "10.29.2.102",
-      "tagName": "大客厅-AP"
-    },
-    {
       "sourceIP": "10.29.80.101",
       "tagName": "JulieWuone18Pro"
     },
     {
       "sourceIP": "10.29.90.113",
-      "tagName": "AndyDasone18Duo-1"
+      "tagName": "Mac-1"
     },
     {
       "sourceIP": "10.29.50.111",
       "tagName": "XiaoAiTongXueX8F"
+    },
+    {
+      "sourceIP": "10.29.70.105",
+      "tagName": "大客厅-AP"
+    },
+    {
+      "sourceIP": "10.29.70.101",
+      "tagName": "U7-Lite"
     }
   ]
 }

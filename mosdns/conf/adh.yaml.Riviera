@@ -1533,62 +1533,6 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "U7-Lite"
-      ids:
-        - "10.29.2.101"
-        - "8c:30:66:3c:90:b6"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
-      name: "大客厅-AP"
-      ids:
-        - "10.29.2.102"
-        - "8c:30:66:80:05:4c"
-      tags: []
-      upstreams: []
-      upstreams_cache_size: 0
-      upstreams_cache_enabled: false
-      use_global_settings: true
-      filtering_enabled: false
-      parental_enabled: false
-      safesearch_enabled: false
-      use_global_blocked_services: true
-      ignore_querylog: false
-      ignore_statistics: false
-    - safe_search:
-        enabled: false
-        bing: true
-        duckduckgo: true
-        ecosia: true
-        google: true
-        pixabay: true
-        yandex: true
-        youtube: true
-      blocked_services:
-        schedule:
-          time_zone: Asia/Shanghai
-        ids: []
       name: "JulieWuone18Pro"
       ids:
         - "10.29.80.101"
@@ -1617,10 +1561,10 @@ clients:
         schedule:
           time_zone: Asia/Shanghai
         ids: []
-      name: "AndyDasone18Duo-1"
+      name: "Mac-1"
       ids:
         - "10.29.90.113"
-        - "68:3b:09:a2:f3:f3"
+        - "d6:e6:af:ce:d8:d6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
@@ -1649,6 +1593,62 @@ clients:
       ids:
         - "10.29.50.111"
         - "4c:c6:4c:33:86:30"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "大客厅-AP"
+      ids:
+        - "10.29.70.105"
+        - "8c:30:66:80:05:4c"
+      tags: []
+      upstreams: []
+      upstreams_cache_size: 0
+      upstreams_cache_enabled: false
+      use_global_settings: true
+      filtering_enabled: false
+      parental_enabled: false
+      safesearch_enabled: false
+      use_global_blocked_services: true
+      ignore_querylog: false
+      ignore_statistics: false
+    - safe_search:
+        enabled: false
+        bing: true
+        duckduckgo: true
+        ecosia: true
+        google: true
+        pixabay: true
+        yandex: true
+        youtube: true
+      blocked_services:
+        schedule:
+          time_zone: Asia/Shanghai
+        ids: []
+      name: "U7-Lite"
+      ids:
+        - "10.29.70.101"
+        - "8c:30:66:3c:90:b6"
       tags: []
       upstreams: []
       upstreams_cache_size: 0
