@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-17T19:00:01.",
-  "count": 53,
+  "exportedAt": "2026-11-18T19:00:01.",
+  "count": 52,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -173,7 +173,7 @@
     },
     {
       "sourceIP": "10.29.90.110",
-      "tagName": "龙龙笔记本电脑"
+      "tagName": "Mac-1"
     },
     {
       "sourceIP": "10.29.70.106",
@@ -202,10 +202,6 @@
     {
       "sourceIP": "10.29.80.101",
       "tagName": "JulieWuone18Pro"
-    },
-    {
-      "sourceIP": "10.29.90.113",
-      "tagName": "Mac-1"
     },
     {
       "sourceIP": "10.29.50.111",
