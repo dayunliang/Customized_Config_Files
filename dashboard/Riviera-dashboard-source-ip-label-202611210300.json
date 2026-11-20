@@ -4,8 +4,8 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-19T19:00:03.",
-  "count": 52,
+  "exportedAt": "2026-11-20T19:00:02.",
+  "count": 53,
   "normalizedData": [
     {
       "sourceIP": "10.29.2.80",
@@ -214,6 +214,10 @@
     {
       "sourceIP": "10.29.2.102",
       "tagName": "大客厅-AP"
+    },
+    {
+      "sourceIP": "10.29.50.111",
+      "tagName": "XiaoAiTongXueX8F"
     }
   ]
 }
