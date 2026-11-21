@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-20T19:00:02.",
+  "exportedAt": "2026-11-21T19:00:01.",
   "count": 53,
   "normalizedData": [
     {
@@ -204,10 +204,6 @@
       "tagName": "JulieWuone18Pro"
     },
     {
-      "sourceIP": "10.29.70.101",
-      "tagName": "U7-Lite"
-    },
-    {
       "sourceIP": "10.29.80.102",
       "tagName": "iPad"
     },
@@ -218,6 +214,10 @@
     {
       "sourceIP": "10.29.50.111",
       "tagName": "XiaoAiTongXueX8F"
+    },
+    {
+      "sourceIP": "10.29.2.101",
+      "tagName": "U7-Lite"
     }
   ]
 }
