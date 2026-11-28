@@ -4,7 +4,7 @@
   "app": "metacubexd",
   "sourceKey": "clientSourceIPTags",
   "sourceFormat": "metacubexd",
-  "exportedAt": "2026-11-27T18:00:01.",
+  "exportedAt": "2026-11-28T18:00:01.",
   "count": 63,
   "normalizedData": [
     {
@@ -249,15 +249,15 @@
     },
     {
       "sourceIP": "192.168.90.110",
-      "tagName": "AndyDasone18Duo"
-    },
-    {
-      "sourceIP": "192.168.90.104",
       "tagName": "Mac"
     },
     {
       "sourceIP": "192.168.70.111",
       "tagName": "Auntie`s Phone-1"
+    },
+    {
+      "sourceIP": "192.168.50.114",
+      "tagName": "BW0759808"
     }
   ]
 }
