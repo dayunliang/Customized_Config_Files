@@ -50,6 +50,10 @@ plugins:
       upstreams:
         - addr: "https://ali-hk.b-gfw.cfd:442/dns-query"
         - addr: "https://ali-sg.b-gfw.cfd:442/dns-query"
+        - addr: "https://cloudflare-dns.com/dns-query"
+        - addr: "https://dns.google/dns-query"
+        - addr: "https://dns.quad9.net/dns-query"
+        - addr: "https://dns.adguard-dns.com/dns-query"
 
   # 5. 本地 Hosts 文件解析
   - tag: local_hosts
