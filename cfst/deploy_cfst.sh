@@ -261,3 +261,4 @@ crontab -l 2>/dev/null | grep -A 1 "CFST_OPENCLASH_AUTO_CRON" || true
 echo "========================================="
 echo "🎉 CFST + OpenClash 自动更新部署完成！"
 echo "========================================="
+

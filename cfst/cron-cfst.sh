@@ -1,139 +1,178 @@
 #!/bin/sh
 
 # ==============================================================================
-# CFST Cron 自动执行脚本【每日一次 + OpenClash Personal_Use_ALL.yaml 合并版】
-# 修改时间：2026-06-11  Asia/Shanghai / UTC+8
+# CFST Cron 自动执行脚本【多地区分批测速 + 全局 Top 10 CFST 策略组版】
 # ==============================================================================
 #
 # 本脚本职责：
-#   1. 每次 cron 执行时，先拉取公开仓库 cfst 最新配置；
-#   2. 运行 CloudflareSpeedTest / docker compose，生成 data/result.csv；
-#   3. 将 result.csv 转换为 OpenClash proxies 节点；
-#   4. 拉取私人仓库 dayunliang/private_config；
-#   5. 修改私人仓库中的：
-#        Lean/files/etc/openclash/config/Personal_Use_ALL.yaml
-#   6. 按区域类别合并已有 CF 优选节点与本次新节点；
-#   7. 按“新节点优先、旧节点靠后”的顺序去重；
-#   8. 每个区域最多保留 10 个节点；
-#   9. 提交并 push 修改后的 Personal_Use_ALL.yaml；
-#  10. 通过 DingTalk 发送更新统计信息。
+#   1. 拉取公开仓库 cfst 最新配置与私人仓库 dayunliang/private_config；
+#   2. 按 CFST_COLOS 列表依次针对 新加坡(SIN) / 美国(LAX) / 德国(FRA) / 荷兰(AMS) 独立测速；
+#   3. 每个地区提取前 5 个可用高速节点，合并生成统一的 data/result.csv；
+#   4. 将合并结果写入私人仓库中的 Personal_Use_ALL.yaml（新节点优先、按 server:port 去重）；
+#   5. 按下载速度降序提取全局前 10 个节点，在 proxy-groups 顶部自动维护独立的 CFST 策略组；
+#   6. 提交并 push 修改后的 Personal_Use_ALL.yaml，通过 DingTalk 发送单次汇总报告。
 #
-# 重要说明：
-#   - 本版已经取消“每日两次 / 第一轮第二轮合并”的旧逻辑；
-#   - 现在每次 cron 都是独立完整更新；
-#   - 本脚本不会再提交 cfst/data/result.csv 到公开仓库；
-#   - 只会提交 private_config 中的 Personal_Use_ALL.yaml。
-#
-# 本次修复重点：
-#   - docker compose 不再前台无限等待；
-#   - 使用宿主机侧超时控制，最多等待 CFST 容器运行 20 分钟；
-#   - 不依赖容器内部是否存在 timeout 命令；
-#   - 不再把 timeout 写进 docker-compose command，避免被解释成：
-#         ./cfst timeout 20m -n ...
-#   - Python 合并 result.csv 时过滤下载速度为 0 的结果；
-#   - Python 合并 result.csv 时过滤地区码为空 / N/A / NA 的结果；
-#   - 避免测速 URL 异常时将大量 0.00 MB/s 节点写入 OpenClash。
-#   - 为 CF 优选节点写入 CFST-META 注释，记录 first_seen / last_seen / speed / latency / code / status。
-#
-# 安全建议：
-#   - 不建议把 DingTalk AppKey / AppSecret / UserID 明文写死在脚本中；
-#   - 推荐在 /root/cfst/.dingtalk.env 中保存：
-#
-#       DING_APP_KEY='你的 AppKey'
-#       DING_APP_SECRET='你的 AppSecret'
-#       DING_USER_ID='你的 UserID'
-#
-# ============================================================================== 
+# ==============================================================================
 
 set -eu
 
 # ==============================================================================
-# 1. 基础变量
-# ============================================================================== 
+# 1. 基础路径与仓库变量
+# ==============================================================================
 
+# CFST 工作目录
 WORK_DIR="/root/cfst"
+
+# CFST 数据与临时文件目录
 DATA_DIR="$WORK_DIR/data"
+
+# Docker Compose 配置文件路径
 COMPOSE_FILE="$WORK_DIR/docker-compose.yml"
 
+# 公开仓库远程名
 PUBLIC_GIT_REMOTE="origin"
+
+# 公开仓库分支名
 PUBLIC_GIT_BRANCH="main"
 
+# 私人仓库本地目录
 PRIVATE_REPO_DIR="/root/private_config"
+
+# 私人仓库 SSH 地址
 PRIVATE_REPO_SSH="git@github.com:dayunliang/private_config.git"
+
+# 私人仓库远程名
 PRIVATE_GIT_REMOTE="origin"
+
+# 私人仓库分支名
 PRIVATE_GIT_BRANCH="main"
+
+# OpenClash 配置文件在私人仓库中的相对路径
 PRIVATE_TARGET_RELATIVE_PATH="Lean/files/etc/openclash/config/Personal_Use_ALL.yaml"
+
+# OpenClash 配置文件完整路径
 PRIVATE_TARGET_FILE="$PRIVATE_REPO_DIR/$PRIVATE_TARGET_RELATIVE_PATH"
 
+# Git 提交用户名
 GIT_USER_NAME="alpine-cron"
+
+# Git 提交邮箱
 GIT_USER_EMAIL="cron@homelab.local"
 
+# 当天日期
 TODAY="$(date '+%Y-%m-%d')"
+
+# 任务开始时间（人类可读格式）
 START_TIME="$(date '+%Y-%m-%d %H:%M')"
+
+# 任务开始时间戳（用于计算总耗时）
 START_EPOCH="$(date '+%s')"
 
-# 兼容原有变量名：后续 Git commit 仍使用任务开始时间。
+# Git commit 使用的时间戳
 NOW_TIME="$START_TIME"
 
+# 合并后的最终测速结果 CSV 路径
 RESULT_CSV="$DATA_DIR/result.csv"
+
+# 钉钉更新报告 Markdown 路径
 REPORT_FILE="$DATA_DIR/openclash_update_report.md"
+
+# 完整运行日志路径
 FULL_LOG_FILE="$DATA_DIR/cron-cfst-full.log"
 
 # ==============================================================================
-# 1.1 CFST 容器运行保护变量
-# ==============================================================================
-#
-# 说明：
-#   - 当前 cfst 是通过实时拉取 docker-compose.yml 后启动；
-#   - compose 文件中的 command 会被追加到镜像 ENTRYPOINT 后面；
-#   - 如果在 command 中写 timeout 20m，实际可能变成：
-#         ./cfst timeout 20m -n 200 ...
-#   - 因此这里统一由宿主机脚本监控容器运行时长。
-#
+# 1.1 多地区 CFST 测速与策略组变量
 # ==============================================================================
 
+# docker-compose.yml 中的服务名称
+CFST_SERVICE_NAME="cloudflare-speedtest"
+
+# 运行时的容器名称
 CFST_CONTAINER_NAME="cfst"
 
-# 最大等待时间，单位：秒。
-# 1200 秒 = 20 分钟。
-CFST_MAX_WAIT_SECONDS=43200
+# 需要依次测速的 Cloudflare 机房三字码列表（空格分隔：新加坡 / 美国 / 德国 / 荷兰）
+CFST_COLOS="SIN LAX FRA AMS"
 
-# 每次检查间隔，单位：秒。
+# 每个地区下载测速并保留的前 N 个节点数
+CFST_PER_COLO_COUNT="5"
+
+# 每个地区在 Personal_Use_ALL.yaml 中最终保留的最大节点数
+MAX_NODES_PER_REGION="5"
+
+# 自动维护的独立策略组名称
+CFST_GROUP_NAME="CFST"
+
+# 独立策略组类型（url-test 自动选最快 / select 手动切换）
+CFST_GROUP_TYPE="url-test"
+
+# 独立策略组收录的全局最快节点数量
+CFST_GROUP_TOP_N="10"
+
+# CFST 输入 IP 段文件（容器内相对路径）
+CFST_IP_FILE="data/ip.txt"
+
+# CFST 延迟测速并发数
+CFST_THREADS="150"
+
+# CFST 单 IP 延迟测速次数
+CFST_PING_TIMES="4"
+
+# CFST 单 IP 下载测速时长（秒）
+CFST_DOWNLOAD_TIME="5"
+
+# CFST 平均延迟上限（毫秒）
+CFST_MAX_LATENCY="350"
+
+# CFST 下载速度下限（MB/s，0 表示不限）
+CFST_MIN_SPEED="0"
+
+# CFST 测速文件地址（R2 存储桶）
+CFST_TEST_URL="https://speedtest.b-gfw.cf-ip.cfd/300mb.bin"
+
+# 单个地区测速容器的最大等待时间（秒，1200 秒 = 20 分钟）
+CFST_MAX_WAIT_SECONDS=1200
+
+# 监控容器状态的轮询间隔（秒）
 CFST_WAIT_STEP_SECONDS=10
 
 # ==============================================================================
+# 1.2 OpenClash / VLESS 节点模板变量
+# ==============================================================================
 
-# 1.1 OpenClash / VLESS 节点模板变量
-# ============================================================================== 
-
+# VLESS 节点端口
 VLESS_PORT="443"
+
+# VLESS UUID
 VLESS_UUID="bc398b21-15f3-484e-83c1-d99f16dc6c4a"
+
+# TLS SNI 域名
 VLESS_SERVERNAME="b-gfw.cf-ip.cfd"
+
+# WebSocket Host 头
 VLESS_HOST="b-gfw.cf-ip.cfd"
+
+# WebSocket 路径
 VLESS_WS_PATH="/?ed=2560"
+
+# TLS 客户端指纹
 VLESS_CLIENT_FINGERPRINT="chrome"
 
 # ==============================================================================
-# 1.2 DingTalk 配置
-# ============================================================================== 
-#
-# 示例：
-#
-#   DING_APP_KEY='dingxxxxxxxxxxxxxxxx'
-#   DING_APP_SECRET='xxxxxxxxxxxxxxxx'
-#   DING_USER_ID='managerxxxx'
-#
-# 如果变量为空，则跳过 DingTalk，不影响主流程。
-#
-# ============================================================================== 
+# 1.3 DingTalk 配置变量
+# ==============================================================================
 
+# 钉钉应用 AppKey
 DING_APP_KEY="dingecswocgwfsntk2v2"
+
+# 钉钉应用 AppSecret
 DING_APP_SECRET="pMiPruv-gJw6un6138ELUzGEBCyhPGk4pe3WZiEdJPPcJQlmi8JkK5Zh_uyvdHM_"
+
+# 钉钉接收人 UserID
 DING_USER_ID="manager3729"
 
 # ==============================================================================
 # 2. DingTalk 通知函数
-# ============================================================================== 
+# ==============================================================================
 
 json_escape_for_dingtalk() {
     if command -v python3 >/dev/null 2>&1; then
@@ -166,9 +205,7 @@ notify_dingtalk_private_markdown() {
 TOKEN_EOF
 )"
 
-    TOKEN_RES="$(curl -sS -X POST "https://api.dingtalk.com/v1.0/oauth2/accessToken" \
-        -H "Content-Type: application/json" \
-        -d "$TOKEN_PAYLOAD" || true)"
+    TOKEN_RES="$(curl -sS -X POST "https://api.dingtalk.com/v1.0/oauth2/accessToken" -H "Content-Type: application/json" -d "$TOKEN_PAYLOAD" || true)"
 
     ACCESS_TOKEN="$(printf '%s' "$TOKEN_RES" | sed -n 's/.*"accessToken"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
 
@@ -194,26 +231,14 @@ TOKEN_EOF
 SEND_EOF
 )"
 
-    SEND_RES="$(curl -sS -X POST "https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend" \
-        -H "x-acs-dingtalk-access-token: $ACCESS_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d "$SEND_PAYLOAD" || true)"
+    SEND_RES="$(curl -sS -X POST "https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend" -H "x-acs-dingtalk-access-token: $ACCESS_TOKEN" -H "Content-Type: application/json" -d "$SEND_PAYLOAD" || true)"
 
     echo "DingTalk 返回：$SEND_RES"
     return 0
 }
 
-
 # ==============================================================================
 # 2.1 终端输出格式函数
-# ==============================================================================
-#
-# 设计目标：
-#   - cron / 手动执行时只显示关键摘要；
-#   - Docker / Git 的完整输出保存在日志文件中；
-#   - 失败时仍然把完整日志路径打印出来，方便排查；
-#   - DingTalk 继续发送 Markdown 汇总，不发送大段原始日志。
-#
 # ==============================================================================
 
 print_line() {
@@ -308,19 +333,19 @@ with path.open('r', encoding='utf-8-sig', newline='') as f:
 rows.sort(key=lambda x: x[2], reverse=True)
 
 print('')
-print('测速结果 Top 10：')
+print(f'合并测速结果（共 {len(rows)} 个有效节点，按速率降序展示前 20）：')
 
 if not rows:
     print('未解析到有效测速节点。')
 else:
-    for idx, (ip, latency, speed, code) in enumerate(rows[:10], start=1):
+    for idx, (ip, latency, speed, code) in enumerate(rows[:20], start=1):
         print(f'{idx}. {ip} / {speed:.2f} MB/s / {latency} ms / {code}')
 PY_SUMMARY_EOF
 }
 
 # ==============================================================================
 # 3. 进入 CFST 工作目录并拉取最新公开配置
-# ============================================================================== 
+# ==============================================================================
 
 cd "$WORK_DIR" || {
     echo "错误：无法进入 CFST 工作目录：$WORK_DIR"
@@ -337,6 +362,8 @@ print_section "CFST Cron 任务启动"
 printf '开始时间：%s\n' "$START_TIME"
 printf '工作目录：%s\n' "$WORK_DIR"
 printf '公开仓库：%s\n' "$PUBLIC_REPO_ROOT"
+printf '目标地区：%s（每地区取前 %s 个）\n' "$CFST_COLOS" "$CFST_PER_COLO_COUNT"
+printf '聚合分组：%s（type=%s，全局 Top %s）\n' "$CFST_GROUP_NAME" "$CFST_GROUP_TYPE" "$CFST_GROUP_TOP_N"
 printf '完整日志：%s\n' "$FULL_LOG_FILE"
 
 git -C "$PUBLIC_REPO_ROOT" config user.name "$GIT_USER_NAME" >> "$FULL_LOG_FILE" 2>&1
@@ -353,7 +380,7 @@ fi
 
 # ==============================================================================
 # 4. 初始化 / 更新私人仓库
-# ============================================================================== 
+# ==============================================================================
 
 if [ ! -d "$PRIVATE_REPO_DIR/.git" ]; then
     print_warn "私人仓库不存在，开始 clone：$PRIVATE_REPO_DIR"
@@ -373,112 +400,99 @@ if [ ! -s "$PRIVATE_TARGET_FILE" ]; then
 fi
 
 # ==============================================================================
-# 5. 运行 CFST 测速，生成 result.csv
-# ==============================================================================
-#
-# 这里不再直接执行：
-#   docker compose up
-#
-# 原因：
-#   - docker compose up 是前台执行；
-#   - 如果 cfst 下载测速阶段卡住，cron 任务会一直挂住；
-#   - 如果 compose 文件中 command 写 timeout，又可能被镜像 ENTRYPOINT 追加成：
-#       ./cfst timeout 20m ...
-#   - 因此这里使用宿主机侧监控方式。
-#
-# 工作流：
-#   1. 清理旧容器；
-#   2. docker compose up -d 后台启动；
-#   3. 循环检查 cfst 容器是否还在运行；
-#   4. 超过 CFST_MAX_WAIT_SECONDS 后强制停止；
-#   5. 打印最后 100 行日志；
-#   6. docker compose down 清理容器和临时网络资源；
-#   7. 检查 result.csv 是否有效。
-#
+# 5. 按地区循环运行 CFST 测速，并合并生成 result.csv
 # ==============================================================================
 
 rm -f "$RESULT_CSV"
 rm -f "$REPORT_FILE"
+rm -f "$DATA_DIR"/result_*.csv
 
-print_section "运行 CFST 测速"
+print_section "按地区运行 CFST 测速"
 
-run_quiet "清理旧 CFST 容器" docker compose down --remove-orphans
-run_quiet "后台启动 CFST 容器" docker compose up -d
+run_quiet "清理旧 CFST 容器与网络" docker compose down --remove-orphans
 
-CFST_WAITED_SECONDS=0
-CFST_TIMEOUT_HIT=0
-CFST_EXIT_CODE="unknown"
+HEADER_WRITTEN=0
 
-while docker ps --format '{{.Names}}' | grep -qx "$CFST_CONTAINER_NAME"; do
-    if [ "$CFST_WAITED_SECONDS" -ge "$CFST_MAX_WAIT_SECONDS" ]; then
-        print_warn "CFST 容器运行超过 $CFST_MAX_WAIT_SECONDS 秒，开始强制停止。"
-        CFST_TIMEOUT_HIT=1
-        {
-            echo
-            echo "==================== CFST Docker Log ===================="
-            docker logs --tail=300 "$CFST_CONTAINER_NAME" 2>&1 || true
-            echo "================== End CFST Docker Log =================="
-            echo
-        } >> "$FULL_LOG_FILE"
-        docker stop "$CFST_CONTAINER_NAME" >> "$FULL_LOG_FILE" 2>&1 || true
-        docker rm "$CFST_CONTAINER_NAME" >> "$FULL_LOG_FILE" 2>&1 || true
-        break
+for COLO in $CFST_COLOS; do
+    COLO_CSV_REL="data/result_${COLO}.csv"
+    COLO_CSV_ABS="$DATA_DIR/result_${COLO}.csv"
+    rm -f "$COLO_CSV_ABS"
+
+    docker rm -f "$CFST_CONTAINER_NAME" >> "$FULL_LOG_FILE" 2>&1 || true
+
+    printf '\n>>> 开始测速地区：%s（目标保留前 %s 个）\n' "$COLO" "$CFST_PER_COLO_COUNT"
+
+    if ! docker compose run -d --name "$CFST_CONTAINER_NAME" "$CFST_SERVICE_NAME" -f "$CFST_IP_FILE" -httping -httping-code 200 -cfcolo "$COLO" -n "$CFST_THREADS" -t "$CFST_PING_TIMES" -dn "$CFST_PER_COLO_COUNT" -dt "$CFST_DOWNLOAD_TIME" -tl "$CFST_MAX_LATENCY" -sl "$CFST_MIN_SPEED" -p "$CFST_PER_COLO_COUNT" -url "$CFST_TEST_URL" -o "$COLO_CSV_REL" >> "$FULL_LOG_FILE" 2>&1; then
+        print_warn "地区 $COLO 启动 CFST 容器失败，跳过该地区。"
+        continue
     fi
 
-    sleep "$CFST_WAIT_STEP_SECONDS"
-    CFST_WAITED_SECONDS=$((CFST_WAITED_SECONDS + CFST_WAIT_STEP_SECONDS))
+    CFST_WAITED_SECONDS=0
+    CFST_TIMEOUT_HIT=0
+    CFST_EXIT_CODE="unknown"
+
+    while docker ps --format '{{.Names}}' | grep -qx "$CFST_CONTAINER_NAME"; do
+        if [ "$CFST_WAITED_SECONDS" -ge "$CFST_MAX_WAIT_SECONDS" ]; then
+            print_warn "地区 $COLO 容器运行超过 $CFST_MAX_WAIT_SECONDS 秒，强制停止。"
+            CFST_TIMEOUT_HIT=1
+            {
+                echo
+                echo "==================== CFST Docker Log [$COLO - TIMEOUT] ===================="
+                docker logs --tail=200 "$CFST_CONTAINER_NAME" 2>&1 || true
+                echo "================== End CFST Docker Log [$COLO - TIMEOUT] =================="
+                echo
+            } >> "$FULL_LOG_FILE"
+            docker stop "$CFST_CONTAINER_NAME" >> "$FULL_LOG_FILE" 2>&1 || true
+            break
+        fi
+
+        sleep "$CFST_WAIT_STEP_SECONDS"
+        CFST_WAITED_SECONDS=$((CFST_WAITED_SECONDS + CFST_WAIT_STEP_SECONDS))
+    done
+
+    if docker ps -a --format '{{.Names}}' | grep -qx "$CFST_CONTAINER_NAME"; then
+        CFST_EXIT_CODE="$(docker inspect -f '{{.State.ExitCode}}' "$CFST_CONTAINER_NAME" 2>/dev/null || printf 'unknown')"
+        {
+            echo
+            echo "==================== CFST Docker Log [$COLO] ===================="
+            docker logs --tail=200 "$CFST_CONTAINER_NAME" 2>&1 || true
+            echo "================== End CFST Docker Log [$COLO] =================="
+            echo
+        } >> "$FULL_LOG_FILE"
+        docker rm -f "$CFST_CONTAINER_NAME" >> "$FULL_LOG_FILE" 2>&1 || true
+    fi
+
+    printf '地区 %s 完成：耗时 %s 秒 | 退出码 %s | 超时 %s\n' "$COLO" "$CFST_WAITED_SECONDS" "$CFST_EXIT_CODE" "$CFST_TIMEOUT_HIT"
+
+    if [ -s "$COLO_CSV_ABS" ]; then
+        if [ "$HEADER_WRITTEN" -eq 0 ]; then
+            cat "$COLO_CSV_ABS" > "$RESULT_CSV"
+            HEADER_WRITTEN=1
+        else
+            tail -n +2 "$COLO_CSV_ABS" >> "$RESULT_CSV"
+        fi
+        print_ok "地区 $COLO 测速结果已合并。"
+    else
+        print_warn "地区 $COLO 未生成有效 CSV，跳过合并。"
+    fi
 done
 
-if docker ps -a --format '{{.Names}}' | grep -qx "$CFST_CONTAINER_NAME"; then
-    CFST_EXIT_CODE="$(docker inspect -f '{{.State.ExitCode}}' "$CFST_CONTAINER_NAME" 2>/dev/null || printf 'unknown')"
-    {
-        echo
-        echo "==================== CFST Docker Log ===================="
-        docker logs --tail=300 "$CFST_CONTAINER_NAME" 2>&1 || true
-        echo "================== End CFST Docker Log =================="
-        echo
-    } >> "$FULL_LOG_FILE"
-fi
-
-run_quiet "清理本次 CFST 容器" docker compose down --remove-orphans
-
-printf '容器等待秒数：%s\n' "$CFST_WAITED_SECONDS"
-printf '容器退出码：%s\n' "$CFST_EXIT_CODE"
-printf '是否触发超时：%s\n' "$CFST_TIMEOUT_HIT"
-printf '完整日志：%s\n' "$FULL_LOG_FILE"
-
-if [ "$CFST_TIMEOUT_HIT" -eq 1 ]; then
-    print_warn "本次 CFST 触发超时保护；如果 result.csv 有效，仍会继续后续校验。"
-fi
+run_quiet "清理本次 CFST 临时网络" docker compose down --remove-orphans
 
 if [ ! -s "$RESULT_CSV" ]; then
-    print_error "CFST 执行完成后未生成有效 result.csv：$RESULT_CSV"
+    print_error "所有地区测速完成后均未生成有效 result.csv：$RESULT_CSV"
     exit 1
 fi
 
 print_cfst_csv_summary
 
 # ==============================================================================
-# 6. 合并 result.csv 到 OpenClash Personal_Use_ALL.yaml
-# ============================================================================== 
-#
-# 这里使用内嵌 Python 做文本级合并：
-#   - 读取现有 Personal_Use_ALL.yaml；
-#   - 提取已有 CF-优选-* 节点；
-#   - 读取本次 result.csv；
-#   - 新节点优先，旧节点靠后；
-#   - 按 server:port 去重；
-#   - 每个区域最多保留 10 个；
-#   - 删除旧 CF 优选区块；
-#   - 在 proxy-groups: 之前重建新的 CF 优选区块；
-#   - 非 CF 节点、proxy-groups、rule-providers、rules 原样保留。
-#
-# ============================================================================== 
+# 6. 合并 result.csv 到 OpenClash Personal_Use_ALL.yaml 并更新 CFST 策略组
+# ==============================================================================
 
-print_section "合并 OpenClash 节点"
+print_section "合并 OpenClash 节点与 CFST 策略组"
 
-python3 - "$RESULT_CSV" "$PRIVATE_TARGET_FILE" "$REPORT_FILE" "$NOW_TIME" \
-    "$VLESS_PORT" "$VLESS_UUID" "$VLESS_SERVERNAME" "$VLESS_HOST" "$VLESS_WS_PATH" "$VLESS_CLIENT_FINGERPRINT" <<'PYTHON_EOF'
+python3 - "$RESULT_CSV" "$PRIVATE_TARGET_FILE" "$REPORT_FILE" "$NOW_TIME" "$VLESS_PORT" "$VLESS_UUID" "$VLESS_SERVERNAME" "$VLESS_HOST" "$VLESS_WS_PATH" "$VLESS_CLIENT_FINGERPRINT" "$MAX_NODES_PER_REGION" "$CFST_GROUP_NAME" "$CFST_GROUP_TYPE" "$CFST_GROUP_TOP_N" <<'PYTHON_EOF'
 import csv
 import re
 import sys
@@ -495,6 +509,10 @@ vless_servername = sys.argv[7]
 vless_host = sys.argv[8]
 vless_ws_path = sys.argv[9]
 vless_fingerprint = sys.argv[10]
+max_nodes_per_region = int(sys.argv[11])
+cfst_group_name = sys.argv[12]
+cfst_group_type = sys.argv[13]
+cfst_group_top_n = int(sys.argv[14])
 
 REGION_ORDER = [
     "HKG", "SIN", "JPN", "KOR", "TWN", "USA", "GBR", "DEU", "FRA", "NLD", "AUS", "CAN", "OTHER"
@@ -567,11 +585,6 @@ def normalize_region_from_name(region_name: str) -> str:
 
 
 def parse_cfst_meta(line: str) -> dict:
-    """解析单行 CFST-META 注释。
-
-    支持格式：
-      # CFST-META: first_seen=2026-06-11 09:00; last_seen=...; speed=...; latency=...; code=...; status=...
-    """
     m = CFST_META_RE.match((line or "").strip())
     if not m:
         return {}
@@ -641,7 +654,6 @@ def read_existing_cf_nodes(text: str):
             i += 1
             continue
 
-        # 如果节点上方紧贴 CFST-META 注释，则读取旧元数据。
         meta = {}
         if i > 0:
             meta = parse_cfst_meta(lines[i - 1])
@@ -687,16 +699,12 @@ def read_existing_cf_nodes(text: str):
 
 def is_ip_like(value: str) -> bool:
     value = (value or "").strip()
-
     if not value:
         return False
-
     if re.match(r"^(\d{1,3}\.){3}\d{1,3}$", value):
         return True
-
     if ":" in value:
         return True
-
     return False
 
 
@@ -718,7 +726,6 @@ def read_new_nodes_from_csv(path: Path):
                 continue
 
             total_rows += 1
-
             server = (row[0] or "").strip()
 
             if not is_ip_like(server):
@@ -733,33 +740,18 @@ def read_new_nodes_from_csv(path: Path):
                 skipped_malformed += 1
                 continue
 
-            speed = 0.0
-
             try:
                 speed = float((row[5] or "0").strip())
             except ValueError:
                 speed = 0.0
 
-            latency = ""
-            if len(row) >= 5:
-                latency = (row[4] or "").strip()
+            latency = (row[4] or "").strip() if len(row) >= 5 else ""
+            code = (row[6] or "").strip().upper() if len(row) >= 7 else ""
 
-            code = ""
-            if len(row) >= 7:
-                code = (row[6] or "").strip().upper()
-
-            # ------------------------------------------------------------
-            # 关键过滤 1：
-            #   下载速度必须大于 0。
-            # ------------------------------------------------------------
             if speed <= 0:
                 skipped_zero_speed += 1
                 continue
 
-            # ------------------------------------------------------------
-            # 关键过滤 2：
-            #   地区码不能是空、N/A、NA。
-            # ------------------------------------------------------------
             if code in ("", "N/A", "NA"):
                 skipped_invalid_code += 1
                 continue
@@ -794,8 +786,6 @@ def node_key(node: dict) -> str:
 
 def merge_nodes(old_nodes, new_nodes):
     old_by_key = {node_key(node): node for node in old_nodes}
-    new_keys = {node_key(node) for node in new_nodes}
-
     old_by_region = {}
     new_by_region = {}
 
@@ -811,15 +801,11 @@ def merge_nodes(old_nodes, new_nodes):
 
     merged_by_region = {}
     stats = []
-
     global_seen = set()
 
     for region in ordered_regions:
         combined = []
 
-        # 1. 本次 CSV 结果优先。
-        #    - 旧 YAML 没有：status=new
-        #    - 旧 YAML 已有：status=active
         for raw_node in new_by_region.get(region, []):
             key = node_key(raw_node)
             if key in global_seen:
@@ -832,7 +818,6 @@ def merge_nodes(old_nodes, new_nodes):
                 node["status"] = "active"
                 node["first_seen"] = old_node.get("first_seen") or "legacy"
                 node["last_seen"] = now_time
-                # speed / latency / code 使用本次最新测速结果。
             else:
                 node = dict(raw_node)
                 node["status"] = "new"
@@ -841,9 +826,6 @@ def merge_nodes(old_nodes, new_nodes):
 
             combined.append(node)
 
-        # 2. 本次没测到的旧节点靠后保留。
-        #    - status=old
-        #    - first_seen / last_seen / speed / latency / code 保留旧元数据。
         for old_node in old_by_region.get(region, []):
             key = node_key(old_node)
             if key in global_seen:
@@ -859,7 +841,7 @@ def merge_nodes(old_nodes, new_nodes):
             node.setdefault("code", "N/A")
             combined.append(node)
 
-        kept = combined[:10]
+        kept = combined[:max_nodes_per_region]
         merged_by_region[region] = kept
 
         old_count = len(old_by_region.get(region, []))
@@ -867,22 +849,14 @@ def merge_nodes(old_nodes, new_nodes):
         unique_count = len(combined)
         final_count = len(kept)
         dropped_count = max(unique_count - final_count, 0)
-        real_new_count = sum(1 for node in combined if node.get("status") == "new")
-        active_count = sum(1 for node in combined if node.get("status") == "active")
-        old_kept_count = sum(1 for node in kept if node.get("status") == "old")
 
         stats.append({
             "region": region,
             "old": old_count,
-            # 保持原有钉钉字段语义：这里的“新增”继续代表本次 CSV 有效节点数量。
             "new": measured_count,
             "unique": unique_count,
             "final": final_count,
             "dropped": dropped_count,
-            # 下面三个字段用于后续排查；当前钉钉报告暂不展示，避免改变你已确认的格式。
-            "real_new": real_new_count,
-            "active": active_count,
-            "old_kept": old_kept_count,
         })
 
     return ordered_regions, merged_by_region, stats
@@ -954,14 +928,9 @@ def remove_old_cf_sections(text: str) -> str:
     i = 0
 
     while i < len(lines):
-        # 识别旧 CF 区块：
-        #   ################################################################
-        #   # 香港优选 (Hong Kong)
-        #   ################################################################
         if lines[i].lstrip().startswith("###") and i + 2 < len(lines):
             header_line = lines[i + 1].strip()
             if CF_SECTION_HEADER_RE.match(header_line):
-                # 跳过当前 CF 区块，直到下一个 CF 区块头或 proxy-groups。
                 i += 3
                 while i < len(lines):
                     if re.match(r"^proxy-groups:\s*$", lines[i]):
@@ -989,12 +958,67 @@ def insert_cf_sections(text: str, cf_sections: str) -> str:
     return before + cf_sections + after
 
 
+def get_top_n_cf_node_names(ordered_regions, merged_by_region, top_n: int = 10):
+    candidates = []
+    for region in ordered_regions:
+        cn, _en = REGION_INFO.get(region, REGION_INFO["OTHER"])
+        for idx, node in enumerate(merged_by_region.get(region, []), start=1):
+            node_name = f"CF-优选-{cn} {idx:02d}"
+            raw_speed = node.get("speed", 0)
+            try:
+                speed_val = float(raw_speed)
+            except (TypeError, ValueError):
+                speed_val = -1.0
+            is_fresh = 1 if node.get("status") in ("new", "active") else 0
+            candidates.append((is_fresh, speed_val, node_name))
+
+    candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    return [name for _fresh, _spd, name in candidates[:top_n]]
+
+
+def upsert_cfst_proxy_group(text: str, top_node_names, group_name: str = "CFST", group_type: str = "url-test") -> str:
+    if not top_node_names:
+        return text
+
+    marker = re.search(r"^proxy-groups:\s*$", text, flags=re.MULTILINE)
+    if not marker:
+        return text
+
+    after_header = text[marker.end():]
+    indent_match = re.search(r"^(?P<indent>[ \t]*)- name:", after_header, flags=re.MULTILINE)
+    indent = indent_match.group("indent") if indent_match else "  "
+
+    lines = [
+        f"{indent}# CFST-GROUP-START",
+        f"{indent}- name: {group_name}",
+        f"{indent}  type: {group_type}",
+    ]
+    if group_type == "url-test":
+        lines.extend([
+            f"{indent}  url: https://www.gstatic.com/generate_204",
+            f"{indent}  interval: 300",
+            f"{indent}  tolerance: 50",
+        ])
+    lines.append(f"{indent}  proxies:")
+    for name in top_node_names:
+        lines.append(f"{indent}    - {name}")
+    lines.append(f"{indent}# CFST-GROUP-END")
+
+    block = "\n".join(lines) + "\n"
+
+    existing_re = re.compile(
+        r"^[ \t]*# CFST-GROUP-START\n.*?^[ \t]*# CFST-GROUP-END\n?",
+        flags=re.MULTILINE | re.DOTALL,
+    )
+    if existing_re.search(text):
+        return existing_re.sub(block, text, count=1)
+
+    insert_pos = marker.end()
+    return text[:insert_pos] + "\n" + block + text[insert_pos:].lstrip("\n")
+
+
 def build_report(stats) -> str:
     report_lines = []
-
-    # 钉钉继续使用 Markdown 表格格式；
-    # 终端摘要在 report_file 写入后单独输出普通文本，不受这里影响。
-    # 只展示“本次有新增有效节点”的地区；本次更新为 0 的地区不展示。
     updated_stats = [item for item in stats if item["new"] > 0]
 
     report_lines.append("### 📊 本次更新地区")
@@ -1031,6 +1055,14 @@ cf_sections = build_cf_sections(ordered_regions, merged_by_region)
 without_old_cf = remove_old_cf_sections(original_text)
 updated_text = insert_cf_sections(without_old_cf, cf_sections)
 
+top_cfst_names = get_top_n_cf_node_names(ordered_regions, merged_by_region, top_n=cfst_group_top_n)
+updated_text = upsert_cfst_proxy_group(
+    updated_text,
+    top_cfst_names,
+    group_name=cfst_group_name,
+    group_type=cfst_group_type,
+)
+
 backup_file = target_file.with_suffix(target_file.suffix + ".bak")
 backup_file.write_text(original_text, encoding="utf-8")
 target_file.write_text(updated_text, encoding="utf-8")
@@ -1038,7 +1070,6 @@ target_file.write_text(updated_text, encoding="utf-8")
 report = build_report(stats)
 report_file.write_text(report, encoding="utf-8")
 
-# 终端只输出普通文本摘要，避免 Linux 终端直接显示 Markdown 表格时出现“不对齐”。
 updated_stats = [item for item in stats if item["new"] > 0]
 
 print("终端摘要：")
@@ -1057,6 +1088,10 @@ else:
             f"淘汰 {item['dropped']}"
         )
 
+print(f"\n策略组 [{cfst_group_name}] 已更新（共 {len(top_cfst_names)} 个节点）：")
+for idx, name in enumerate(top_cfst_names, start=1):
+    print(f"  {idx}. {name}")
+
 PYTHON_EOF
 
 if [ ! -s "$REPORT_FILE" ]; then
@@ -1066,7 +1101,7 @@ fi
 
 # ==============================================================================
 # 7. 提交并推送 private_config 中的 Personal_Use_ALL.yaml
-# ============================================================================== 
+# ==============================================================================
 
 print_section "提交配置变更"
 
@@ -1088,7 +1123,7 @@ run_quiet "推送私人仓库" git push "$PRIVATE_GIT_REMOTE" "$PRIVATE_GIT_BRAN
 
 # ==============================================================================
 # 8. DingTalk 发送更新信息
-# ============================================================================== 
+# ==============================================================================
 
 END_TIME="$(date '+%Y-%m-%d %H:%M')"
 END_EPOCH="$(date '+%s')"
@@ -1109,14 +1144,13 @@ notify_dingtalk_private_markdown "$DING_TITLE" "$DING_TEXT"
 
 # ==============================================================================
 # 9. 清理本次临时结果
-# ============================================================================== 
+# ==============================================================================
 
 rm -f "$RESULT_CSV"
+rm -f "$DATA_DIR"/result_*.csv
 rm -f "$DATA_DIR/result.txt"
 rm -f "$DATA_DIR/data.yaml"
 rm -f "$DATA_DIR/cfst-docker-last.log"
-
-# 保留 REPORT_FILE，方便在 /root/cfst/data/openclash_update_report.md 查看最近一次统计。
 
 print_section "任务完成"
 printf '状态：完成\n'
